@@ -502,6 +502,31 @@ package feathers.controls
 			this.invalidate(INVALIDATION_FLAG_DATA);
 			this.dispatchEventWith(Event.CHANGE);
 		}
+		
+		public function get htmlText():String
+		{
+			return this._text;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set htmlText(value:String):void
+		{
+			if(!value)
+			{
+				//don't allow null or undefined
+				value = "";
+			}
+			if(this._text == value)
+			{
+				return;
+			}
+			this._text = value;
+			this.textEditorProperties.isHTML = true;
+			this.invalidate(INVALIDATION_FLAG_DATA);
+			this.dispatchEventWith(Event.CHANGE);
+		}
 
 		/**
 		 * The baseline measurement of the text, in pixels.

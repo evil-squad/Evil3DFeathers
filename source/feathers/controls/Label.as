@@ -164,6 +164,25 @@ package feathers.controls
 			this._text = value;
 			this.invalidate(INVALIDATION_FLAG_DATA);
 		}
+		
+		public function get htmlText():String
+		{
+			return this._text;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set htmlText(value:String):void
+		{
+			if(this._text == value)
+			{
+				return;
+			}
+			this._text = value;
+			this.textRendererProperties.isHTML = true;
+			this.invalidate(INVALIDATION_FLAG_DATA);
+		}
 
 		/**
 		 * @private
