@@ -1,6 +1,6 @@
 /*
 Feathers
-Copyright 2012-2015 Joshua Tynjala. All Rights Reserved.
+Copyright 2012-2015 Bowler Hat LLC. All Rights Reserved.
 
 This program is free software. You can redistribute and/or modify it in
 accordance with the terms of the accompanying license agreement.
@@ -8,6 +8,7 @@ accordance with the terms of the accompanying license agreement.
 package feathers.controls.text
 {
 	import feathers.controls.Scroller;
+	import feathers.skins.IStyleProvider;
 	import feathers.utils.geom.matrixToRotation;
 	import feathers.utils.geom.matrixToScaleX;
 	import feathers.utils.geom.matrixToScaleY;
@@ -42,6 +43,15 @@ package feathers.controls.text
 		private static const HELPER_POINT:Point = new Point();
 
 		/**
+		 * The default <code>IStyleProvider</code> for all <code>TextFieldTextEditorViewPort</code>
+		 * components.
+		 *
+		 * @default null
+		 * @see feathers.core.FeathersControl#styleProvider
+		 */
+		public static var globalStyleProvider:IStyleProvider;
+
+		/**
 		 * Constructor.
 		 */
 		public function TextFieldTextEditorViewPort()
@@ -50,6 +60,14 @@ package feathers.controls.text
 			this.multiline = true;
 			this.wordWrap = true;
 			this.resetScrollOnFocusOut = false;
+		}
+
+		/**
+		 * @private
+		 */
+		override protected function get defaultStyleProvider():IStyleProvider
+		{
+			return globalStyleProvider;
 		}
 
 		/**
@@ -504,6 +522,17 @@ package feathers.controls.text
 			if(this._useGutter)
 			{
 				newHeight += 4;
+			}
+			if(this._visibleHeight === this._visibleHeight) //!isNaN
+			{
+				if(newHeight < this._visibleHeight)
+				{
+					newHeight = this._visibleHeight;
+				}
+			}
+			else if(newHeight < this._minVisibleHeight)
+			{
+				newHeight = this._minVisibleHeight;
 			}
 
 			result.x = newWidth;

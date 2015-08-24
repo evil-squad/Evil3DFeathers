@@ -1,6 +1,6 @@
 /*
 Feathers
-Copyright 2012-2015 Joshua Tynjala. All Rights Reserved.
+Copyright 2012-2015 Bowler Hat LLC. All Rights Reserved.
 
 This program is free software. You can redistribute and/or modify it in
 accordance with the terms of the accompanying license agreement.
@@ -11,6 +11,7 @@ package feathers.controls.text
 	import feathers.core.INativeFocusOwner;
 	import feathers.core.ITextEditor;
 	import feathers.events.FeathersEventType;
+	import feathers.skins.IStyleProvider;
 	import feathers.utils.text.TextInputNavigation;
 	import feathers.utils.text.TextInputRestrict;
 
@@ -169,6 +170,15 @@ package feathers.controls.text
 		public static const TEXT_ALIGN_RIGHT:String = "right";
 
 		/**
+		 * The default <code>IStyleProvider</code> for all <code>TextBlockTextEditor</code>
+		 * components.
+		 *
+		 * @default null
+		 * @see feathers.core.FeathersControl#styleProvider
+		 */
+		public static var globalStyleProvider:IStyleProvider;
+
+		/**
 		 * Constructor.
 		 */
 		public function TextBlockTextEditor()
@@ -180,6 +190,14 @@ package feathers.controls.text
 			this.isQuickHitAreaEnabled = true;
 			this.truncateToFit = false;
 			this.addEventListener(TouchEvent.TOUCH, textEditor_touchHandler);
+		}
+
+		/**
+		 * @private
+		 */
+		override protected function get defaultStyleProvider():IStyleProvider
+		{
+			return globalStyleProvider;
 		}
 
 		/**
@@ -620,12 +638,6 @@ package feathers.controls.text
 				{
 					this.selectRange(newIndex, newIndex);
 				}
-				else
-				{
-					//the cursor may not have been positioned yet, so make sure
-					//that happens.
-					this.positionCursorAtCharIndex(this.getCursorIndexFromSelectionRange());
-				}
 				this.focusIn();
 			}
 			else
@@ -693,8 +705,6 @@ package feathers.controls.text
 				this._cursorSkin.visible = false;
 				this._selectionSkin.visible = true;
 			}
-			this.positionCursorAtCharIndex(this.getCursorIndexFromSelectionRange());
-			this.positionSelectionBackground();
 			this.invalidate(INVALIDATION_FLAG_SELECTED);
 		}
 
@@ -754,6 +764,18 @@ package feathers.controls.text
 				this.selectionSkin = new Quad(1, 1, 0x000000);
 			}
 			super.initialize();
+		}
+
+		override protected function draw():void
+		{
+			var dataInvalid:Boolean = this.isInvalid(INVALIDATION_FLAG_DATA);
+			var selectionInvalid:Boolean = this.isInvalid(INVALIDATION_FLAG_SELECTED);
+			super.draw();
+			if(dataInvalid || selectionInvalid)
+			{
+				this.positionCursorAtCharIndex(this.getCursorIndexFromSelectionRange());
+				this.positionSelectionBackground();
+			}
 		}
 
 		/**
@@ -1351,6 +1373,11 @@ package feathers.controls.text
 				return;
 			}
 			var pastedText:String = Clipboard.generalClipboard.getData(ClipboardFormats.TEXT_FORMAT) as String;
+			if(pastedText === null)
+			{
+				//the clipboard doesn't contain any text to paste
+				return;
+			}
 			if(this._restrict)
 			{
 				pastedText = this._restrict.filterText(pastedText);

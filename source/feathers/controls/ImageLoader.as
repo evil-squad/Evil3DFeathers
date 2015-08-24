@@ -1,6 +1,6 @@
 /*
 Feathers
-Copyright 2012-2015 Joshua Tynjala. All Rights Reserved.
+Copyright 2012-2015 Bowler Hat LLC. All Rights Reserved.
 
 This program is free software. You can redistribute and/or modify it in
 accordance with the terms of the accompanying license agreement.
@@ -10,6 +10,8 @@ package feathers.controls
 	import feathers.core.FeathersControl;
 	import feathers.events.FeathersEventType;
 	import feathers.skins.IStyleProvider;
+	import feathers.utils.display.stageToStarling;
+	import feathers.utils.textures.TextureCache;
 
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
@@ -321,17 +323,12 @@ package feathers.controls
 		/**
 		 * @private
 		 */
+		protected var _isRestoringTexture:Boolean = false;
+
+		/**
+		 * @private
+		 */
 		protected var _texture:Texture;
-
-		/**
-		 * @private
-		 */
-		protected var _textureBitmapData:BitmapData;
-
-		/**
-		 * @private
-		 */
-		protected var _textureRawData:ByteArray;
 
 		/**
 		 * @private
@@ -388,12 +385,25 @@ package feathers.controls
 			{
 				return;
 			}
+			this._isRestoringTexture = false;
 			if(this._isInTextureQueue)
 			{
 				this.removeFromTextureQueue();
 			}
 			this._source = value;
+			
+			var oldTexture:Texture;
+			//we should try to reuse the existing texture, if possible.
+			if(this._isTextureOwner && !(value is Texture))
+			{
+				oldTexture = this._texture;
+				this._isTextureOwner = false;
+			}
 			this.cleanupTexture();
+			if(oldTexture)
+			{
+				this._texture = oldTexture;
+			}
 			if(this.image)
 			{
 				this.image.visible = false;
@@ -409,6 +419,34 @@ package feathers.controls
 				this._isLoaded = false;
 			}
 			this.invalidate(INVALIDATION_FLAG_DATA);
+		}
+
+		/**
+		 * @private
+		 */
+		protected var _textureCache:TextureCache;
+
+		/**
+		 * An optional cache for textures.
+		 *
+		 * <p>In the following example, a cache is provided for textures:</p>
+		 *
+		 * <listing version="3.0">
+		 * loader.textureCache = new TextureCache(30);</listing>
+		 *
+		 * @default null
+		 */
+		public function get textureCache():TextureCache
+		{
+			return this._textureCache;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set textureCache(value:TextureCache):void
+		{
+			this._textureCache = value;
 		}
 
 		/**
@@ -541,6 +579,41 @@ package feathers.controls
 				return;
 			}
 			this._textureScale = value;
+			this.invalidate(INVALIDATION_FLAG_SIZE);
+		}
+
+		/**
+		 * @private
+		 */
+		private var _scaleFactor:Number = 1;
+
+		/**
+		 * The scale factor value to pass to <code>Texture.fromBitmapData()</code>
+		 * when creating a texture loaded from a URL.
+		 *
+		 * <p>In the following example, the image loader's scale factor is
+		 * customized:</p>
+		 *
+		 * <listing version="3.0">
+		 * loader.scaleFactor = 2;</listing>
+		 *
+		 * @default 1
+		 */
+		public function get scaleFactor():Number
+		{
+			return this._textureScale;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set scaleFactor(value:Number):void
+		{
+			if(this._scaleFactor == value)
+			{
+				return;
+			}
+			this._scaleFactor = value;
 			this.invalidate(INVALIDATION_FLAG_SIZE);
 		}
 
@@ -1282,6 +1355,7 @@ package feathers.controls
 		 */
 		override public function dispose():void
 		{
+			this._isRestoringTexture = false;
 			if(this.loader)
 			{
 				this.loader.contentLoaderInfo.removeEventListener(flash.events.Event.COMPLETE, loader_completeHandler);
@@ -1446,7 +1520,7 @@ package feathers.controls
 				else if(sourceURL != this._lastURL)
 				{
 					this._lastURL = sourceURL;
-
+					
 					if(this.urlLoader)
 					{
 						this.urlLoader.removeEventListener(flash.events.Event.COMPLETE, rawDataLoader_completeHandler);
@@ -1475,6 +1549,17 @@ package feathers.controls
 						{
 							//no need to do anything in response
 						}
+					}
+
+					if(this._textureCache && !this._isRestoringTexture && this._textureCache.hasTexture(sourceURL))
+					{
+						this._texture = this._textureCache.retainTexture(sourceURL);
+						this._isTextureOwner = false;
+						this._isRestoringTexture = false;
+						this._isLoaded = true;
+						this.refreshCurrentTexture();
+						this.dispatchEventWith(starling.events.Event.COMPLETE);
+						return;
 					}
 
 					if(isATFURL(sourceURL))
@@ -1630,10 +1715,10 @@ package feathers.controls
 		 */
 		protected function refreshCurrentTexture():void
 		{
-			var newTexture:Texture = this._texture;
+			var newTexture:Texture = this._isLoaded ? this._texture : null;
 			if(!newTexture)
 			{
-				if(this.loader)
+				if(this.loader || this.urlLoader)
 				{
 					newTexture = this._loadingTexture;
 				}
@@ -1690,19 +1775,15 @@ package feathers.controls
 		 */
 		protected function cleanupTexture():void
 		{
-			if(this._isTextureOwner)
+			if(this._texture)
 			{
-				if(this._textureBitmapData)
-				{
-					this._textureBitmapData.dispose();
-				}
-				if(this._textureRawData)
-				{
-					this._textureRawData.clear();
-				}
-				if(this._texture)
+				if(this._isTextureOwner)
 				{
 					this._texture.dispose();
+				}
+				else if(this._textureCache && this._source is String)
+				{
+					this._textureCache.releaseTexture(this._source as String);
 				}
 			}
 			if(this._pendingBitmapDataTexture)
@@ -1718,8 +1799,6 @@ package feathers.controls
 			this._currentTextureHeight = NaN;
 			this._pendingBitmapDataTexture = null;
 			this._pendingRawTextureData = null;
-			this._textureBitmapData = null;
-			this._textureRawData = null;
 			this._texture = null;
 			this._isTextureOwner = false;
 		}
@@ -1733,14 +1812,8 @@ package feathers.controls
 			{
 				return;
 			}
-			for each(var starling:Starling in Starling.all)
-			{
-				if(starling.stage === this.stage)
-				{
-					starling.makeCurrent();
-					break;
-				}
-			}
+			var starling:Starling = stageToStarling(this.stage);
+			starling.makeCurrent();
 		}
 
 		/**
@@ -1762,20 +1835,30 @@ package feathers.controls
 				return;
 			}
 			this.verifyCurrentStarling();
-			this._texture = Texture.fromBitmapData(bitmapData, false, false, 1, this._textureFormat);
-			if(Starling.handleLostContext)
+			
+			if(!this._texture)
 			{
-				//we're saving it so that we can dispose it when we get a new
-				//texture or when we're disposed
-				this._textureBitmapData = bitmapData;
+				//skip Texture.fromBitmapData() because we don't want
+				//it to create an onRestore function that will be
+				//immediately discarded for garbage collection. 
+				this._texture = Texture.empty(bitmapData.width / this._scaleFactor,
+					bitmapData.height / this._scaleFactor, true, false, false,
+					this._scaleFactor, this._textureFormat);
+				var sourceURL:String = this._source as String;
+				this._texture.root.onRestore = this.createTextureOnRestore(this._texture,
+					sourceURL, this._textureFormat, this._scaleFactor);
+				if(this._textureCache)
+				{
+					this._textureCache.addTexture(sourceURL, this._texture, true);
+				}
 			}
-			else
-			{
-				//since Starling isn't handling the lost context, we don't need
-				//to save the texture bitmap data.
-				bitmapData.dispose();
-			}
-			this._isTextureOwner = true;
+			this._texture.root.uploadBitmapData(bitmapData);
+			bitmapData.dispose();
+			
+			//if we have a cache for the textures, then the cache is the owner
+			//because other ImageLoaders may use the same texture.
+			this._isTextureOwner = this._textureCache === null;
+			this._isRestoringTexture = false;
 			this._isLoaded = true;
 			this.invalidate(INVALIDATION_FLAG_DATA);
 			this.dispatchEventWith(starling.events.Event.COMPLETE);
@@ -1800,20 +1883,27 @@ package feathers.controls
 				return;
 			}
 			this.verifyCurrentStarling();
-			this._texture = Texture.fromAtfData(rawData);
-			if(Starling.handleLostContext)
+			
+			if(this._texture)
 			{
-				//we're saving it so that we can clear it when we get a new
-				//texture or when we're disposed
-				this._textureRawData = rawData;
+				this._texture.root.uploadAtfData(rawData);
 			}
 			else
 			{
-				//since Starling isn't handling the lost context, we don't need
-				//to save the raw texture data.
-				rawData.clear();
+				this._texture = Texture.fromAtfData(rawData, this._scaleFactor);
+				var sourceURL:String = this._source as String;
+				this._texture.root.onRestore = this.createTextureOnRestore(this._texture,
+					sourceURL, this._textureFormat, this._scaleFactor);
+				if(this._textureCache)
+				{
+					this._textureCache.addTexture(sourceURL, this._texture, true);
+				}
 			}
-			this._isTextureOwner = true;
+			rawData.clear();
+			//if we have a cache for the textures, then the cache is the owner
+			//because other ImageLoaders may use the same texture.
+			this._isTextureOwner = this._textureCache === null;
+			this._isRestoringTexture = false;
 			this._isLoaded = true;
 			this.invalidate(INVALIDATION_FLAG_DATA);
 			this.dispatchEventWith(starling.events.Event.COMPLETE);
@@ -1942,6 +2032,55 @@ package feathers.controls
 		/**
 		 * @private
 		 */
+		protected function createTextureOnRestore(texture:Texture, source:String,
+			format:String, scaleFactor:Number):Function
+		{
+			return function():void
+			{
+				if(_texture === texture)
+				{
+					texture_onRestore();
+					return;
+				}
+				//this is a hacky way to handle restoring the texture when the
+				//current ImageLoader is no longer displaying the texture being
+				//restored.
+				var otherLoader:ImageLoader = new ImageLoader();
+				otherLoader.source = source;
+				otherLoader._texture = texture;
+				otherLoader._textureFormat = format;
+				otherLoader._scaleFactor = scaleFactor;
+				otherLoader.validate();
+				otherLoader.addEventListener(starling.events.Event.COMPLETE, onRestore_onComplete);
+			};
+		}
+
+		/**
+		 * @private
+		 */
+		protected function onRestore_onComplete(event:starling.events.Event):void
+		{
+			var otherLoader:ImageLoader = ImageLoader(event.currentTarget);
+			otherLoader._isTextureOwner = false;
+			otherLoader._texture = null;
+			otherLoader.dispose();
+		}
+
+		/**
+		 * @private
+		 */
+		protected function texture_onRestore():void
+		{
+			//reload the texture from the URL
+			this._isRestoringTexture = true;
+			this._lastURL = null;
+			this._isLoaded = false;
+			this.invalidate(INVALIDATION_FLAG_DATA);
+		}
+
+		/**
+		 * @private
+		 */
 		protected function processTextureQueue_enterFrameHandler(event:EnterFrameEvent):void
 		{
 			this._accumulatedPrepareTextureTime += event.passedTime;
@@ -1974,9 +2113,20 @@ package feathers.controls
 			this.loader.contentLoaderInfo.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, loader_securityErrorHandler);
 			this.loader = null;
 
-			this.cleanupTexture();
 			var bitmapData:BitmapData = bitmap.bitmapData;
-			if(this._delayTextureCreation)
+			
+			//attempt to reuse the existing texture so that we don't need to
+			//create a new one.
+			var canReuseTexture:Boolean = this._texture &&
+				this._texture.nativeWidth === bitmapData.width &&
+				this._texture.nativeHeight === bitmapData.height &&
+				this._texture.scale === this._scaleFactor &&
+				this._texture.format === this._textureFormat;
+			if(!canReuseTexture)
+			{
+				this.cleanupTexture();
+			}
+			if(this._delayTextureCreation && !this._isRestoringTexture)
 			{
 				this._pendingBitmapDataTexture = bitmapData;
 				if(this._textureQueueDuration < Number.POSITIVE_INFINITY)
@@ -2010,7 +2160,7 @@ package feathers.controls
 
 			this.cleanupTexture();
 			this.invalidate(INVALIDATION_FLAG_DATA);
-			this.dispatchEventWith(feathers.events.FeathersEventType.ERROR, false, event);
+			this.dispatchEventWith(FeathersEventType.ERROR, false, event);
 			this.dispatchEventWith(starling.events.Event.IO_ERROR, false, event);
 		}
 
@@ -2026,7 +2176,7 @@ package feathers.controls
 
 			this.cleanupTexture();
 			this.invalidate(INVALIDATION_FLAG_DATA);
-			this.dispatchEventWith(feathers.events.FeathersEventType.ERROR, false, event);
+			this.dispatchEventWith(FeathersEventType.ERROR, false, event);
 			this.dispatchEventWith(starling.events.Event.SECURITY_ERROR, false, event);
 		}
 
@@ -2042,8 +2192,12 @@ package feathers.controls
 			this.urlLoader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, rawDataLoader_securityErrorHandler);
 			this.urlLoader = null;
 
-			this.cleanupTexture();
-			if(this._delayTextureCreation)
+			//only clear the texture if we're not restoring
+			if(!this._isRestoringTexture)
+			{
+				this.cleanupTexture();
+			}
+			if(this._delayTextureCreation && !this._isRestoringTexture)
 			{
 				this._pendingRawTextureData = rawData;
 				if(this._textureQueueDuration < Number.POSITIVE_INFINITY)

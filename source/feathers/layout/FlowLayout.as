@@ -1,6 +1,6 @@
 /*
 Feathers
-Copyright 2012-2015 Joshua Tynjala. All Rights Reserved.
+Copyright 2012-2015 Bowler Hat LLC. All Rights Reserved.
 
 This program is free software. You can redistribute and/or modify it in
 accordance with the terms of the accompanying license agreement.
@@ -10,7 +10,6 @@ package feathers.layout
 	import feathers.core.IValidating;
 
 	import flash.errors.IllegalOperationError;
-
 	import flash.geom.Point;
 
 	import starling.display.DisplayObject;
@@ -45,6 +44,15 @@ package feathers.layout
 	 * rows. When the width of a row reaches the width of the container, a new
 	 * row will be started. Constrained to the suggested width, the flow layout
 	 * will change in height as the number of items increases or decreases.
+	 *
+	 * <p><strong>Beta Layout:</strong> This is a new layout, and its APIs
+	 * may need some changes between now and the next version of Feathers to
+	 * account for overlooked requirements or other issues. Upgrading to future
+	 * versions of Feathers may involve manual changes to your code that uses
+	 * this layout. The
+	 * <a target="_top" href="../../../help/deprecation-policy.html">Feathers deprecation policy</a>
+	 * will not go into effect until this component's status is upgraded from
+	 * beta to stable.</p>
 	 *
 	 * @see ../../../help/flow-layout.html How to use FlowLayout with Feathers containers
 	 */
@@ -188,6 +196,71 @@ package feathers.layout
 				return;
 			}
 			this._verticalGap = value;
+			this.dispatchEventWith(Event.CHANGE);
+		}
+
+		/**
+		 * @private
+		 */
+		protected var _firstHorizontalGap:Number = NaN;
+
+		/**
+		 * The space, in pixels, between the first and second items. If the
+		 * value of <code>firstHorizontalGap</code> is <code>NaN</code>, the
+		 * value of the <code>horizontalGap</code> property will be used
+		 * instead.
+		 *
+		 * @default NaN
+		 *
+		 * @see #gap
+		 */
+		public function get firstHorizontalGap():Number
+		{
+			return this._firstHorizontalGap;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set firstHorizontalGap(value:Number):void
+		{
+			if(this._firstHorizontalGap == value)
+			{
+				return;
+			}
+			this._firstHorizontalGap = value;
+			this.dispatchEventWith(Event.CHANGE);
+		}
+
+		/**
+		 * @private
+		 */
+		protected var _lastHorizontalGap:Number = NaN;
+
+		/**
+		 * The space, in pixels, between the last and second to last items. If
+		 * the value of <code>lastHorizontalGap</code> is <code>NaN</code>, the
+		 * value of the <code>horizontalGap</code> property will be used instead.
+		 *
+		 * @default NaN
+		 * 
+		 * @see #gap
+		 */
+		public function get lastHorizontalGap():Number
+		{
+			return this._lastHorizontalGap;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set lastHorizontalGap(value:Number):void
+		{
+			if(this._lastHorizontalGap == value)
+			{
+				return;
+			}
+			this._lastHorizontalGap = value;
 			this.dispatchEventWith(Event.CHANGE);
 		}
 
@@ -591,8 +664,10 @@ package feathers.layout
 			var itemCount:int = items.length;
 			var positionY:Number = boundsY + this._paddingTop;
 			var maxItemHeight:Number = 0;
-			var horizontalGap:Number = this._horizontalGap;
 			var verticalGap:Number = this._verticalGap;
+			var hasFirstHorizontalGap:Boolean = this._firstHorizontalGap === this._firstHorizontalGap; //!isNaN
+			var hasLastHorizontalGap:Boolean = this._lastHorizontalGap === this._lastHorizontalGap; //!isNaN
+			var secondToLastIndex:int = itemCount - 2;
 			do
 			{
 				if(i > 0)
@@ -611,6 +686,15 @@ package feathers.layout
 				for(; i < itemCount; i++)
 				{
 					var item:DisplayObject = items[i];
+					var horizontalGap:Number = this._horizontalGap;
+					if(hasFirstHorizontalGap && i === 0)
+					{
+						horizontalGap = this._firstHorizontalGap;
+					}
+					else if(hasLastHorizontalGap && i > 0 && i == secondToLastIndex)
+					{
+						horizontalGap = this._lastHorizontalGap;
+					}
 	
 					if(this._useVirtualLayout && this._hasVariableItemDimensions)
 					{
@@ -695,6 +779,18 @@ package feathers.layout
 					}
 					if(supportsMultipleRows && rowItemCount > 0 && (positionX + itemWidth) > (availableRowWidth - this._paddingRight))
 					{
+						//we need to restore the previous gap because it will be
+						//subtracted from the x position to get the row width.
+						var previousIndex:int = i - 1;
+						horizontalGap = this._horizontalGap;
+						if(hasFirstHorizontalGap && previousIndex === 0)
+						{
+							horizontalGap = this._firstHorizontalGap;
+						}
+						else if(hasLastHorizontalGap && previousIndex > 0 && previousIndex == secondToLastIndex)
+						{
+							horizontalGap = this._lastHorizontalGap;
+						}
 						//we've reached the end of the row, so go to next
 						break;
 					}
@@ -716,7 +812,7 @@ package feathers.layout
 					}
 					rowItemCount++;
 				}
-	
+
 				//this is the total width of all items in the row
 				var totalRowWidth:Number = positionX - horizontalGap + this._paddingRight - boundsX;
 				rowItemCount = this._rowItems.length;
@@ -782,6 +878,11 @@ package feathers.layout
 			//we don't want to keep a reference to any of the items, so clear
 			//this cache
 			this._rowItems.length = 0;
+			
+			if(!supportsMultipleRows)
+			{
+				availableRowWidth = totalRowWidth;
+			}
 
 			var totalHeight:Number = positionY + maxItemHeight + this._paddingBottom;
 			//the available height is the height of the viewport. if the explicit
@@ -887,8 +988,10 @@ package feathers.layout
 			var i:int = 0;
 			var positionY:Number = boundsY + this._paddingTop;
 			var maxItemHeight:Number = 0;
-			var horizontalGap:Number = this._horizontalGap;
 			var verticalGap:Number = this._verticalGap;
+			var hasFirstHorizontalGap:Boolean = this._firstHorizontalGap === this._firstHorizontalGap; //!isNaN
+			var hasLastHorizontalGap:Boolean = this._lastHorizontalGap === this._lastHorizontalGap; //!isNaN
+			var secondToLastIndex:int = itemCount - 2;
 			do
 			{
 				if(i > 0)
@@ -904,6 +1007,15 @@ package feathers.layout
 				//the total width of all items
 				for(; i < itemCount; i++)
 				{
+					var horizontalGap:Number = this._horizontalGap;
+					if(hasFirstHorizontalGap && i === 0)
+					{
+						horizontalGap = this._firstHorizontalGap;
+					}
+					else if(hasLastHorizontalGap && i > 0 && i == secondToLastIndex)
+					{
+						horizontalGap = this._lastHorizontalGap;
+					}
 					if(this._hasVariableItemDimensions)
 					{
 						var cachedWidth:Number = this._widthCache[i];
@@ -950,6 +1062,11 @@ package feathers.layout
 				}
 			}
 			while(i < itemCount)
+			
+			if(!supportsMultipleRows)
+			{
+				availableRowWidth = positionX - horizontalGap + this._paddingRight - boundsX;
+			}
 			
 			var totalHeight:Number = positionY + maxItemHeight + this._paddingBottom;
 			//the available height is the height of the viewport. if the explicit
@@ -1124,9 +1241,11 @@ package feathers.layout
 			var i:int = 0;
 			var positionY:Number = this._paddingTop;
 			var maxItemHeight:Number = 0;
-			var horizontalGap:Number = this._horizontalGap;
 			var verticalGap:Number = this._verticalGap;
 			var maxPositionY:Number = scrollY + height;
+			var hasFirstHorizontalGap:Boolean = this._firstHorizontalGap === this._firstHorizontalGap; //!isNaN
+			var hasLastHorizontalGap:Boolean = this._lastHorizontalGap === this._lastHorizontalGap; //!isNaN
+			var secondToLastIndex:int = itemCount - 2;
 			do
 			{
 				if(i > 0)
@@ -1147,6 +1266,15 @@ package feathers.layout
 				//the total width of all items
 				for(; i < itemCount; i++)
 				{
+					var horizontalGap:Number = this._horizontalGap;
+					if(hasFirstHorizontalGap && i === 0)
+					{
+						horizontalGap = this._firstHorizontalGap;
+					}
+					else if(hasLastHorizontalGap && i > 0 && i == secondToLastIndex)
+					{
+						horizontalGap = this._lastHorizontalGap;
+					}
 					if(this._hasVariableItemDimensions)
 					{
 						var cachedWidth:Number = this._widthCache[i];

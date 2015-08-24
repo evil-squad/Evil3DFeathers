@@ -1,6 +1,6 @@
 /*
 Feathers
-Copyright 2012-2015 Joshua Tynjala. All Rights Reserved.
+Copyright 2012-2015 Bowler Hat LLC. All Rights Reserved.
 
 This program is free software. You can redistribute and/or modify it in
 accordance with the terms of the accompanying license agreement.
@@ -33,15 +33,6 @@ package feathers.controls
 	 * item.setScreenIDForPushEvent( SettingsScreen.SHOW_ADVANCED_SETTINGS, "advancedSettings" );
 	 * item.addPopEvent( Event.COMPLETE );
 	 * navigator.addScreen( "settings", item );</listing>
-	 *
-	 * <p><strong>Beta Component:</strong> This is a new component, and its APIs
-	 * may need some changes between now and the next version of Feathers to
-	 * account for overlooked requirements or other issues. Upgrading to future
-	 * versions of Feathers may involve manual changes to your code that uses
-	 * this component. The
-	 * <a target="_top" href="../../../help/deprecation-policy.html">Feathers deprecation policy</a>
-	 * will not go into effect until this component's status is upgraded from
-	 * beta to stable.</p>
 	 *
 	 * @see ../../../help/stack-screen-navigator.html How to use the Feathers StackScreenNavigator component
 	 * @see feathers.controls.StackScreenNavigator
@@ -238,7 +229,18 @@ package feathers.controls
 		 * the default <code>pushTransition</code> defined by the
 		 * <code>StackScreenNavigator</code> will be used.
 		 *
-		 * <p>The function should have the following signature:</p>
+		 * <p>In the following example, the screen navigator item is given a
+		 * push transition:</p>
+		 *
+		 * <listing version="3.0">
+		 * item.pushTransition = Slide.createSlideLeftTransition();</listing>
+		 *
+		 * <p>A number of animated transitions may be found in the
+		 * <a href="../motion/package-detail.html">feathers.motion</a> package.
+		 * However, you are not limited to only these transitions. It's possible
+		 * to create custom transitions too.</p>
+		 *
+		 * <p>A custom transition function should have the following signature:</p>
 		 * <pre>function(oldScreen:DisplayObject, newScreen:DisplayObject, completeCallback:Function):void</pre>
 		 *
 		 * <p>Either of the <code>oldScreen</code> and <code>newScreen</code>
@@ -290,6 +292,17 @@ package feathers.controls
 		 * A custom pop transition for this screen only. If <code>null</code>,
 		 * the default <code>popTransition</code> defined by the
 		 * <code>StackScreenNavigator</code> will be used.
+		 *
+		 * <p>In the following example, the screen navigator item is given a
+		 * pop transition:</p>
+		 *
+		 * <listing version="3.0">
+		 * item.popTransition = Slide.createSlideRightTransition();</listing>
+		 *
+		 * <p>A number of animated transitions may be found in the
+		 * <a href="../motion/package-detail.html">feathers.motion</a> package.
+		 * However, you are not limited to only these transitions. It's possible
+		 * to create custom transitions too.</p>
 		 *
 		 * <p>The function should have the following signature:</p>
 		 * <pre>function(oldScreen:DisplayObject, newScreen:DisplayObject, completeCallback:Function):void</pre>

@@ -1,27 +1,27 @@
 /*
- Copyright 2012-2015 Joshua Tynjala
+Copyright 2012-2015 Bowler Hat LLC
 
- Permission is hereby granted, free of charge, to any person
- obtaining a copy of this software and associated documentation
- files (the "Software"), to deal in the Software without
- restriction, including without limitation the rights to use,
- copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the
- Software is furnished to do so, subject to the following
- conditions:
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without
+restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following
+conditions:
 
- The above copyright notice and this permission notice shall be
- included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- OTHER DEALINGS IN THE SOFTWARE.
- */
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+*/
 package feathers.themes
 {
 	import feathers.controls.Alert;
@@ -63,6 +63,8 @@ package feathers.themes
 	import feathers.controls.renderers.DefaultListItemRenderer;
 	import feathers.controls.text.TextBlockTextEditor;
 	import feathers.controls.text.TextBlockTextRenderer;
+	import feathers.controls.text.TextFieldTextEditor;
+	import feathers.controls.text.TextFieldTextEditorViewPort;
 	import feathers.core.FeathersControl;
 	import feathers.core.FocusManager;
 	import feathers.core.PopUpManager;
@@ -262,6 +264,31 @@ package feathers.themes
 		 * @private
 		 */
 		protected static const THEME_STYLE_NAME_POP_UP_VOLUME_SLIDER_MINIMUM_TRACK:String = "metalworks-desktop-pop-up-volume-slider-minimum-track";
+
+		/**
+		 * @private
+		 */
+		protected static const THEME_STYLE_NAME_QUIET_BUTTON_LABEL:String = "metalworks-desktop-quiet-button-label";
+
+		/**
+		 * @private
+		 */
+		protected static const THEME_STYLE_NAME_POP_UP_HEADER_TITLE:String = "metalworks-desktop-pop-up-header-title";
+
+		/**
+		 * @private
+		 */
+		protected static const THEME_STYLE_NAME_GROUPED_LIST_FOOTER_CONTENT_LABEL:String = "metalworks-desktop-grouped-list-footer-content-label";
+
+		/**
+		 * @private
+		 */
+		protected static const THEME_STYLE_NAME_TAB_LABEL:String = "metalworks-desktop-tab-bar-tab-label";
+
+		/**
+		 * @private
+		 */
+		protected static const THEME_STYLE_NAME_NUMERIC_STEPPER_TEXT_INPUT_TEXT_EDITOR:String = "metalworks-desktop-numeric-stepper-text-input-text-editor";
 
 		/**
 		 * The default global text renderer factory for this theme creates a
@@ -580,8 +607,8 @@ package feathers.themes
 		protected var playPauseButtonPlayDownIconTexture:Texture;
 		protected var playPauseButtonPauseUpIconTexture:Texture;
 		protected var playPauseButtonPauseDownIconTexture:Texture;
-		protected var largePlayPauseButtonPlayUpIconTexture:Texture;
-		protected var largePlayPauseButtonPlayDownIconTexture:Texture;
+		protected var overlayPlayPauseButtonPlayUpIconTexture:Texture;
+		protected var overlayPlayPauseButtonPlayDownIconTexture:Texture;
 		protected var fullScreenToggleButtonEnterUpIconTexture:Texture;
 		protected var fullScreenToggleButtonEnterDownIconTexture:Texture;
 		protected var fullScreenToggleButtonExitUpIconTexture:Texture;
@@ -838,8 +865,8 @@ package feathers.themes
 			this.playPauseButtonPlayDownIconTexture = this.atlas.getTexture("play-pause-toggle-button-play-down-icon0000");
 			this.playPauseButtonPauseUpIconTexture = this.atlas.getTexture("play-pause-toggle-button-pause-up-icon0000");
 			this.playPauseButtonPauseDownIconTexture = this.atlas.getTexture("play-pause-toggle-button-pause-down-icon0000");
-			this.largePlayPauseButtonPlayUpIconTexture = this.atlas.getTexture("large-play-pause-toggle-button-play-up-icon0000");
-			this.largePlayPauseButtonPlayDownIconTexture = this.atlas.getTexture("large-play-pause-toggle-button-play-down-icon0000");
+			this.overlayPlayPauseButtonPlayUpIconTexture = this.atlas.getTexture("overlay-play-pause-toggle-button-play-up-icon0000");
+			this.overlayPlayPauseButtonPlayDownIconTexture = this.atlas.getTexture("overlay-play-pause-toggle-button-play-down-icon0000");
 			this.fullScreenToggleButtonEnterUpIconTexture = this.atlas.getTexture("full-screen-toggle-button-enter-up-icon0000");
 			this.fullScreenToggleButtonEnterDownIconTexture = this.atlas.getTexture("full-screen-toggle-button-enter-down-icon0000");
 			this.fullScreenToggleButtonExitUpIconTexture = this.atlas.getTexture("full-screen-toggle-button-exit-up-icon0000");
@@ -863,6 +890,7 @@ package feathers.themes
 			this.getStyleProviderForClass(Header).setFunctionForStyleName(Alert.DEFAULT_CHILD_STYLE_NAME_HEADER, this.setPopupHeaderStyles);
 			this.getStyleProviderForClass(ButtonGroup).setFunctionForStyleName(Alert.DEFAULT_CHILD_STYLE_NAME_BUTTON_GROUP, this.setAlertButtonGroupStyles);
 			this.getStyleProviderForClass(TextBlockTextRenderer).setFunctionForStyleName(Alert.DEFAULT_CHILD_STYLE_NAME_MESSAGE, this.setAlertMessageTextRendererStyles);
+			this.getStyleProviderForClass(TextBlockTextRenderer).setFunctionForStyleName(THEME_STYLE_NAME_POP_UP_HEADER_TITLE, this.setPopupHeaderTitleStyles);
 
 			//autocomplete
 			this.getStyleProviderForClass(AutoComplete).defaultStyleFunction = this.setTextInputStyles;
@@ -875,6 +903,8 @@ package feathers.themes
 			this.getStyleProviderForClass(Button).setFunctionForStyleName(Button.ALTERNATE_STYLE_NAME_DANGER_BUTTON, this.setDangerButtonStyles);
 			this.getStyleProviderForClass(Button).setFunctionForStyleName(Button.ALTERNATE_STYLE_NAME_BACK_BUTTON, this.setBackButtonStyles);
 			this.getStyleProviderForClass(Button).setFunctionForStyleName(Button.ALTERNATE_STYLE_NAME_FORWARD_BUTTON, this.setForwardButtonStyles);
+			this.getStyleProviderForClass(TextBlockTextRenderer).setFunctionForStyleName(Button.DEFAULT_CHILD_STYLE_NAME_LABEL, this.setButtonLabelStyles);
+			this.getStyleProviderForClass(TextBlockTextRenderer).setFunctionForStyleName(THEME_STYLE_NAME_QUIET_BUTTON_LABEL, this.setQuietButtonLabelStyles);
 
 			//button group
 			this.getStyleProviderForClass(ButtonGroup).defaultStyleFunction = this.setButtonGroupStyles;
@@ -884,6 +914,7 @@ package feathers.themes
 
 			//check
 			this.getStyleProviderForClass(Check).defaultStyleFunction = this.setCheckStyles;
+			this.getStyleProviderForClass(TextBlockTextRenderer).setFunctionForStyleName(Check.DEFAULT_CHILD_STYLE_NAME_LABEL, this.setCheckLabelStyles);
 
 			//drawers
 			this.getStyleProviderForClass(Drawers).defaultStyleFunction = this.setDrawersStyles;
@@ -893,14 +924,18 @@ package feathers.themes
 
 			//header
 			this.getStyleProviderForClass(Header).defaultStyleFunction = this.setHeaderStyles;
+			this.getStyleProviderForClass(TextBlockTextRenderer).setFunctionForStyleName(Header.DEFAULT_CHILD_STYLE_NAME_TITLE, this.setHeaderTitleProperties);
 
 			//header and footer renderers for grouped list
 			this.getStyleProviderForClass(DefaultGroupedListHeaderOrFooterRenderer).defaultStyleFunction = this.setGroupedListHeaderRendererStyles;
 			this.getStyleProviderForClass(DefaultGroupedListHeaderOrFooterRenderer).setFunctionForStyleName(GroupedList.DEFAULT_CHILD_STYLE_NAME_FOOTER_RENDERER, this.setGroupedListFooterRendererStyles);
+			this.getStyleProviderForClass(TextBlockTextRenderer).setFunctionForStyleName(DefaultGroupedListHeaderOrFooterRenderer.DEFAULT_CHILD_STYLE_NAME_CONTENT_LABEL, this.setGroupedListHeaderContentLabelStyles);
+			this.getStyleProviderForClass(TextBlockTextRenderer).setFunctionForStyleName(THEME_STYLE_NAME_GROUPED_LIST_FOOTER_CONTENT_LABEL, this.setGroupedListFooterContentLabelStyles);
 
 			//item renderers for lists
 			this.getStyleProviderForClass(DefaultGroupedListItemRenderer).defaultStyleFunction = this.setItemRendererStyles;
 			this.getStyleProviderForClass(DefaultListItemRenderer).defaultStyleFunction = this.setItemRendererStyles;
+			this.getStyleProviderForClass(TextBlockTextRenderer).setFunctionForStyleName(BaseDefaultItemRenderer.DEFAULT_CHILD_STYLE_NAME_LABEL, this.setItemRendererLabelStyles);
 			this.getStyleProviderForClass(TextBlockTextRenderer).setFunctionForStyleName(BaseDefaultItemRenderer.DEFAULT_CHILD_STYLE_NAME_ACCESSORY_LABEL, this.setItemRendererAccessoryLabelRendererStyles);
 			this.getStyleProviderForClass(TextBlockTextRenderer).setFunctionForStyleName(BaseDefaultItemRenderer.DEFAULT_CHILD_STYLE_NAME_ICON_LABEL, this.setItemRendererIconLabelStyles);
 
@@ -918,6 +953,7 @@ package feathers.themes
 			//numeric stepper
 			this.getStyleProviderForClass(NumericStepper).defaultStyleFunction = this.setNumericStepperStyles;
 			this.getStyleProviderForClass(TextInput).setFunctionForStyleName(NumericStepper.DEFAULT_CHILD_STYLE_NAME_TEXT_INPUT, this.setNumericStepperTextInputStyles);
+			this.getStyleProviderForClass(TextBlockTextEditor).setFunctionForStyleName(THEME_STYLE_NAME_NUMERIC_STEPPER_TEXT_INPUT_TEXT_EDITOR, this.setNumericStepperTextInputTextEditorStyles);
 			this.getStyleProviderForClass(Button).setFunctionForStyleName(NumericStepper.DEFAULT_CHILD_STYLE_NAME_DECREMENT_BUTTON, this.setNumericStepperDecrementButtonStyles);
 			this.getStyleProviderForClass(Button).setFunctionForStyleName(NumericStepper.DEFAULT_CHILD_STYLE_NAME_INCREMENT_BUTTON, this.setNumericStepperIncrementButtonStyles);
 
@@ -943,6 +979,7 @@ package feathers.themes
 
 			//radio
 			this.getStyleProviderForClass(Radio).defaultStyleFunction = this.setRadioStyles;
+			this.getStyleProviderForClass(TextBlockTextRenderer).setFunctionForStyleName(Radio.DEFAULT_CHILD_STYLE_NAME_LABEL, this.setRadioLabelStyles);
 
 			//scroll bar
 			this.getStyleProviderForClass(ScrollBar).setFunctionForStyleName(Scroller.DEFAULT_CHILD_STYLE_NAME_HORIZONTAL_SCROLL_BAR, this.setHorizontalScrollBarStyles);
@@ -984,23 +1021,29 @@ package feathers.themes
 			//tab bar
 			this.getStyleProviderForClass(TabBar).defaultStyleFunction = this.setTabBarStyles;
 			this.getStyleProviderForClass(ToggleButton).setFunctionForStyleName(TabBar.DEFAULT_CHILD_STYLE_NAME_TAB, this.setTabStyles);
+			this.getStyleProviderForClass(TextBlockTextRenderer).setFunctionForStyleName(THEME_STYLE_NAME_TAB_LABEL, this.setTabLabelStyles);
 
 			//text input
 			this.getStyleProviderForClass(TextInput).defaultStyleFunction = this.setTextInputStyles;
 			this.getStyleProviderForClass(TextInput).setFunctionForStyleName(TextInput.ALTERNATE_STYLE_NAME_SEARCH_TEXT_INPUT, this.setSearchTextInputStyles);
+			this.getStyleProviderForClass(TextBlockTextRenderer).setFunctionForStyleName(TextInput.DEFAULT_CHILD_STYLE_NAME_PROMPT, this.setTextInputPromptStyles);
+			this.getStyleProviderForClass(TextBlockTextEditor).setFunctionForStyleName(TextInput.DEFAULT_CHILD_STYLE_NAME_TEXT_EDITOR, this.setTextInputTextEditorStyles);
 
 			//text area
 			this.getStyleProviderForClass(TextArea).defaultStyleFunction = this.setTextAreaStyles;
+			this.getStyleProviderForClass(TextFieldTextEditorViewPort).setFunctionForStyleName(TextArea.DEFAULT_CHILD_STYLE_NAME_TEXT_EDITOR, this.setTextAreaTextEditorStyles);
 
 			//toggle button
 			this.getStyleProviderForClass(ToggleButton).defaultStyleFunction = this.setButtonStyles;
-			this.getStyleProviderForClass(ToggleButton).setFunctionForStyleName(Button.ALTERNATE_NAME_QUIET_BUTTON, this.setQuietButtonStyles);
+			this.getStyleProviderForClass(ToggleButton).setFunctionForStyleName(Button.ALTERNATE_STYLE_NAME_QUIET_BUTTON, this.setQuietButtonStyles);
 
 			//toggle switch
 			this.getStyleProviderForClass(ToggleSwitch).defaultStyleFunction = this.setToggleSwitchStyles;
 			this.getStyleProviderForClass(Button).setFunctionForStyleName(ToggleSwitch.DEFAULT_CHILD_STYLE_NAME_THUMB, this.setToggleSwitchThumbStyles);
 			this.getStyleProviderForClass(ToggleButton).setFunctionForStyleName(ToggleSwitch.DEFAULT_CHILD_STYLE_NAME_THUMB, this.setToggleSwitchThumbStyles);
 			this.getStyleProviderForClass(Button).setFunctionForStyleName(ToggleSwitch.DEFAULT_CHILD_STYLE_NAME_ON_TRACK, this.setToggleSwitchTrackStyles);
+			this.getStyleProviderForClass(TextBlockTextRenderer).setFunctionForStyleName(ToggleSwitch.DEFAULT_CHILD_STYLE_NAME_ON_LABEL, this.setToggleSwitchOnLabelStyles);
+			this.getStyleProviderForClass(TextBlockTextRenderer).setFunctionForStyleName(ToggleSwitch.DEFAULT_CHILD_STYLE_NAME_OFF_LABEL, this.setToggleSwitchOffLabelStyles);
 			//we don't need a style function for the off track in this theme
 			//the toggle switch layout uses a single track
 
@@ -1009,13 +1052,16 @@ package feathers.themes
 
 			//play/pause toggle button
 			this.getStyleProviderForClass(PlayPauseToggleButton).defaultStyleFunction = this.setPlayPauseToggleButtonStyles;
-			this.getStyleProviderForClass(PlayPauseToggleButton).setFunctionForStyleName(PlayPauseToggleButton.ALTERNATE_STYLE_NAME_LARGE_PLAY_PAUSE_TOGGLE_BUTTON, this.setLargePlayPauseToggleButtonStyles);
+			this.getStyleProviderForClass(PlayPauseToggleButton).setFunctionForStyleName(PlayPauseToggleButton.ALTERNATE_STYLE_NAME_OVERLAY_PLAY_PAUSE_TOGGLE_BUTTON, this.setOverlayPlayPauseToggleButtonStyles);
 
 			//full screen toggle button
 			this.getStyleProviderForClass(FullScreenToggleButton).defaultStyleFunction = this.setFullScreenToggleButtonStyles;
 
 			//mute toggle button
 			this.getStyleProviderForClass(MuteToggleButton).defaultStyleFunction = this.setMuteToggleButtonStyles;
+			this.getStyleProviderForClass(VolumeSlider).setFunctionForStyleName(MuteToggleButton.DEFAULT_CHILD_STYLE_NAME_VOLUME_SLIDER, this.setPopUpVolumeSliderStyles);
+			this.getStyleProviderForClass(Button).setFunctionForStyleName(THEME_STYLE_NAME_POP_UP_VOLUME_SLIDER_THUMB, this.setSliderThumbStyles);
+			this.getStyleProviderForClass(Button).setFunctionForStyleName(THEME_STYLE_NAME_POP_UP_VOLUME_SLIDER_MINIMUM_TRACK, this.setPopUpVolumeSliderTrackStyles);
 
 			//seek slider
 			this.getStyleProviderForClass(SeekSlider).defaultStyleFunction = this.setSeekSliderStyles;
@@ -1025,12 +1071,9 @@ package feathers.themes
 
 			//volume slider
 			this.getStyleProviderForClass(VolumeSlider).defaultStyleFunction = this.setVolumeSliderStyles;
-			this.getStyleProviderForClass(VolumeSlider).setFunctionForStyleName(MuteToggleButton.DEFAULT_CHILD_STYLE_NAME_VOLUME_SLIDER, this.setPopUpVolumeSliderStyles);
 			this.getStyleProviderForClass(Button).setFunctionForStyleName(VolumeSlider.DEFAULT_CHILD_STYLE_NAME_THUMB, this.setVolumeSliderThumbStyles);
 			this.getStyleProviderForClass(Button).setFunctionForStyleName(VolumeSlider.DEFAULT_CHILD_STYLE_NAME_MINIMUM_TRACK, this.setVolumeSliderMinimumTrackStyles);
 			this.getStyleProviderForClass(Button).setFunctionForStyleName(VolumeSlider.DEFAULT_CHILD_STYLE_NAME_MAXIMUM_TRACK, this.setVolumeSliderMaximumTrackStyles);
-			this.getStyleProviderForClass(Button).setFunctionForStyleName(THEME_STYLE_NAME_POP_UP_VOLUME_SLIDER_THUMB, this.setSliderThumbStyles);
-			this.getStyleProviderForClass(Button).setFunctionForStyleName(THEME_STYLE_NAME_POP_UP_VOLUME_SLIDER_MINIMUM_TRACK, this.setPopUpVolumeSliderTrackStyles);
 		}
 
 		protected function pageIndicatorNormalSymbolFactory():DisplayObject
@@ -1130,15 +1173,6 @@ package feathers.themes
 
 		protected function setBaseButtonStyles(button:Button):void
 		{
-			button.defaultLabelProperties.elementFormat = this.darkUIElementFormat;
-			button.disabledLabelProperties.elementFormat = this.darkUIDisabledElementFormat;
-			if(button is ToggleButton)
-			{
-				//for convenience, this function can style both a regular button
-				//and a toggle button
-				ToggleButton(button).selectedDisabledLabelProperties.elementFormat = this.darkUIDisabledElementFormat;
-			}
-
 			button.focusIndicatorSkin = new Scale9Image(this.focusIndicatorSkinTextures, this.scale);
 			button.focusPadding = this.focusPaddingSize;
 
@@ -1175,6 +1209,12 @@ package feathers.themes
 			this.setBaseButtonStyles(button);
 			button.minWidth = this.buttonMinWidth;
 			button.minHeight = this.controlSize;
+		}
+		
+		protected function setButtonLabelStyles(textRenderer:TextBlockTextRenderer):void
+		{
+			textRenderer.elementFormat = this.darkUIElementFormat;
+			textRenderer.disabledElementFormat = this.darkUIDisabledElementFormat;
 		}
 
 		protected function setCallToActionButtonStyles(button:Button):void
@@ -1217,18 +1257,10 @@ package feathers.themes
 			};
 			button.stateToSkinFunction = skinSelector.updateValue;
 
+			button.customLabelStyleName = THEME_STYLE_NAME_QUIET_BUTTON_LABEL;
+
 			button.focusIndicatorSkin = new Scale9Image(this.focusIndicatorSkinTextures, this.scale);
 			button.focusPadding = this.focusPaddingSize;
-
-			button.defaultLabelProperties.elementFormat = this.lightUIElementFormat;
-			button.downLabelProperties.elementFormat = this.darkUIElementFormat;
-			button.disabledLabelProperties.elementFormat = this.lightUIDisabledElementFormat;
-			if(button is ToggleButton)
-			{
-				var toggleButton:ToggleButton = ToggleButton(button);
-				toggleButton.defaultSelectedLabelProperties.elementFormat = this.darkUIElementFormat;
-				toggleButton.selectedDisabledLabelProperties.elementFormat = this.darkUIDisabledElementFormat;
-			}
 
 			button.paddingTop = this.smallGutterSize;
 			button.paddingBottom = this.smallGutterSize;
@@ -1238,6 +1270,21 @@ package feathers.themes
 			button.minGap = this.smallGutterSize;
 			button.minWidth = this.controlSize;
 			button.minHeight = this.controlSize;
+		}
+		
+		protected function setQuietButtonLabelStyles(textRenderer:TextBlockTextRenderer):void
+		{
+			textRenderer.elementFormat = this.lightUIElementFormat;
+			textRenderer.selectedElementFormat = this.darkUIElementFormat;
+			textRenderer.disabledElementFormat = this.lightUIDisabledElementFormat;
+			textRenderer.setElementFormatForState(Button.STATE_DOWN, this.darkUIElementFormat);
+			textRenderer.setElementFormatForState(Button.STATE_DISABLED, this.lightUIDisabledElementFormat);
+			if(textRenderer.stateContext is ToggleButton)
+			{
+				//for convenience, this function can style both a regular button
+				//and a toggle button
+				textRenderer.setElementFormatForState(ToggleButton.STATE_DISABLED_AND_SELECTED, this.darkUIDisabledElementFormat);
+			}
 		}
 
 		protected function setDangerButtonStyles(button:Button):void
@@ -1364,13 +1411,16 @@ package feathers.themes
 			check.focusPaddingLeft = this.focusPaddingSize;
 			check.focusPaddingRight = this.focusPaddingSize;
 
-			check.defaultLabelProperties.elementFormat = this.lightUIElementFormat;
-			check.disabledLabelProperties.elementFormat = this.lightUIDisabledElementFormat;
-			check.selectedDisabledLabelProperties.elementFormat = this.lightUIDisabledElementFormat;
-
+			check.horizontalAlign = Check.HORIZONTAL_ALIGN_LEFT;
 			check.gap = this.smallGutterSize;
 			check.minWidth = this.controlSize;
 			check.minHeight = this.controlSize;
+		}
+
+		protected function setCheckLabelStyles(textRenderer:TextBlockTextRenderer):void
+		{
+			textRenderer.elementFormat = this.lightUIElementFormat;
+			textRenderer.disabledElementFormat = this.lightUIDisabledElementFormat;
 		}
 
 	//-------------------------
@@ -1406,8 +1456,6 @@ package feathers.themes
 			renderer.backgroundSkin = new Quad(this.controlSize, this.controlSize, GROUPED_LIST_HEADER_BACKGROUND_COLOR);
 
 			renderer.horizontalAlign = DefaultGroupedListHeaderOrFooterRenderer.HORIZONTAL_ALIGN_LEFT;
-			renderer.contentLabelProperties.elementFormat = this.lightUIElementFormat;
-			renderer.contentLabelProperties.disabledElementFormat = this.lightUIDisabledElementFormat;
 
 			renderer.paddingTop = this.smallGutterSize;
 			renderer.paddingBottom = this.smallGutterSize;
@@ -1423,9 +1471,9 @@ package feathers.themes
 		{
 			renderer.backgroundSkin = new Quad(this.controlSize, this.controlSize, GROUPED_LIST_FOOTER_BACKGROUND_COLOR);
 
+			renderer.customContentLabelStyleName = THEME_STYLE_NAME_GROUPED_LIST_FOOTER_CONTENT_LABEL;
+
 			renderer.horizontalAlign = DefaultGroupedListHeaderOrFooterRenderer.HORIZONTAL_ALIGN_CENTER;
-			renderer.contentLabelProperties.elementFormat = this.lightElementFormat;
-			renderer.contentLabelProperties.disabledElementFormat = this.lightUIDisabledElementFormat;
 
 			renderer.paddingTop = this.smallGutterSize;
 			renderer.paddingBottom = this.smallGutterSize;
@@ -1434,6 +1482,18 @@ package feathers.themes
 			renderer.minWidth = renderer.minHeight = this.controlSize;
 
 			renderer.contentLoaderFactory = this.imageLoaderFactory;
+		}
+
+		protected function setGroupedListHeaderContentLabelStyles(textRenderer:TextBlockTextRenderer):void
+		{
+			textRenderer.elementFormat = this.lightUIElementFormat;
+			textRenderer.disabledElementFormat = this.lightUIDisabledElementFormat;
+		}
+
+		protected function setGroupedListFooterContentLabelStyles(textRenderer:TextBlockTextRenderer):void
+		{
+			textRenderer.elementFormat = this.lightElementFormat;
+			textRenderer.disabledElementFormat = this.disabledElementFormat;
 		}
 
 	//-------------------------
@@ -1455,7 +1515,12 @@ package feathers.themes
 			backgroundSkin.width = this.controlSize;
 			backgroundSkin.height = this.controlSize;
 			header.backgroundSkin = backgroundSkin;
-			header.titleProperties.elementFormat = this.lightElementFormat;
+		}
+
+		protected function setHeaderTitleProperties(textRenderer:TextBlockTextRenderer):void
+		{
+			textRenderer.elementFormat = this.lightElementFormat;
+			textRenderer.disabledElementFormat = this.disabledElementFormat;
 		}
 
 	//-------------------------
@@ -1533,12 +1598,6 @@ package feathers.themes
 			};
 			renderer.stateToSkinFunction = skinSelector.updateValue;
 
-			renderer.defaultLabelProperties.elementFormat = this.lightElementFormat;
-			renderer.hoverLabelProperties.elementFormat = this.darkElementFormat;
-			renderer.downLabelProperties.elementFormat = this.darkElementFormat;
-			renderer.defaultSelectedLabelProperties.elementFormat = this.darkElementFormat;
-			renderer.disabledLabelProperties.elementFormat = this.disabledElementFormat;
-
 			renderer.horizontalAlign = Button.HORIZONTAL_ALIGN_LEFT;
 			renderer.paddingTop = this.smallGutterSize;
 			renderer.paddingBottom = this.smallGutterSize;
@@ -1559,14 +1618,31 @@ package feathers.themes
 			renderer.iconLoaderFactory = this.imageLoaderFactory;
 		}
 
-		protected function setItemRendererAccessoryLabelRendererStyles(renderer:TextBlockTextRenderer):void
+		protected function setItemRendererLabelStyles(textRenderer:TextBlockTextRenderer):void
 		{
-			renderer.elementFormat = this.lightElementFormat;
+			textRenderer.elementFormat = this.lightElementFormat;
+			textRenderer.disabledElementFormat = this.disabledElementFormat;
+			textRenderer.selectedElementFormat = this.darkElementFormat;
+			textRenderer.setElementFormatForState(BaseDefaultItemRenderer.STATE_DOWN, this.darkElementFormat);
+			textRenderer.setElementFormatForState(BaseDefaultItemRenderer.STATE_HOVER, this.darkElementFormat);
 		}
 
-		protected function setItemRendererIconLabelStyles(renderer:TextBlockTextRenderer):void
+		protected function setItemRendererAccessoryLabelRendererStyles(textRenderer:TextBlockTextRenderer):void
 		{
-			renderer.elementFormat = this.lightElementFormat;
+			textRenderer.elementFormat = this.lightElementFormat;
+			textRenderer.disabledElementFormat = this.disabledElementFormat;
+			textRenderer.selectedElementFormat = this.darkElementFormat;
+			textRenderer.setElementFormatForState(BaseDefaultItemRenderer.STATE_DOWN, this.darkElementFormat);
+			textRenderer.setElementFormatForState(BaseDefaultItemRenderer.STATE_HOVER, this.darkElementFormat);
+		}
+
+		protected function setItemRendererIconLabelStyles(textRenderer:TextBlockTextRenderer):void
+		{
+			textRenderer.elementFormat = this.lightElementFormat;
+			textRenderer.disabledElementFormat = this.disabledElementFormat;
+			textRenderer.selectedElementFormat = this.darkElementFormat;
+			textRenderer.setElementFormatForState(BaseDefaultItemRenderer.STATE_DOWN, this.darkElementFormat);
+			textRenderer.setElementFormatForState(BaseDefaultItemRenderer.STATE_HOVER, this.darkElementFormat);
 		}
 
 	//-------------------------
@@ -1594,6 +1670,8 @@ package feathers.themes
 				textureScale: this.scale
 			};
 			input.stateToSkinFunction = skinSelector.updateValue;
+			
+			input.customTextEditorStyleName = THEME_STYLE_NAME_NUMERIC_STEPPER_TEXT_INPUT_TEXT_EDITOR;
 
 			input.minWidth = this.gridSize;
 			input.minHeight = this.controlSize;
@@ -1602,12 +1680,15 @@ package feathers.themes
 			input.paddingBottom = this.smallGutterSize;
 			input.paddingLeft = this.gutterSize;
 			input.paddingRight = this.gutterSize;
-
-			input.textEditorProperties.cursorSkin = new Quad(1, 1, LIGHT_TEXT_COLOR);
-			input.textEditorProperties.selectionSkin = new Quad(1, 1, TEXT_SELECTION_BACKGROUND_COLOR);
-			input.textEditorProperties.elementFormat = this.lightUIElementFormat;
-			input.textEditorProperties.disabledElementFormat = this.lightUIDisabledElementFormat;
-			input.textEditorProperties.textAlign = TextBlockTextEditor.TEXT_ALIGN_CENTER;
+		}
+		
+		protected function setNumericStepperTextInputTextEditorStyles(textEditor:TextBlockTextEditor):void
+		{
+			textEditor.cursorSkin = new Quad(1, 1, LIGHT_TEXT_COLOR);
+			textEditor.selectionSkin = new Quad(1, 1, TEXT_SELECTION_BACKGROUND_COLOR);
+			textEditor.elementFormat = this.lightUIElementFormat;
+			textEditor.disabledElementFormat = this.lightUIDisabledElementFormat;
+			textEditor.textAlign = TextBlockTextEditor.TEXT_ALIGN_CENTER;
 		}
 
 		protected function setNumericStepperDecrementButtonStyles(button:Button):void
@@ -1693,6 +1774,8 @@ package feathers.themes
 
 		protected function setPopupHeaderStyles(header:Header):void
 		{
+			header.customTitleStyleName = THEME_STYLE_NAME_POP_UP_HEADER_TITLE;
+			
 			header.minWidth = this.gridSize;
 			header.minHeight = this.gridSize;
 			header.paddingTop = this.smallGutterSize;
@@ -1705,7 +1788,12 @@ package feathers.themes
 			var backgroundSkin:TiledImage = new TiledImage(this.headerPopupBackgroundSkinTexture, this.scale);
 			backgroundSkin.width = backgroundSkin.height = this.controlSize;
 			header.backgroundSkin = backgroundSkin;
-			header.titleProperties.elementFormat = this.lightElementFormat;
+		}
+
+		protected function setPopupHeaderTitleStyles(textRenderer:TextBlockTextRenderer):void
+		{
+			textRenderer.elementFormat = this.lightElementFormat;
+			textRenderer.disabledElementFormat = this.disabledElementFormat;
 		}
 
 	//-------------------------
@@ -1858,13 +1946,16 @@ package feathers.themes
 			radio.focusPaddingLeft = this.focusPaddingSize;
 			radio.focusPaddingRight = this.focusPaddingSize;
 
-			radio.defaultLabelProperties.elementFormat = this.lightUIElementFormat;
-			radio.disabledLabelProperties.elementFormat = this.lightUIDisabledElementFormat;
-			radio.selectedDisabledLabelProperties.elementFormat = this.lightUIDisabledElementFormat;
-
+			radio.horizontalAlign = Radio.HORIZONTAL_ALIGN_LEFT;
 			radio.gap = this.smallGutterSize;
 			radio.minWidth = this.controlSize;
 			radio.minHeight = this.controlSize;
+		}
+
+		protected function setRadioLabelStyles(textRenderer:TextBlockTextRenderer):void
+		{
+			textRenderer.elementFormat = this.lightUIElementFormat;
+			textRenderer.disabledElementFormat = this.lightUIDisabledElementFormat;
 		}
 
 	//-------------------------
@@ -2279,15 +2370,11 @@ package feathers.themes
 				textureScale: this.scale
 			};
 			tab.stateToSkinFunction = skinSelector.updateValue;
+			
+			tab.customLabelStyleName = THEME_STYLE_NAME_TAB_LABEL;
 
 			tab.focusIndicatorSkin = new Scale9Image(this.focusIndicatorSkinTextures, this.scale);
 			tab.focusPadding = this.focusPaddingSize;
-
-			tab.defaultLabelProperties.elementFormat = this.lightUIElementFormat;
-			tab.downLabelProperties.elementFormat = this.darkUIElementFormat;
-			tab.defaultSelectedLabelProperties.elementFormat = this.darkUIElementFormat;
-			tab.disabledLabelProperties.elementFormat = this.lightUIDisabledElementFormat;
-			tab.selectedDisabledLabelProperties.elementFormat = this.darkUIDisabledElementFormat;
 
 			tab.paddingTop = this.smallGutterSize;
 			tab.paddingBottom = this.smallGutterSize;
@@ -2296,6 +2383,15 @@ package feathers.themes
 			tab.gap = this.smallGutterSize;
 			tab.minWidth = this.controlSize;
 			tab.minHeight = this.controlSize;
+		}
+
+		protected function setTabLabelStyles(textRenderer:TextBlockTextRenderer):void
+		{
+			textRenderer.elementFormat = this.lightUIElementFormat;
+			textRenderer.selectedElementFormat = this.darkUIElementFormat;
+			textRenderer.setElementFormatForState(ToggleButton.STATE_DOWN, this.darkUIElementFormat);
+			textRenderer.setElementFormatForState(ToggleButton.STATE_DISABLED, this.lightUIDisabledElementFormat);
+			textRenderer.setElementFormatForState(ToggleButton.STATE_DISABLED_AND_SELECTED, this.darkUIDisabledElementFormat);
 		}
 
 	//-------------------------
@@ -2319,13 +2415,16 @@ package feathers.themes
 			textArea.stateToSkinFunction = skinSelector.updateValue;
 
 			textArea.padding = this.borderSize;
+		}
 
-			textArea.textEditorProperties.textFormat = this.scrollTextTextFormat;
-			textArea.textEditorProperties.disabledTextFormat = this.scrollTextDisabledTextFormat;
-			textArea.textEditorProperties.paddingTop = this.extraSmallGutterSize;
-			textArea.textEditorProperties.paddingRight = this.smallGutterSize;
-			textArea.textEditorProperties.paddingBottom = this.extraSmallGutterSize;
-			textArea.textEditorProperties.paddingLeft = this.smallGutterSize;
+		protected function setTextAreaTextEditorStyles(textEditor:TextFieldTextEditorViewPort):void
+		{
+			textEditor.textFormat = this.scrollTextTextFormat;
+			textEditor.disabledTextFormat = this.scrollTextDisabledTextFormat;
+			textEditor.paddingTop = this.extraSmallGutterSize;
+			textEditor.paddingRight = this.smallGutterSize;
+			textEditor.paddingBottom = this.extraSmallGutterSize;
+			textEditor.paddingLeft = this.smallGutterSize;
 		}
 
 	//-------------------------
@@ -2353,19 +2452,25 @@ package feathers.themes
 			input.paddingBottom = this.smallGutterSize;
 			input.paddingLeft = this.gutterSize;
 			input.paddingRight = this.gutterSize;
-
-			input.textEditorProperties.elementFormat = this.lightElementFormat;
-			input.textEditorProperties.disabledElementFormat = this.disabledElementFormat;
-			input.textEditorProperties.cursorSkin = new Quad(1, 1, LIGHT_TEXT_COLOR);
-			input.textEditorProperties.selectionSkin = new Quad(1, 1, TEXT_SELECTION_BACKGROUND_COLOR);
-
-			input.promptProperties.elementFormat = this.lightElementFormat;
-			input.promptProperties.disabledElementFormat = this.disabledElementFormat;
 		}
 
 		protected function setTextInputStyles(input:TextInput):void
 		{
 			this.setBaseTextInputStyles(input);
+		}
+
+		protected function setTextInputTextEditorStyles(textEditor:TextBlockTextEditor):void
+		{
+			textEditor.cursorSkin = new Quad(1, 1, LIGHT_TEXT_COLOR);
+			textEditor.selectionSkin = new Quad(1, 1, TEXT_SELECTION_BACKGROUND_COLOR);
+			textEditor.elementFormat = this.lightElementFormat;
+			textEditor.disabledElementFormat = this.disabledElementFormat;
+		}
+
+		protected function setTextInputPromptStyles(textRenderer:TextBlockTextRenderer):void
+		{
+			textRenderer.elementFormat = this.lightElementFormat;
+			textRenderer.disabledElementFormat = this.disabledElementFormat;
 		}
 
 		protected function setSearchTextInputStyles(input:TextInput):void
@@ -2394,10 +2499,18 @@ package feathers.themes
 
 			toggle.focusIndicatorSkin = new Scale9Image(this.focusIndicatorSkinTextures, this.scale);
 			toggle.focusPadding = this.focusPaddingSize;
+		}
 
-			toggle.defaultLabelProperties.elementFormat = this.lightUIElementFormat;
-			toggle.disabledLabelProperties.elementFormat = this.lightUIDisabledElementFormat;
-			toggle.onLabelProperties.elementFormat = this.selectedUIElementFormat;
+		protected function setToggleSwitchOnLabelStyles(textRenderer:TextBlockTextRenderer):void
+		{
+			textRenderer.elementFormat = this.selectedUIElementFormat;
+			textRenderer.disabledElementFormat = this.lightUIDisabledElementFormat;
+		}
+
+		protected function setToggleSwitchOffLabelStyles(textRenderer:TextBlockTextRenderer):void
+		{
+			textRenderer.elementFormat = this.lightUIElementFormat;
+			textRenderer.disabledElementFormat = this.lightUIDisabledElementFormat;
 		}
 
 		protected function setToggleSwitchThumbStyles(thumb:Button):void
@@ -2469,12 +2582,12 @@ package feathers.themes
 			button.minHeight = this.controlSize;
 		}
 
-		protected function setLargePlayPauseToggleButtonStyles(button:PlayPauseToggleButton):void
+		protected function setOverlayPlayPauseToggleButtonStyles(button:PlayPauseToggleButton):void
 		{
 			var iconSelector:SmartDisplayObjectStateValueSelector = new SmartDisplayObjectStateValueSelector();
-			iconSelector.setValueForState(this.largePlayPauseButtonPlayUpIconTexture, Button.STATE_UP, false);
-			iconSelector.setValueForState(this.largePlayPauseButtonPlayUpIconTexture, Button.STATE_HOVER, false);
-			iconSelector.setValueForState(this.largePlayPauseButtonPlayDownIconTexture, Button.STATE_DOWN, false);
+			iconSelector.setValueForState(this.overlayPlayPauseButtonPlayUpIconTexture, Button.STATE_UP, false);
+			iconSelector.setValueForState(this.overlayPlayPauseButtonPlayUpIconTexture, Button.STATE_HOVER, false);
+			iconSelector.setValueForState(this.overlayPlayPauseButtonPlayDownIconTexture, Button.STATE_DOWN, false);
 			iconSelector.displayObjectProperties =
 			{
 				scaleX: this.scale,
@@ -2529,12 +2642,14 @@ package feathers.themes
 			slider.minHeight = this.volumeSliderMinimumTrackSkinTexture.height;
 		}
 
-		protected function setVolumeSliderThumbStyles(button:Button):void
+		protected function setVolumeSliderThumbStyles(thumb:Button):void
 		{
 			var thumbSize:Number = 6 * this.scale;
-			button.defaultSkin = new Quad(thumbSize, thumbSize);
-			button.defaultSkin.width = 0;
-			button.hasLabelTextRenderer = false;
+			var defaultSkin:Quad = new Quad(thumbSize, thumbSize);
+			defaultSkin.width = 0;
+			defaultSkin.height = 0;
+			thumb.defaultSkin = defaultSkin;
+			thumb.hasLabelTextRenderer = false;
 		}
 
 		protected function setVolumeSliderMinimumTrackStyles(track:Button):void
@@ -2543,6 +2658,7 @@ package feathers.themes
 			defaultSkin.scaleContent = false;
 			defaultSkin.source = this.volumeSliderMinimumTrackSkinTexture;
 			track.defaultSkin = defaultSkin;
+			track.hasLabelTextRenderer = false;
 		}
 
 		protected function setVolumeSliderMaximumTrackStyles(track:Button):void
@@ -2552,6 +2668,32 @@ package feathers.themes
 			defaultSkin.horizontalAlign = ImageLoader.HORIZONTAL_ALIGN_RIGHT;
 			defaultSkin.source = this.volumeSliderMaximumTrackSkinTexture;
 			track.defaultSkin = defaultSkin;
+			track.hasLabelTextRenderer = false;
+		}
+
+	//-------------------------
+	// MuteToggleButton
+	//-------------------------
+
+		protected function setMuteToggleButtonStyles(button:MuteToggleButton):void
+		{
+			var iconSelector:SmartDisplayObjectStateValueSelector = new SmartDisplayObjectStateValueSelector();
+			iconSelector.defaultValue = this.muteToggleButtonLoudUpIconTexture;
+			iconSelector.defaultSelectedValue = this.muteToggleButtonMutedUpIconTexture;
+			iconSelector.setValueForState(this.muteToggleButtonLoudDownIconTexture, Button.STATE_DOWN, false);
+			iconSelector.setValueForState(this.muteToggleButtonMutedDownIconTexture, Button.STATE_DOWN, true);
+			iconSelector.displayObjectProperties =
+			{
+				scaleX: this.scale,
+				scaleY: this.scale
+			};
+			button.stateToIconFunction = iconSelector.updateValue;
+
+			button.showVolumeSliderOnHover = true;
+			button.hasLabelTextRenderer = false;
+
+			button.minWidth = this.controlSize;
+			button.minHeight = this.controlSize;
 		}
 
 		protected function setPopUpVolumeSliderStyles(slider:VolumeSlider):void
@@ -2582,31 +2724,6 @@ package feathers.themes
 		}
 
 	//-------------------------
-	// MuteToggleButton
-	//-------------------------
-
-		protected function setMuteToggleButtonStyles(button:MuteToggleButton):void
-		{
-			var iconSelector:SmartDisplayObjectStateValueSelector = new SmartDisplayObjectStateValueSelector();
-			iconSelector.defaultValue = this.muteToggleButtonLoudUpIconTexture;
-			iconSelector.defaultSelectedValue = this.muteToggleButtonMutedUpIconTexture;
-			iconSelector.setValueForState(this.muteToggleButtonLoudDownIconTexture, Button.STATE_DOWN, false);
-			iconSelector.setValueForState(this.muteToggleButtonMutedDownIconTexture, Button.STATE_DOWN, true);
-			iconSelector.displayObjectProperties =
-			{
-				scaleX: this.scale,
-				scaleY: this.scale
-			};
-			button.stateToIconFunction = iconSelector.updateValue;
-
-			button.showVolumeSliderOnHover = true;
-			button.hasLabelTextRenderer = false;
-
-			button.minWidth = this.controlSize;
-			button.minHeight = this.controlSize;
-		}
-
-	//-------------------------
 	// SeekSlider
 	//-------------------------
 
@@ -2626,29 +2743,32 @@ package feathers.themes
 			}
 		}
 
-		protected function setSeekSliderThumbStyles(button:Button):void
+		protected function setSeekSliderThumbStyles(thumb:Button):void
 		{
 			var thumbSize:Number = 6 * this.scale;
-			button.defaultSkin = new Quad(thumbSize, thumbSize);
-			button.hasLabelTextRenderer = false;
+			var defaultSkin:Quad = new Quad(thumbSize, thumbSize);
+			defaultSkin.width = 0;
+			defaultSkin.height = 0;
+			thumb.defaultSkin = defaultSkin;
+			thumb.hasLabelTextRenderer = false;
 		}
 
-		protected function setSeekSliderMinimumTrackStyles(button:Button):void
+		protected function setSeekSliderMinimumTrackStyles(track:Button):void
 		{
 			var defaultSkin:Scale9Image = new Scale9Image(this.buttonUpSkinTextures, this.scale);
 			defaultSkin.width = this.wideControlSize;
 			defaultSkin.height = this.smallControlSize;
-			button.defaultSkin = defaultSkin;
-			button.hasLabelTextRenderer = false;
+			track.defaultSkin = defaultSkin;
+			track.hasLabelTextRenderer = false;
 		}
 
-		protected function setSeekSliderMaximumTrackStyles(button:Button):void
+		protected function setSeekSliderMaximumTrackStyles(track:Button):void
 		{
 			var defaultSkin:Scale9Image = new Scale9Image(this.backgroundSkinTextures, this.scale);
 			defaultSkin.width = this.wideControlSize;
 			defaultSkin.height = this.smallControlSize;
-			button.defaultSkin = defaultSkin;
-			button.hasLabelTextRenderer = false;
+			track.defaultSkin = defaultSkin;
+			track.hasLabelTextRenderer = false;
 		}
 
 	}

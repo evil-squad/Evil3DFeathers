@@ -1,6 +1,6 @@
 /*
 Feathers
-Copyright 2012-2015 Joshua Tynjala. All Rights Reserved.
+Copyright 2012-2015 Bowler Hat LLC. All Rights Reserved.
 
 This program is free software. You can redistribute and/or modify it in
 accordance with the terms of the accompanying license agreement.
@@ -10,6 +10,7 @@ package feathers.controls.text
 	import feathers.core.FeathersControl;
 	import feathers.core.IMultilineTextEditor;
 	import feathers.events.FeathersEventType;
+	import feathers.skins.IStyleProvider;
 	import feathers.text.StageTextField;
 	import feathers.utils.geom.matrixToScaleX;
 	import feathers.utils.geom.matrixToScaleY;
@@ -20,8 +21,10 @@ package feathers.controls.text
 	import flash.events.KeyboardEvent;
 	import flash.events.SoftKeyboardEvent;
 	import flash.geom.Matrix;
+	import flash.geom.Matrix3D;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.geom.Vector3D;
 	import flash.system.Capabilities;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
@@ -40,6 +43,7 @@ package feathers.controls.text
 	import starling.textures.ConcreteTexture;
 	import starling.textures.Texture;
 	import starling.utils.MatrixUtil;
+	import starling.utils.SystemUtil;
 
 	/**
 	 * Dispatched when the text property changes.
@@ -196,6 +200,16 @@ package feathers.controls.text
 		/**
 		 * @private
 		 */
+		private static var HELPER_MATRIX3D:Matrix3D;
+		
+		/**
+		 * @private
+		 */
+		private static var HELPER_POINT3D:Vector3D;
+		
+		/**
+		 * @private
+		 */
 		private static const HELPER_MATRIX:Matrix = new Matrix();
 
 		/**
@@ -204,9 +218,13 @@ package feathers.controls.text
 		private static const HELPER_POINT:Point = new Point();
 
 		/**
-		 * @private
+		 * The default <code>IStyleProvider</code> for all <code>StageTextTextEditor</code>
+		 * components.
+		 *
+		 * @default null
+		 * @see feathers.core.FeathersControl#styleProvider
 		 */
-		protected static const INVALIDATION_FLAG_POSITION:String = "position";
+		public static var globalStyleProvider:IStyleProvider;
 
 		/**
 		 * Constructor.
@@ -221,33 +239,11 @@ package feathers.controls.text
 		/**
 		 * @private
 		 */
-		override public function set x(value:Number):void
+		override protected function get defaultStyleProvider():IStyleProvider
 		{
-			if(super.x == value)
-			{
-				return;
-			}
-			super.x = value;
-			//we need to know when the position changes to change the position
-			//of the StageText instance.
-			this.invalidate(INVALIDATION_FLAG_POSITION);
+			return globalStyleProvider;
 		}
-
-		/**
-		 * @private
-		 */
-		override public function set y(value:Number):void
-		{
-			if(super.y == value)
-			{
-				return;
-			}
-			super.y = value;
-			//we need to know when the position changes to change the position
-			//of the StageText instance.
-			this.invalidate(INVALIDATION_FLAG_POSITION);
-		}
-
+		
 		/**
 		 * The StageText instance. It's typed Object so that a replacement class
 		 * can be used in browser-based Flash Player.
@@ -1135,17 +1131,17 @@ package feathers.controls.text
 					this.validate();
 				}
 			}
-			this.refreshViewPortAndFontSize();
+			
+			//we'll skip this if the text field isn't visible to avoid running
+			//that code every frame.
+			if(this.stageText && this.stageText.visible)
+			{
+				this.refreshViewPortAndFontSize();
+			}
 
 			if(this.textSnapshot)
 			{
-				var desktopGutterPositionOffset:Number = 0;
-				if(this._stageTextIsTextField)
-				{
-					desktopGutterPositionOffset = 2;
-				}
-				this.textSnapshot.x = Math.round(HELPER_MATRIX.tx) - HELPER_MATRIX.tx - desktopGutterPositionOffset;
-				this.textSnapshot.y = Math.round(HELPER_MATRIX.ty) - HELPER_MATRIX.ty - desktopGutterPositionOffset;
+				this.positionSnapshot();
 			}
 
 			super.render(support, parentAlpha);
@@ -1156,6 +1152,12 @@ package feathers.controls.text
 		 */
 		public function setFocus(position:Point = null):void
 		{
+			//setting the editable property of a StageText to false seems to be
+			//ignored on Android, so this is the workaround
+			if(!this._isEditable && SystemUtil.platform === "AND")
+			{
+				return;
+			}
 			if(this.stage && !this.stageText.stage)
 			{
 				this.stageText.stage = Starling.current.nativeStage;
@@ -1450,10 +1452,9 @@ package feathers.controls.text
 			var stateInvalid:Boolean = this.isInvalid(INVALIDATION_FLAG_STATE);
 			var stylesInvalid:Boolean = this.isInvalid(INVALIDATION_FLAG_STYLES);
 			var dataInvalid:Boolean = this.isInvalid(INVALIDATION_FLAG_DATA);
-			var positionInvalid:Boolean = this.isInvalid(INVALIDATION_FLAG_POSITION);
 			var skinInvalid:Boolean = this.isInvalid(INVALIDATION_FLAG_SKIN);
 
-			if(positionInvalid || sizeInvalid || stylesInvalid || skinInvalid || stateInvalid)
+			if(sizeInvalid || stylesInvalid || skinInvalid || stateInvalid)
 			{
 				this.refreshViewPortAndFontSize();
 				this.refreshMeasureTextFieldDimensions()
@@ -1762,9 +1763,9 @@ package feathers.controls.text
 				desktopGutterPositionOffset = 2;
 				desktopGutterDimensionsOffset = 4;
 			}
+			this.getTransformationMatrix(this.stage, HELPER_MATRIX);
 			if(this._stageTextHasFocus || this._updateSnapshotOnScaleChange)
 			{
-				this.getTransformationMatrix(this.stage, HELPER_MATRIX);
 				var globalScaleX:Number = matrixToScaleX(HELPER_MATRIX);
 				var globalScaleY:Number = matrixToScaleY(HELPER_MATRIX);
 				var smallerGlobalScale:Number = globalScaleX;
@@ -1779,7 +1780,16 @@ package feathers.controls.text
 				globalScaleY = 1;
 				smallerGlobalScale = 1;
 			}
-			MatrixUtil.transformCoords(HELPER_MATRIX, -desktopGutterPositionOffset, -desktopGutterPositionOffset, HELPER_POINT);
+			if(this.is3D)
+			{
+				HELPER_MATRIX3D = this.getTransformationMatrix3D(this.stage, HELPER_MATRIX3D);
+				HELPER_POINT3D = MatrixUtil.transformCoords3D(HELPER_MATRIX3D, -desktopGutterPositionOffset, -desktopGutterPositionOffset, 0, HELPER_POINT3D);
+				HELPER_POINT.setTo(HELPER_POINT3D.x, HELPER_POINT3D.y);
+			}
+			else
+			{
+				MatrixUtil.transformCoords(HELPER_MATRIX, -desktopGutterPositionOffset, -desktopGutterPositionOffset, HELPER_POINT);
+			}
 			var nativeScaleFactor:Number = 1;
 			if(Starling.current.supportHighResolutions)
 			{
@@ -1834,6 +1844,21 @@ package feathers.controls.text
 			//the +4 is accounting for the TextField gutter
 			this._measureTextField.width = this.actualWidth + 4;
 			this._measureTextField.height = this.actualHeight;
+		}
+
+		/**
+		 * @private
+		 */
+		protected function positionSnapshot():void
+		{
+			this.getTransformationMatrix(this.stage, HELPER_MATRIX);
+			var desktopGutterPositionOffset:Number = 0;
+			if(this._stageTextIsTextField)
+			{
+				desktopGutterPositionOffset = 2;
+			}
+			this.textSnapshot.x = Math.round(HELPER_MATRIX.tx) - HELPER_MATRIX.tx - desktopGutterPositionOffset;
+			this.textSnapshot.y = Math.round(HELPER_MATRIX.ty) - HELPER_MATRIX.ty - desktopGutterPositionOffset;
 		}
 
 		/**

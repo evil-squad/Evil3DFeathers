@@ -1,6 +1,6 @@
 /*
 Feathers
-Copyright 2012-2015 Joshua Tynjala. All Rights Reserved.
+Copyright 2012-2015 Bowler Hat LLC. All Rights Reserved.
 
 This program is free software. You can redistribute and/or modify it in
 accordance with the terms of the accompanying license agreement.
@@ -9,6 +9,7 @@ package feathers.controls
 {
 	import feathers.core.IToggle;
 	import feathers.core.PropertyProxy;
+	import feathers.events.FeathersEventType;
 	import feathers.skins.IStyleProvider;
 
 	import starling.display.DisplayObject;
@@ -60,6 +61,78 @@ package feathers.controls
 	public class ToggleButton extends Button implements IToggle
 	{
 		/**
+		 * @copy feathers.controls.Button#STATE_UP
+		 *
+		 * @see #stateToSkinFunction
+		 * @see #stateToIconFunction
+		 * @see #stateToLabelPropertiesFunction
+		 */
+		public static const STATE_UP:String = "up";
+
+		/**
+		 * @copy feathers.controls.Button#STATE_DOWN
+		 *
+		 * @see #stateToSkinFunction
+		 * @see #stateToIconFunction
+		 * @see #stateToLabelPropertiesFunction
+		 */
+		public static const STATE_DOWN:String = "down";
+
+		/**
+		 * @copy feathers.controls.Button#STATE_HOVER
+		 *
+		 * @see #stateToSkinFunction
+		 * @see #stateToIconFunction
+		 * @see #stateToLabelPropertiesFunction
+		 */
+		public static const STATE_HOVER:String = "hover";
+
+		/**
+		 * @copy feathers.controls.Button#STATE_DISABLED
+		 *
+		 * @see #stateToSkinFunction
+		 * @see #stateToIconFunction
+		 * @see #stateToLabelPropertiesFunction
+		 */
+		public static const STATE_DISABLED:String = "disabled";
+
+		/**
+		 * Identifier for the button's up state when selected. Can be used for styling purposes.
+		 *
+		 * @see #stateToSkinFunction
+		 * @see #stateToIconFunction
+		 * @see #stateToLabelPropertiesFunction
+		 */
+		public static const STATE_UP_AND_SELECTED:String = "upAndSelected";
+
+		/**
+		 * Identifier for the button's down state when selected. Can be used for styling purposes.
+		 *
+		 * @see #stateToSkinFunction
+		 * @see #stateToIconFunction
+		 * @see #stateToLabelPropertiesFunction
+		 */
+		public static const STATE_DOWN_AND_SELECTED:String = "downAndSelected";
+
+		/**
+		 * Identifier for the button's hover state when selected. Can be used for styling purposes.
+		 *
+		 * @see #stateToSkinFunction
+		 * @see #stateToIconFunction
+		 * @see #stateToLabelPropertiesFunction
+		 */
+		public static const STATE_HOVER_AND_SELECTED:String = "hoverAndSelected";
+
+		/**
+		 * Identifier for the button's disabled state. Can be used for styling purposes.
+		 *
+		 * @see #stateToSkinFunction
+		 * @see #stateToIconFunction
+		 * @see #stateToLabelPropertiesFunction
+		 */
+		public static const STATE_DISABLED_AND_SELECTED:String = "disabledAndSelected";
+		
+		/**
 		 * The default <code>IStyleProvider</code> for all <code>ToggleButton</code>
 		 * components. If <code>null</code>, falls back to using
 		 * <code>Button.globalStyleProvider</code> instead.
@@ -88,6 +161,18 @@ package feathers.controls
 				return ToggleButton.globalStyleProvider;
 			}
 			return Button.globalStyleProvider;
+		}
+
+		/**
+		 * @private
+		 */
+		override public function get currentState():String
+		{
+			if(this._isSelected)
+			{
+				return super.currentState + "AndSelected";
+			}
+			return super.currentState;
 		}
 
 		/**
@@ -167,6 +252,7 @@ package feathers.controls
 			this.invalidate(INVALIDATION_FLAG_SELECTED);
 			this.invalidate(INVALIDATION_FLAG_STATE);
 			this.dispatchEventWith(Event.CHANGE);
+			this.dispatchEventWith(FeathersEventType.STATE_CHANGE);
 		}
 
 		/**
@@ -228,6 +314,7 @@ package feathers.controls
 		 *
 		 * @see #defaultSkin
 		 * @see #defaultSelectedSkin
+		 * @see #STATE_UP
 		 */
 		public function get selectedUpSkin():DisplayObject
 		{
@@ -265,6 +352,7 @@ package feathers.controls
 		 *
 		 * @see #defaultSkin
 		 * @see #defaultSelectedSkin
+		 * @see #STATE_DOWN
 		 */
 		public function get selectedDownSkin():DisplayObject
 		{
@@ -302,6 +390,7 @@ package feathers.controls
 		 *
 		 * @see #defaultSkin
 		 * @see #defaultSelectedSkin
+		 * @see #STATE_HOVER
 		 */
 		public function get selectedHoverSkin():DisplayObject
 		{
@@ -339,6 +428,7 @@ package feathers.controls
 		 *
 		 * @see #defaultSkin
 		 * @see #defaultSelectedSkin
+		 * @see #STATE_DISABLED
 		 */
 		public function get selectedDisabledSkin():DisplayObject
 		{
@@ -359,16 +449,15 @@ package feathers.controls
 		}
 
 		/**
-		 * The default selected label properties are a set of key/value pairs to
-		 * be passed down ot the button's label text renderer, and it is used
-		 * when the button is selected and no specific properties are defined
-		 * for the button's current state. If <code>null</code>, then
-		 * <code>defaultLabelProperties</code> is used instead. The label
-		 * text renderer is an <code>ITextRenderer</code> instance. The
-		 * available properties depend on which <code>ITextRenderer</code>
-		 * implementation is returned by <code>labelFactory</code>. The most
-		 * common implementations are <code>BitmapFontTextRenderer</code> and
-		 * <code>TextFieldTextRenderer</code>.
+		 * An object that stores properties for the button's label text renderer
+		 * when no specific properties are defined for the button's current
+		 * state (and the button's <code>isSelected</code> property is
+		 * <code>true</code>), and the properties will be passed down to the
+		 * label text renderer when the button validates. The available
+		 * properties depend on which <code>ITextRenderer</code> implementation
+		 * is returned by <code>labelFactory</code>. Refer to
+		 * <a href="../core/ITextRenderer.html"><code>feathers.core.ITextRenderer</code></a>
+		 * for a list of available text renderer implementations.
 		 *
 		 * <p>The following example gives the button default label properties to
 		 * use for all selected states when no specific label properties are
@@ -381,8 +470,6 @@ package feathers.controls
 		 * @default null
 		 *
 		 * @see feathers.core.ITextRenderer
-		 * @see feathers.controls.text.BitmapFontTextRenderer
-		 * @see feathers.controls.text.TextFieldTextRenderer
 		 * @see #defaultLabelProperties
 		 */
 		public function get defaultSelectedLabelProperties():Object
@@ -419,16 +506,15 @@ package feathers.controls
 		}
 
 		/**
-		 * A set of key/value pairs to be passed down ot the button's label
-		 * text renderer when the button is in the up state and is selected. If
-		 * <code>null</code>, then <code>defaultSelectedLabelProperties</code>
-		 * is used instead. If <code>defaultSelectedLabelProperties</code> is also
-		 * <code>null</code>, then <code>defaultLabelProperties</code> is used.
-		 * The label text renderer is an <code>ITextRenderer</code> instance.
-		 * The available properties depend on which <code>ITextRenderer</code>
-		 * implementation is returned by <code>labelFactory</code>. The most
-		 * common implementations are <code>BitmapFontTextRenderer</code> and
-		 * <code>TextFieldTextRenderer</code>.
+		 * An object that stores properties for the button's label text renderer
+		 * when the button is in the <code>Button.STATE_UP</code> state (and
+		 * the button's <code>isSelected</code> property is <code>true</code>),
+		 * and the properties will be passed down to the label text renderer
+		 * when the button validates. The available properties depend on which
+		 * <code>ITextRenderer</code> implementation is returned by
+		 * <code>labelFactory</code>. Refer to
+		 * <a href="../core/ITextRenderer.html"><code>feathers.core.ITextRenderer</code></a>
+		 * for a list of available text renderer implementations.
 		 *
 		 * <p>The following example gives the button label properties for the
 		 * selected up state:</p>
@@ -439,11 +525,10 @@ package feathers.controls
 		 * @default null
 		 *
 		 * @see feathers.core.ITextRenderer
-		 * @see feathers.controls.text.BitmapFontTextRenderer
-		 * @see feathers.controls.text.TextFieldTextRenderer
 		 * @see #defaultLabelProperties
 		 * @see #defaultSelectedLabelProperties
 		 * @see #upLabelProperties
+		 * @see #STATE_UP
 		 */
 		public function get selectedUpLabelProperties():Object
 		{
@@ -479,16 +564,15 @@ package feathers.controls
 		}
 
 		/**
-		 * A set of key/value pairs to be passed down ot the button's label
-		 * text renderer when the button is in the down state and is selected.
-		 * If <code>null</code>, then <code>defaultSelectedLabelProperties</code>
-		 * is used instead. If <code>defaultSelectedLabelProperties</code> is also
-		 * <code>null</code>, then <code>defaultLabelProperties</code> is used.
-		 * The label text renderer is an <code>ITextRenderer</code> instance.
-		 * The available properties depend on which <code>ITextRenderer</code>
-		 * implementation is returned by <code>labelFactory</code>. The most
-		 * common implementations are <code>BitmapFontTextRenderer</code> and
-		 * <code>TextFieldTextRenderer</code>.
+		 * An object that stores properties for the button's label text renderer
+		 * when the button is in the <code>Button.STATE_DOWN</code> state (and
+		 * the button's <code>isSelected</code> property is <code>true</code>),
+		 * and the properties will be passed down to the label text renderer
+		 * when the button validates. The available properties depend on which
+		 * <code>ITextRenderer</code> implementation is returned by
+		 * <code>labelFactory</code>. Refer to
+		 * <a href="../core/ITextRenderer.html"><code>feathers.core.ITextRenderer</code></a>
+		 * for a list of available text renderer implementations.
 		 *
 		 * <p>The following example gives the button label properties for the
 		 * selected down state:</p>
@@ -499,11 +583,10 @@ package feathers.controls
 		 * @default null
 		 *
 		 * @see feathers.core.ITextRenderer
-		 * @see feathers.controls.text.BitmapFontTextRenderer
-		 * @see feathers.controls.text.TextFieldTextRenderer
 		 * @see #defaultLabelProperties
 		 * @see #defaultSelectedLabelProperties
 		 * @see #downLabelProperties
+		 * @see #STATE_DOWN
 		 */
 		public function get selectedDownLabelProperties():Object
 		{
@@ -539,16 +622,15 @@ package feathers.controls
 		}
 
 		/**
-		 * A set of key/value pairs to be passed down ot the button's label
-		 * text renderer when the button is in the hover state and is selected.
-		 * If <code>null</code>, then <code>defaultSelectedLabelProperties</code>
-		 * is used instead. If <code>defaultSelectedLabelProperties</code> is also
-		 * <code>null</code>, then <code>defaultLabelProperties</code> is used.
-		 * The label text renderer is an <code>ITextRenderer</code> instance.
-		 * The available properties depend on which <code>ITextRenderer</code>
-		 * implementation is returned by <code>labelFactory</code>. The most
-		 * common implementations are <code>BitmapFontTextRenderer</code> and
-		 * <code>TextFieldTextRenderer</code>.
+		 * An object that stores properties for the button's label text renderer
+		 * when the button is in the <code>Button.STATE_HOVER</code> state (and
+		 * the button's <code>isSelected</code> property is <code>true</code>),
+		 * and the properties will be passed down to the label text renderer
+		 * when the button validates. The available properties depend on which
+		 * <code>ITextRenderer</code> implementation is returned by
+		 * <code>labelFactory</code>. Refer to
+		 * <a href="../core/ITextRenderer.html"><code>feathers.core.ITextRenderer</code></a>
+		 * for a list of available text renderer implementations.
 		 *
 		 * <p>The following example gives the button label properties for the
 		 * selected hover state:</p>
@@ -559,11 +641,10 @@ package feathers.controls
 		 * @default null
 		 *
 		 * @see feathers.core.ITextRenderer
-		 * @see feathers.controls.text.BitmapFontTextRenderer
-		 * @see feathers.controls.text.TextFieldTextRenderer
 		 * @see #defaultLabelProperties
 		 * @see #defaultSelectedLabelProperties
 		 * @see #hoverLabelProperties
+		 * @see #STATE_HOVER
 		 */
 		public function get selectedHoverLabelProperties():Object
 		{
@@ -599,16 +680,15 @@ package feathers.controls
 		}
 
 		/**
-		 * A set of key/value pairs to be passed down ot the button's label
-		 * text renderer when the button is in the disabled state and is
-		 * selected. If <code>null</code>, then <code>defaultSelectedLabelProperties</code>
-		 * is used instead. If <code>defaultSelectedLabelProperties</code> is also
-		 * <code>null</code>, then <code>defaultLabelProperties</code> is used.
-		 * The label text renderer is an <code>ITextRenderer</code> instance.
-		 * The available properties depend on which <code>ITextRenderer</code>
-		 * implementation is returned by <code>labelFactory</code>. The most
-		 * common implementations are <code>BitmapFontTextRenderer</code> and
-		 * <code>TextFieldTextRenderer</code>.
+		 * An object that stores properties for the button's label text renderer
+		 * when the button is in the <code>Button.STATE_DISABLED</code> state
+		 * (and the button's <code>isSelected</code> property is
+		 * <code>true</code>), and the properties will be passed down to the
+		 * label text renderer when the button validates. The available
+		 * properties depend on which <code>ITextRenderer</code> implementation
+		 * is returned by <code>labelFactory</code>. Refer to
+		 * <a href="../core/ITextRenderer.html"><code>feathers.core.ITextRenderer</code></a>
+		 * for a list of available text renderer implementations.
 		 *
 		 * <p>The following example gives the button label properties for the
 		 * selected disabled state:</p>
@@ -619,11 +699,10 @@ package feathers.controls
 		 * @default null
 		 *
 		 * @see feathers.core.ITextRenderer
-		 * @see feathers.controls.text.BitmapFontTextRenderer
-		 * @see feathers.controls.text.TextFieldTextRenderer
 		 * @see #defaultLabelProperties
 		 * @see #defaultSelectedLabelProperties
 		 * @see #disabledLabelProperties
+		 * @see #STATE_DISABLED
 		 */
 		public function get selectedDisabledLabelProperties():Object
 		{
@@ -717,6 +796,7 @@ package feathers.controls
 		 *
 		 * @see #defaultIcon
 		 * @see #defaultSelectedIcon
+		 * @see #STATE_UP
 		 */
 		public function get selectedUpIcon():DisplayObject
 		{
@@ -754,6 +834,7 @@ package feathers.controls
 		 *
 		 * @see #defaultIcon
 		 * @see #defaultSelectedIcon
+		 * @see #STATE_DOWN
 		 */
 		public function get selectedDownIcon():DisplayObject
 		{
@@ -791,6 +872,7 @@ package feathers.controls
 		 *
 		 * @see #defaultIcon
 		 * @see #defaultSelectedIcon
+		 * @see #STATE_HOVER
 		 */
 		public function get selectedHoverIcon():DisplayObject
 		{
@@ -828,6 +910,7 @@ package feathers.controls
 		 *
 		 * @see #defaultIcon
 		 * @see #defaultSelectedIcon
+		 * @see #STATE_DISABLED
 		 */
 		public function get selectedDisabledIcon():DisplayObject
 		{

@@ -1,6 +1,6 @@
 /*
 Feathers
-Copyright 2012-2015 Joshua Tynjala. All Rights Reserved.
+Copyright 2012-2015 Bowler Hat LLC. All Rights Reserved.
 
 This program is free software. You can redistribute and/or modify it in
 accordance with the terms of the accompanying license agreement.
@@ -10,8 +10,11 @@ package feathers.controls.text
 	import feathers.core.FeathersControl;
 	import feathers.core.FocusManager;
 	import feathers.core.INativeFocusOwner;
+	import feathers.core.IStateContext;
+	import feathers.core.IStateObserver;
 	import feathers.core.ITextEditor;
 	import feathers.events.FeathersEventType;
+	import feathers.skins.IStyleProvider;
 	import feathers.utils.geom.matrixToRotation;
 	import feathers.utils.geom.matrixToScaleX;
 	import feathers.utils.geom.matrixToScaleY;
@@ -24,8 +27,10 @@ package feathers.controls.text
 	import flash.events.KeyboardEvent;
 	import flash.events.SoftKeyboardEvent;
 	import flash.geom.Matrix;
+	import flash.geom.Matrix3D;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.geom.Vector3D;
 	import flash.text.AntiAliasType;
 	import flash.text.GridFitType;
 	import flash.text.TextField;
@@ -195,8 +200,18 @@ package feathers.controls.text
 	 *
 	 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/TextField.html flash.text.TextField
 	 */
-	public class TextFieldTextEditor extends FeathersControl implements ITextEditor, INativeFocusOwner
+	public class TextFieldTextEditor extends FeathersControl implements ITextEditor, INativeFocusOwner, IStateObserver
 	{
+		/**
+		 * @private
+		 */
+		private static var HELPER_MATRIX3D:Matrix3D;
+
+		/**
+		 * @private
+		 */
+		private static var HELPER_POINT3D:Vector3D;
+		
 		/**
 		 * @private
 		 */
@@ -208,6 +223,15 @@ package feathers.controls.text
 		private static const HELPER_POINT:Point = new Point();
 
 		/**
+		 * The default <code>IStyleProvider</code> for all <code>TextFieldTextEditor</code>
+		 * components.
+		 *
+		 * @default null
+		 * @see feathers.core.FeathersControl#styleProvider
+		 */
+		public static var globalStyleProvider:IStyleProvider;
+
+		/**
 		 * Constructor.
 		 */
 		public function TextFieldTextEditor()
@@ -215,6 +239,14 @@ package feathers.controls.text
 			this.isQuickHitAreaEnabled = true;
 			this.addEventListener(Event.ADDED_TO_STAGE, textEditor_addedToStageHandler);
 			this.addEventListener(Event.REMOVED_FROM_STAGE, textEditor_removedFromStageHandler);
+		}
+
+		/**
+		 * @private
+		 */
+		override protected function get defaultStyleProvider():IStyleProvider
+		{
+			return globalStyleProvider;
 		}
 
 		/**
@@ -347,6 +379,16 @@ package feathers.controls.text
 		/**
 		 * @private
 		 */
+		protected var currentTextFormat:TextFormat;
+
+		/**
+		 * @private
+		 */
+		protected var _textFormatForState:Object;
+
+		/**
+		 * @private
+		 */
 		protected var _textFormat:TextFormat;
 
 		/**
@@ -359,6 +401,7 @@ package feathers.controls.text
 		 *
 		 * @default null
 		 *
+		 * @see #setTextFormatForState()
 		 * @see #disabledTextFormat
 		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/TextFormat.html flash.text.TextFormat
 		 */
@@ -390,7 +433,8 @@ package feathers.controls.text
 		protected var _disabledTextFormat:TextFormat;
 
 		/**
-		 * The font and styles used to draw the text when the component is disabled.
+		 * The font and styles used to draw the text when the component is
+		 * disabled.
 		 *
 		 * <p>In the following example, the disabled text format is changed:</p>
 		 *
@@ -1163,6 +1207,48 @@ package feathers.controls.text
 		/**
 		 * @private
 		 */
+		protected var _stateContext:IStateContext;
+
+		/**
+		 * When the text renderer observes a state context, the text renderer
+		 * may change its <code>TextFormat</code> based on the current state of
+		 * that context. Typically, a relevant component will automatically
+		 * assign itself as the state context of a text renderer, so this
+		 * property is typically meant for internal use only.
+		 *
+		 * @default null
+		 *
+		 * @see #setTextFormatForState()
+		 */
+		public function get stateContext():IStateContext
+		{
+			return this._stateContext;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set stateContext(value:IStateContext):void
+		{
+			if(this._stateContext === value)
+			{
+				return;
+			}
+			if(this._stateContext)
+			{
+				this._stateContext.removeEventListener(FeathersEventType.STATE_CHANGE, stateContext_stateChangeHandler);
+			}
+			this._stateContext = value;
+			if(this._stateContext)
+			{
+				this._stateContext.addEventListener(FeathersEventType.STATE_CHANGE, stateContext_stateChangeHandler);
+			}
+			this.invalidate(INVALIDATION_FLAG_STATE);
+		}
+
+		/**
+		 * @private
+		 */
 		protected var _updateSnapshotOnScaleChange:Boolean = false;
 
 		/**
@@ -1268,6 +1354,8 @@ package feathers.controls.text
 			//ease major memory pressure from native filters
 			this.textField = null;
 			this.measureTextField = null;
+			
+			this.stateContext = null;
 
 			super.dispose();
 		}
@@ -1475,6 +1563,44 @@ package feathers.controls.text
 		}
 
 		/**
+		 * Sets the <code>TextFormat</code> to be used by the text renderer when
+		 * the <code>currentState</code> property of the
+		 * <code>stateContext</code> matches the specified state value.
+		 *
+		 * <p>If an <code>TextFormat</code> is not defined for a specific
+		 * state, the value of the <code>textFormat</code> property will be
+		 * used instead.</p>
+		 *
+		 * <p>If the <code>disabledTextFormat</code> property is not
+		 * <code>null</code> and the <code>isEnabled</code> property is
+		 * <code>false</code>, all other text formats will be ignored.</p>
+		 *
+		 * @see #stateContext
+		 * @see #textFormat
+		 */
+		public function setTextFormatForState(state:String, textFormat:TextFormat):void
+		{
+			if(textFormat)
+			{
+				if(!this._textFormatForState)
+				{
+					this._textFormatForState = {};
+				}
+				this._textFormatForState[state] = textFormat;
+			}
+			else
+			{
+				delete this._textFormatForState[state];
+			}
+			//if the context's current state is the state that we're modifying,
+			//we need to use the new value immediately.
+			if(this._stateContext && this._stateContext.currentState === state)
+			{
+				this.invalidate(INVALIDATION_FLAG_STATE);
+			}
+		}
+
+		/**
 		 * @private
 		 */
 		override protected function initialize():void
@@ -1527,6 +1653,7 @@ package feathers.controls.text
 
 			if(dataInvalid || stylesInvalid || stateInvalid)
 			{
+				this.refreshTextFormat();
 				this.commitStylesAndData(this.textField);
 			}
 		}
@@ -1651,35 +1778,32 @@ package feathers.controls.text
 			textField.embedFonts = this._embedFonts;
 			textField.type = this._isEditable ? TextFieldType.INPUT : TextFieldType.DYNAMIC;
 			textField.selectable = this._isEnabled;
-			var isFormatDifferent:Boolean = false;
-			var currentTextFormat:TextFormat;
-			if(!this._isEnabled && this._disabledTextFormat)
-			{
-				currentTextFormat = this._disabledTextFormat;
-			}
-			else
-			{
-				currentTextFormat = this._textFormat;
-			}
-			if(currentTextFormat)
+			
+			if(textField === this.textField)
 			{
 				//for some reason, textField.defaultTextFormat always fails
 				//comparison against currentTextFormat. if we save to a member
 				//variable and compare against that instead, it works.
 				//I guess text field creates a different TextFormat object.
-				isFormatDifferent = this._previousTextFormat != currentTextFormat;
-				this._previousTextFormat = currentTextFormat;
-				textField.defaultTextFormat = currentTextFormat;
+				var isFormatDifferent:Boolean = this._previousTextFormat != this.currentTextFormat;
+				this._previousTextFormat = this.currentTextFormat;
 			}
+			textField.defaultTextFormat = this.currentTextFormat;
+			
 			if(this._isHTML)
 			{
 				if(isFormatDifferent || textField.htmlText != this._text)
 				{
 					if(textField == this.textField && this._pendingSelectionBeginIndex < 0)
 					{
+						//if the TextFormat has changed from the last commit,
+						//the selection range may be lost when we set the text
+						//so we need to save it to restore later. 
 						this._pendingSelectionBeginIndex = this.textField.selectionBeginIndex;
 						this._pendingSelectionEndIndex = this.textField.selectionEndIndex;
 					}
+					//the TextField's text should be updated after a TextFormat
+					//change because otherwise it will keep using the old one.
 					textField.htmlText = this._text;
 				}
 			}
@@ -1695,6 +1819,37 @@ package feathers.controls.text
 					textField.text = this._text;
 				}
 			}
+		}
+
+		/**
+		 * @private
+		 */
+		protected function refreshTextFormat():void
+		{
+			var textFormat:TextFormat;
+			if(this._stateContext && this._textFormatForState)
+			{
+				var currentState:String = this._stateContext.currentState;
+				if(currentState in this._textFormatForState)
+				{
+					textFormat = TextFormat(this._textFormatForState[currentState]);
+				}
+			}
+			if(!textFormat && !this._isEnabled && this._disabledTextFormat)
+			{
+				textFormat = this._disabledTextFormat;
+			}
+			if(!textFormat)
+			{
+				//let's fall back to using Starling's embedded mini font if no
+				//text format has been specified
+				if(!this._textFormat)
+				{
+					this._textFormat = new TextFormat();
+				}
+				textFormat = this._textFormat;
+			}
+			this.currentTextFormat = textFormat;
 		}
 
 		/**
@@ -1809,7 +1964,16 @@ package feathers.controls.text
 			{
 				smallerGlobalScale = globalScaleY;
 			}
-			MatrixUtil.transformCoords(HELPER_MATRIX, 0, 0, HELPER_POINT);
+			if(this.is3D)
+			{
+				HELPER_MATRIX3D = this.getTransformationMatrix3D(this.stage, HELPER_MATRIX3D);
+				HELPER_POINT3D = MatrixUtil.transformCoords3D(HELPER_MATRIX3D, 0, 0, 0, HELPER_POINT3D);
+				HELPER_POINT.setTo(HELPER_POINT3D.x, HELPER_POINT3D.y);
+			}
+			else
+			{
+				MatrixUtil.transformCoords(HELPER_MATRIX, 0, 0, HELPER_POINT);
+			}
 			var starlingViewPort:Rectangle = Starling.current.viewPort;
 			var nativeScaleFactor:Number = 1;
 			if(Starling.current.supportHighResolutions)
@@ -2135,6 +2299,14 @@ package feathers.controls.text
 		protected function textField_softKeyboardDeactivateHandler(event:SoftKeyboardEvent):void
 		{
 			this.dispatchEventWith(FeathersEventType.SOFT_KEYBOARD_DEACTIVATE, true);
+		}
+
+		/**
+		 * @private
+		 */
+		protected function stateContext_stateChangeHandler(event:Event):void
+		{
+			this.invalidate(INVALIDATION_FLAG_STATE);
 		}
 	}
 }

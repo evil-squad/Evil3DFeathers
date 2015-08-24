@@ -1,6 +1,6 @@
 /*
 Feathers
-Copyright 2012-2015 Joshua Tynjala. All Rights Reserved.
+Copyright 2012-2015 Bowler Hat LLC. All Rights Reserved.
 
 This program is free software. You can redistribute and/or modify it in
 accordance with the terms of the accompanying license agreement.
@@ -290,10 +290,23 @@ package feathers.data
 		 * has changed, you can manually tell the collection about the change,
 		 * and the collection will dispatch the <code>CollectionEventType.UPDATE_ITEM</code>
 		 * event to manually notify the component that renders the data.
+		 * 
+		 * @see #updateAll()
 		 */
 		public function updateItemAt(index:int):void
 		{
 			this.dispatchEventWith(CollectionEventType.UPDATE_ITEM, false, index);
+		}
+
+		/**
+		 * Dispatches <code>CollectionEventType.UPDATE_ALL</code> to inform any
+		 * component that renders this data to update all visible data.
+		 * 
+		 * @see #updateItemAt()
+		 */
+		public function updateAll():void
+		{
+			this.dispatchEventWith(CollectionEventType.UPDATE_ALL);
 		}
 		
 		/**

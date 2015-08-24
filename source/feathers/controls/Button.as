@@ -1,6 +1,6 @@
 /*
 Feathers
-Copyright 2012-2015 Joshua Tynjala. All Rights Reserved.
+Copyright 2012-2015 Bowler Hat LLC. All Rights Reserved.
 
 This program is free software. You can redistribute and/or modify it in
 accordance with the terms of the accompanying license agreement.
@@ -10,6 +10,9 @@ package feathers.controls
 	import feathers.core.FeathersControl;
 	import feathers.core.IFeathersControl;
 	import feathers.core.IFocusDisplayObject;
+	import feathers.core.IStateContext;
+	import feathers.core.IStateObserver;
+	import feathers.core.ITextBaselineControl;
 	import feathers.core.ITextRenderer;
 	import feathers.core.IValidating;
 	import feathers.core.PropertyProxy;
@@ -88,6 +91,30 @@ package feathers.controls
 	 * @see #longPressDuration
 	 */
 	[Event(name="longPress",type="starling.events.Event")]
+	
+	/**
+	 * Dispatched when the display object's state changes.
+	 *
+	 * <p>The properties of the event object have the following values:</p>
+	 * <table class="innertable">
+	 * <tr><th>Property</th><th>Value</th></tr>
+	 * <tr><td><code>bubbles</code></td><td>false</td></tr>
+	 * <tr><td><code>currentTarget</code></td><td>The Object that defines the
+	 *   event listener that handles the event. For example, if you use
+	 *   <code>myButton.addEventListener()</code> to register an event listener,
+	 *   myButton is the value of the <code>currentTarget</code>.</td></tr>
+	 * <tr><td><code>data</code></td><td>null</td></tr>
+	 * <tr><td><code>target</code></td><td>The Object that dispatched the event;
+	 *   it is not always the Object listening for the event. Use the
+	 *   <code>currentTarget</code> property to always access the Object
+	 *   listening for the event.</td></tr>
+	 * </table>
+	 *
+	 * @eventType feathers.events.FeathersEventType.STATE_CHANGE
+	 * 
+	 * @see #currentState
+	 */
+	[Event(name="stateChange",type="starling.events.Event")]
 
 	/**
 	 * A push button control that may be triggered when pressed and released.
@@ -103,7 +130,7 @@ package feathers.controls
 	 *
 	 * @see ../../../help/button.html How to use the Feathers Button component
 	 */
-	public class Button extends FeathersControl implements IFocusDisplayObject
+	public class Button extends FeathersControl implements IFocusDisplayObject, IStateContext, ITextBaselineControl
 	{
 		/**
 		 * @private
@@ -116,18 +143,6 @@ package feathers.controls
 		 * @see feathers.core.FeathersControl#styleNameList
 		 */
 		public static const DEFAULT_CHILD_STYLE_NAME_LABEL:String = "feathers-button-label";
-
-		/**
-		 * DEPRECATED: Replaced by <code>Button.DEFAULT_CHILD_STYLE_NAME_LABEL</code>.
-		 *
-		 * <p><strong>DEPRECATION WARNING:</strong> This property is deprecated
-		 * starting with Feathers 2.1. It will be removed in a future version of
-		 * Feathers according to the standard
-		 * <a target="_top" href="../../../help/deprecation-policy.html">Feathers deprecation policy</a>.</p>
-		 *
-		 * @see Button#DEFAULT_CHILD_STYLE_NAME_LABEL
-		 */
-		public static const DEFAULT_CHILD_NAME_LABEL:String = DEFAULT_CHILD_STYLE_NAME_LABEL;
 
 		/**
 		 * An alternate style name to use with <code>Button</code> to allow a
@@ -152,18 +167,6 @@ package feathers.controls
 		public static const ALTERNATE_STYLE_NAME_CALL_TO_ACTION_BUTTON:String = "feathers-call-to-action-button";
 
 		/**
-		 * DEPRECATED: Replaced by <code>Button.ALTERNATE_STYLE_NAME_CALL_TO_ACTION_BUTTON</code>.
-		 *
-		 * <p><strong>DEPRECATION WARNING:</strong> This property is deprecated
-		 * starting with Feathers 2.1. It will be removed in a future version of
-		 * Feathers according to the standard
-		 * <a target="_top" href="../../../help/deprecation-policy.html">Feathers deprecation policy</a>.</p>
-		 *
-		 * @see Button#ALTERNATE_STYLE_NAME_CALL_TO_ACTION_BUTTON
-		 */
-		public static const ALTERNATE_NAME_CALL_TO_ACTION_BUTTON:String = ALTERNATE_STYLE_NAME_CALL_TO_ACTION_BUTTON;
-
-		/**
 		 * An alternate style name to use with <code>Button</code> to allow a
 		 * theme to give it a less prominent, "quiet" style. If a theme does not
 		 * provide a style for a quiet button, the theme will automatically fall
@@ -184,18 +187,6 @@ package feathers.controls
 		 * @see feathers.core.FeathersControl#styleNameList
 		 */
 		public static const ALTERNATE_STYLE_NAME_QUIET_BUTTON:String = "feathers-quiet-button";
-
-		/**
-		 * DEPRECATED: Replaced by <code>Button.ALTERNATE_STYLE_NAME_QUIET_BUTTON</code>.
-		 *
-		 * <p><strong>DEPRECATION WARNING:</strong> This property is deprecated
-		 * starting with Feathers 2.1. It will be removed in a future version of
-		 * Feathers according to the standard
-		 * <a target="_top" href="../../../help/deprecation-policy.html">Feathers deprecation policy</a>.</p>
-		 *
-		 * @see Button#ALTERNATE_STYLE_NAME_QUIET_BUTTON
-		 */
-		public static const ALTERNATE_NAME_QUIET_BUTTON:String = ALTERNATE_STYLE_NAME_QUIET_BUTTON;
 
 		/**
 		 * An alternate style name to use with <code>Button</code> to allow a
@@ -222,18 +213,6 @@ package feathers.controls
 		public static const ALTERNATE_STYLE_NAME_DANGER_BUTTON:String = "feathers-danger-button";
 
 		/**
-		 * DEPRECATED: Replaced by <code>Button.ALTERNATE_STYLE_NAME_DANGER_BUTTON</code>.
-		 *
-		 * <p><strong>DEPRECATION WARNING:</strong> This property is deprecated
-		 * starting with Feathers 2.1. It will be removed in a future version of
-		 * Feathers according to the standard
-		 * <a target="_top" href="../../../help/deprecation-policy.html">Feathers deprecation policy</a>.</p>
-		 *
-		 * @see Button#ALTERNATE_STYLE_NAME_DANGER_BUTTON
-		 */
-		public static const ALTERNATE_NAME_DANGER_BUTTON:String = ALTERNATE_STYLE_NAME_DANGER_BUTTON;
-
-		/**
 		 * An alternate style name to use with <code>Button</code> to allow a
 		 * theme to give it a "back button" style, perhaps with an arrow
 		 * pointing backward. If a theme does not provide a style for a back
@@ -257,18 +236,6 @@ package feathers.controls
 		public static const ALTERNATE_STYLE_NAME_BACK_BUTTON:String = "feathers-back-button";
 
 		/**
-		 * DEPRECATED: Replaced by <code>Button.ALTERNATE_STYLE_NAME_BACK_BUTTON</code>.
-		 *
-		 * <p><strong>DEPRECATION WARNING:</strong> This property is deprecated
-		 * starting with Feathers 2.1. It will be removed in a future version of
-		 * Feathers according to the standard
-		 * <a target="_top" href="../../../help/deprecation-policy.html">Feathers deprecation policy</a>.</p>
-		 *
-		 * @see Button#ALTERNATE_STYLE_NAME_BACK_BUTTON
-		 */
-		public static const ALTERNATE_NAME_BACK_BUTTON:String = ALTERNATE_STYLE_NAME_BACK_BUTTON;
-
-		/**
 		 * An alternate style name to use with <code>Button</code> to allow a
 		 * theme to give it a "forward" button style, perhaps with an arrow
 		 * pointing forward. If a theme does not provide a style for a forward
@@ -290,18 +257,6 @@ package feathers.controls
 		 * @see feathers.core.FeathersControl#styleNameList
 		 */
 		public static const ALTERNATE_STYLE_NAME_FORWARD_BUTTON:String = "feathers-forward-button";
-
-		/**
-		 * DEPRECATED: Replaced by <code>Button.ALTERNATE_STYLE_NAME_FORWARD_BUTTON</code>.
-		 *
-		 * <p><strong>DEPRECATION WARNING:</strong> This property is deprecated
-		 * starting with Feathers 2.1. It will be removed in a future version of
-		 * Feathers according to the standard
-		 * <a target="_top" href="../../../help/deprecation-policy.html">Feathers deprecation policy</a>.</p>
-		 *
-		 * @see Button#ALTERNATE_STYLE_NAME_FORWARD_BUTTON
-		 */
-		public static const ALTERNATE_NAME_FORWARD_BUTTON:String = ALTERNATE_STYLE_NAME_FORWARD_BUTTON;
 		
 		/**
 		 * Identifier for the button's up state. Can be used for styling purposes.
@@ -466,29 +421,6 @@ package feathers.controls
 		 * @see feathers.core.FeathersControl#styleNameList
 		 */
 		protected var labelStyleName:String = DEFAULT_CHILD_STYLE_NAME_LABEL;
-
-		/**
-		 * DEPRECATED: Replaced by <code>labelStyleName</code>.
-		 *
-		 * <p><strong>DEPRECATION WARNING:</strong> This property is deprecated
-		 * starting with Feathers 2.1. It will be removed in a future version of
-		 * Feathers according to the standard
-		 * <a target="_top" href="../../../help/deprecation-policy.html">Feathers deprecation policy</a>.</p>
-		 *
-		 * @see #labelStyleName
-		 */
-		protected function get labelName():String
-		{
-			return this.labelStyleName;
-		}
-
-		/**
-		 * @private
-		 */
-		protected function set labelName(value:String):void
-		{
-			this.labelStyleName = value;
-		}
 		
 		/**
 		 * The text renderer for the button's label.
@@ -546,7 +478,7 @@ package feathers.controls
 			if(!this._isEnabled)
 			{
 				this.touchable = false;
-				this.currentState = STATE_DISABLED;
+				this.changeState(STATE_DISABLED);
 				this.touchPointID = -1;
 			}
 			else
@@ -555,7 +487,7 @@ package feathers.controls
 				//let's only change to up if needed
 				if(this.currentState == STATE_DISABLED)
 				{
-					this.currentState = STATE_UP;
+					this.changeState(STATE_UP);
 				}
 				this.touchable = true;
 			}
@@ -567,30 +499,13 @@ package feathers.controls
 		protected var _currentState:String = STATE_UP;
 		
 		/**
-		 * The current touch state of the button.
-		 *
-		 * <p>For internal use in subclasses.</p>
+		 * The current state of the button.
+		 * 
+		 * @see #event:stateChange feathers.events.FeathersEventType.STATE_CHANGE
 		 */
-		protected function get currentState():String
+		public function get currentState():String
 		{
 			return this._currentState;
-		}
-		
-		/**
-		 * @private
-		 */
-		protected function set currentState(value:String):void
-		{
-			if(this._currentState == value)
-			{
-				return;
-			}
-			if(this.stateNames.indexOf(value) < 0)
-			{
-				throw new ArgumentError("Invalid state: " + value + ".");
-			}
-			this._currentState = value;
-			this.invalidate(INVALIDATION_FLAG_STATE);
 		}
 		
 		/**
@@ -1430,6 +1345,7 @@ package feathers.controls
 		 * @default null
 		 * 
 		 * @see #defaultSkin
+		 * @see #STATE_UP
 		 */
 		public function get upSkin():DisplayObject
 		{
@@ -1464,6 +1380,7 @@ package feathers.controls
 		 * @default null
 		 * 
 		 * @see #defaultSkin
+		 * @see #STATE_DOWN
 		 */
 		public function get downSkin():DisplayObject
 		{
@@ -1498,6 +1415,7 @@ package feathers.controls
 		 * @default null
 		 *
 		 * @see #defaultSkin
+		 * @see #STATE_HOVER
 		 */
 		public function get hoverSkin():DisplayObject
 		{
@@ -1532,6 +1450,7 @@ package feathers.controls
 		 * @default null
 		 * 
 		 * @see #defaultSkin
+		 * @see #STATE_DISABLED
 		 */
 		public function get disabledSkin():DisplayObject
 		{
@@ -1582,8 +1501,6 @@ package feathers.controls
 		 *
 		 * @see feathers.core.ITextRenderer
 		 * @see feathers.core.FeathersControl#defaultTextRendererFactory
-		 * @see feathers.controls.text.BitmapFontTextRenderer
-		 * @see feathers.controls.text.TextFieldTextRenderer
 		 */
 		public function get labelFactory():Function
 		{
@@ -1602,6 +1519,52 @@ package feathers.controls
 			this._labelFactory = value;
 			this.invalidate(INVALIDATION_FLAG_TEXT_RENDERER);
 		}
+
+		/**
+		 * @private
+		 */
+		protected var _customLabelStyleName:String;
+
+		/**
+		 * A style name to add to the button's label text renderer
+		 * sub-component. Typically used by a theme to provide different styles
+		 * to different buttons.
+		 *
+		 * <p>In the following example, a custom label style name is passed to
+		 * the button:</p>
+		 *
+		 * <listing version="3.0">
+		 * button.customLabelStyleName = "my-custom-button-label";</listing>
+		 *
+		 * <p>In your theme, you can target this sub-component style name to
+		 * provide different styles than the default:</p>
+		 *
+		 * <listing version="3.0">
+		 * getStyleProviderForClass( BitmapFontTextRenderer ).setFunctionForStyleName( "my-custom-button-label", setCustomButtonLabelStyles );</listing>
+		 *
+		 * @default null
+		 *
+		 * @see #DEFAULT_CHILD_STYLE_NAME_LABEL
+		 * @see feathers.core.FeathersControl#styleNameList
+		 * @see #labelFactory
+		 */
+		public function get customLabelStyleName():String
+		{
+			return this._customLabelStyleName;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set customLabelStyleName(value:String):void
+		{
+			if(this._customLabelStyleName == value)
+			{
+				return;
+			}
+			this._customLabelStyleName = value;
+			this.invalidate(INVALIDATION_FLAG_TEXT_RENDERER);
+		}
 		
 		/**
 		 * @private
@@ -1609,15 +1572,14 @@ package feathers.controls
 		protected var _labelPropertiesSelector:StateWithToggleValueSelector = new StateWithToggleValueSelector();
 		
 		/**
-		 * The default label properties are a set of key/value pairs to be
-		 * passed down to the button's label text renderer, and it is used when
-		 * no specific properties are defined for the button's current state.
-		 * Intended for use when multiple states should share the same
-		 * properties. The label text renderer is an <code>ITextRenderer</code>
-		 * instance. The available properties depend on which <code>ITextRenderer</code>
-		 * implementation is returned by <code>labelFactory</code>. The most
-		 * common implementations are <code>BitmapFontTextRenderer</code> and
-		 * <code>TextFieldTextRenderer</code>.
+		 * An object that stores properties for the button's label text renderer
+		 * when no specific properties are defined for the button's current
+		 * state, and the properties will be passed down to the label text
+		 * renderer when the button validates. The available properties depend
+		 * on which <code>ITextRenderer</code> implementation is returned by
+		 * <code>labelFactory</code>. Refer to
+		 * <a href="../core/ITextRenderer.html"><code>feathers.core.ITextRenderer</code></a>
+		 * for a list of available text renderer implementations.
 		 *
 		 * <p>The following example gives the button default label properties to
 		 * use for all states when no specific label properties are available
@@ -1631,8 +1593,6 @@ package feathers.controls
 		 * @default null
 		 *
 		 * @see feathers.core.ITextRenderer
-		 * @see feathers.controls.text.BitmapFontTextRenderer
-		 * @see feathers.controls.text.TextFieldTextRenderer
 		 * @see #stateToLabelPropertiesFunction
 		 */
 		public function get defaultLabelProperties():Object
@@ -1669,14 +1629,14 @@ package feathers.controls
 		}
 		
 		/**
-		 * A set of key/value pairs to be passed down ot the button's label
-		 * text renderer when the button is in the up state. If <code>null</code>,
-		 * then <code>defaultLabelProperties</code> is used instead. The label
-		 * text renderer is an <code>ITextRenderer</code> instance. The
-		 * available properties depend on which <code>ITextRenderer</code>
-		 * implementation is returned by <code>labelFactory</code>. The most
-		 * common implementations are <code>BitmapFontTextRenderer</code> and
-		 * <code>TextFieldTextRenderer</code>.
+		 * An object that stores properties for the button's label text renderer
+		 * when the button is in the <code>Button.STATE_UP</code> state, and the
+		 * properties will be passed down to the label text renderer when the
+		 * button validates. The available properties depend on which
+		 * <code>ITextRenderer</code> implementation is returned by
+		 * <code>labelFactory</code>. Refer to
+		 * <a href="../core/ITextRenderer.html"><code>feathers.core.ITextRenderer</code></a>
+		 * for a list of available text renderer implementations.
 		 *
 		 * <p>The following example gives the button label properties for the
 		 * up state:</p>
@@ -1687,9 +1647,8 @@ package feathers.controls
 		 * @default null
 		 *
 		 * @see feathers.core.ITextRenderer
-		 * @see feathers.controls.text.BitmapFontTextRenderer
-		 * @see feathers.controls.text.TextFieldTextRenderer
 		 * @see #defaultLabelProperties
+		 * @see #STATE_UP
 		 */
 		public function get upLabelProperties():Object
 		{
@@ -1725,14 +1684,14 @@ package feathers.controls
 		}
 		
 		/**
-		 * A set of key/value pairs to be passed down ot the button's label
-		 * text renderer when the button is in the down state. If <code>null</code>,
-		 * then <code>defaultLabelProperties</code> is used instead. The label
-		 * text renderer is an <code>ITextRenderer</code> instance. The
-		 * available properties depend on which <code>ITextRenderer</code>
-		 * implementation is returned by <code>labelFactory</code>. The most
-		 * common implementations are <code>BitmapFontTextRenderer</code> and
-		 * <code>TextFieldTextRenderer</code>.
+		 * An object that stores properties for the button's label text renderer
+		 * when the button is in the <code>Button.STATE_DOWN</code> state, and
+		 * the properties will be passed down to the label text renderer when
+		 * the button validates. The available properties depend on which
+		 * <code>ITextRenderer</code> implementation is returned by
+		 * <code>labelFactory</code>. Refer to
+		 * <a href="../core/ITextRenderer.html"><code>feathers.core.ITextRenderer</code></a>
+		 * for a list of available text renderer implementations.
 		 *
 		 * <p>The following example gives the button label properties for the
 		 * down state:</p>
@@ -1743,9 +1702,8 @@ package feathers.controls
 		 * @default null
 		 *
 		 * @see feathers.core.ITextRenderer
-		 * @see feathers.controls.text.BitmapFontTextRenderer
-		 * @see feathers.controls.text.TextFieldTextRenderer
 		 * @see #defaultLabelProperties
+		 * @see #STATE_DOWN
 		 */
 		public function get downLabelProperties():Object
 		{
@@ -1781,14 +1739,14 @@ package feathers.controls
 		}
 
 		/**
-		 * A set of key/value pairs to be passed down ot the button's label
-		 * text renderer when the button is in the hover state. If <code>null</code>,
-		 * then <code>defaultLabelProperties</code> is used instead. The label
-		 * text renderer is an <code>ITextRenderer</code> instance. The
-		 * available properties depend on which <code>ITextRenderer</code>
-		 * implementation is returned by <code>labelFactory</code>. The most
-		 * common implementations are <code>BitmapFontTextRenderer</code> and
-		 * <code>TextFieldTextRenderer</code>.
+		 * An object that stores properties for the button's label text renderer
+		 * when the button is in the <code>Button.STATE_HOVER</code> state, and
+		 * the properties will be passed down to the label text renderer when
+		 * the button validates. The available properties depend on which
+		 * <code>ITextRenderer</code> implementation is returned by
+		 * <code>labelFactory</code>. Refer to
+		 * <a href="../core/ITextRenderer.html"><code>feathers.core.ITextRenderer</code></a>
+		 * for a list of available text renderer implementations.
 		 *
 		 * <p>The following example gives the button label properties for the
 		 * hover state:</p>
@@ -1799,9 +1757,8 @@ package feathers.controls
 		 * @default null
 		 *
 		 * @see feathers.core.ITextRenderer
-		 * @see feathers.controls.text.BitmapFontTextRenderer
-		 * @see feathers.controls.text.TextFieldTextRenderer
 		 * @see #defaultLabelProperties
+		 * @see #STATE_HOVER
 		 */
 		public function get hoverLabelProperties():Object
 		{
@@ -1837,14 +1794,14 @@ package feathers.controls
 		}
 		
 		/**
-		 * A set of key/value pairs to be passed down ot the button's label
-		 * text renderer when the button is in the disabled state. If <code>null</code>,
-		 * then <code>defaultLabelProperties</code> is used instead. The label
-		 * text renderer is an <code>ITextRenderer</code> instance. The
-		 * available properties depend on which <code>ITextRenderer</code>
-		 * implementation is returned by <code>labelFactory</code>. The most
-		 * common implementations are <code>BitmapFontTextRenderer</code> and
-		 * <code>TextFieldTextRenderer</code>.
+		 * An object that stores properties for the button's label text renderer
+		 * when the button is in the <code>Button.STATE_DISABLED</code> state,
+		 * and the properties will be passed down to the label text renderer
+		 * when the button validates. The available properties depend on which
+		 * <code>ITextRenderer</code> implementation is returned by
+		 * <code>labelFactory</code>. Refer to
+		 * <a href="../core/ITextRenderer.html"><code>feathers.core.ITextRenderer</code></a>
+		 * for a list of available text renderer implementations.
 		 *
 		 * <p>The following example gives the button label properties for the
 		 * disabled state:</p>
@@ -1855,9 +1812,8 @@ package feathers.controls
 		 * @default null
 		 *
 		 * @see feathers.core.ITextRenderer
-		 * @see feathers.controls.text.BitmapFontTextRenderer
-		 * @see feathers.controls.text.TextFieldTextRenderer
 		 * @see #defaultLabelProperties
+		 * @see #STATE_DISABLED
 		 */
 		public function get disabledLabelProperties():Object
 		{
@@ -1951,6 +1907,7 @@ package feathers.controls
 		 * @default null
 		 * 
 		 * @see #defaultIcon
+		 * @see #STATE_UP
 		 */
 		public function get upIcon():DisplayObject
 		{
@@ -1985,6 +1942,7 @@ package feathers.controls
 		 * @default null
 		 * 
 		 * @see #defaultIcon
+		 * @see #STATE_DOWN
 		 */
 		public function get downIcon():DisplayObject
 		{
@@ -2019,6 +1977,7 @@ package feathers.controls
 		 * @default null
 		 *
 		 * @see #defaultIcon
+		 * @see #STATE_HOVER
 		 */
 		public function get hoverIcon():DisplayObject
 		{
@@ -2053,6 +2012,7 @@ package feathers.controls
 		 * @default null
 		 * 
 		 * @see #defaultIcon
+		 * @see #STATE_DISABLED
 		 */
 		public function get disabledIcon():DisplayObject
 		{
@@ -2208,6 +2168,18 @@ package feathers.controls
 		public function set scaleWhenHovering(value:Number):void
 		{
 			this._scaleWhenHovering = value;
+		}
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get baseline():Number
+		{
+			if(!this.labelTextRenderer)
+			{
+				return this.scaledActualHeight;
+			}
+			return this.scaleY * (this.labelTextRenderer.y + this.labelTextRenderer.baseline);
 		}
 
 		/**
@@ -2438,9 +2410,32 @@ package feathers.controls
 			{
 				var factory:Function = this._labelFactory != null ? this._labelFactory : FeathersControl.defaultTextRendererFactory;
 				this.labelTextRenderer = ITextRenderer(factory());
-				this.labelTextRenderer.styleNameList.add(this.labelName);
+				var labelStyleName:String = this._customLabelStyleName != null ? this._customLabelStyleName : this.labelStyleName;
+				this.labelTextRenderer.styleNameList.add(labelStyleName);
+				if(this.labelTextRenderer is IStateObserver)
+				{
+					IStateObserver(this.labelTextRenderer).stateContext = this;
+				}
 				this.addChild(DisplayObject(this.labelTextRenderer));
 			}
+		}
+
+		/**
+		 * @private
+		 */
+		protected function changeState(state:String):void
+		{
+			if(this._currentState == state)
+			{
+				return;
+			}
+			if(this.stateNames.indexOf(state) < 0)
+			{
+				throw new ArgumentError("Invalid state: " + state + ".");
+			}
+			this._currentState = state;
+			this.invalidate(INVALIDATION_FLAG_STATE);
+			this.dispatchEventWith(FeathersEventType.STATE_CHANGE);
 		}
 
 		/**
@@ -2851,11 +2846,11 @@ package feathers.controls
 			this.removeEventListener(Event.ENTER_FRAME, longPress_enterFrameHandler);
 			if(this._isEnabled)
 			{
-				this.currentState = STATE_UP;
+				this.changeState(STATE_UP);
 			}
 			else
 			{
-				this.currentState = STATE_DISABLED;
+				this.changeState(STATE_DISABLED);
 			}
 		}
 
@@ -2899,11 +2894,11 @@ package feathers.controls
 				this.touchPointID = -1;
 				if(this._isEnabled)
 				{
-					this.currentState = STATE_UP;
+					this.changeState(STATE_UP);
 				}
 				else
 				{
-					this.currentState = STATE_DISABLED;
+					this.changeState(STATE_DISABLED);
 				}
 			}
 		}
@@ -2942,11 +2937,11 @@ package feathers.controls
 				{
 					if(isInBounds || this.keepDownStateOnRollOut)
 					{
-						this.currentState = STATE_DOWN;
+						this.changeState(STATE_DOWN);
 					}
 					else
 					{
-						this.currentState = STATE_UP;
+						this.changeState(STATE_UP);
 					}
 				}
 				else if(touch.phase == TouchPhase.ENDED)
@@ -2966,7 +2961,7 @@ package feathers.controls
 				touch = event.getTouch(this, TouchPhase.BEGAN);
 				if(touch)
 				{
-					this.currentState = STATE_DOWN;
+					this.changeState(STATE_DOWN);
 					this.touchPointID = touch.id;
 					if(this._isLongPressEnabled)
 					{
@@ -2979,12 +2974,12 @@ package feathers.controls
 				touch = event.getTouch(this, TouchPhase.HOVER);
 				if(touch)
 				{
-					this.currentState = STATE_HOVER;
+					this.changeState(STATE_HOVER);
 					return;
 				}
 
 				//end of hover
-				this.currentState = STATE_UP;
+				this.changeState(STATE_UP);
 			}
 		}
 
@@ -3010,14 +3005,14 @@ package feathers.controls
 			if(event.keyCode == Keyboard.ESCAPE)
 			{
 				this.touchPointID = -1;
-				this.currentState = STATE_UP;
+				this.changeState(STATE_UP);
 			}
 			if(this.touchPointID >= 0 || event.keyCode != Keyboard.SPACE)
 			{
 				return;
 			}
 			this.touchPointID = int.MAX_VALUE;
-			this.currentState = STATE_DOWN;
+			this.changeState(STATE_DOWN);
 		}
 
 		/**

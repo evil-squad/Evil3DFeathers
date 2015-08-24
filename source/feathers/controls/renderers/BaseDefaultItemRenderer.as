@@ -1,6 +1,6 @@
 /*
 Feathers
-Copyright 2012-2015 Joshua Tynjala. All Rights Reserved.
+Copyright 2012-2015 Bowler Hat LLC. All Rights Reserved.
 
 This program is free software. You can redistribute and/or modify it in
 accordance with the terms of the accompanying license agreement.
@@ -15,6 +15,7 @@ package feathers.controls.renderers
 	import feathers.core.FeathersControl;
 	import feathers.core.IFeathersControl;
 	import feathers.core.IFocusContainer;
+	import feathers.core.IStateObserver;
 	import feathers.core.ITextRenderer;
 	import feathers.core.IValidating;
 	import feathers.core.PropertyProxy;
@@ -36,24 +37,20 @@ package feathers.controls.renderers
 	public class BaseDefaultItemRenderer extends ToggleButton implements IFocusContainer
 	{
 		/**
+		 * The default value added to the <code>styleNameList</code> of the
+		 * primary label.
+		 *
+		 * @see feathers.core.FeathersControl#styleNameList
+		 */
+		public static const DEFAULT_CHILD_STYLE_NAME_LABEL:String = "feathers-item-renderer-label";
+		
+		/**
 		 * The default value added to the <code>styleNameList</code> of the icon
 		 * label, if it exists.
 		 *
 		 * @see feathers.core.FeathersControl#styleNameList
 		 */
 		public static const DEFAULT_CHILD_STYLE_NAME_ICON_LABEL:String = "feathers-item-renderer-icon-label";
-
-		/**
-		 * DEPRECATED: Replaced by <code>BaseDefaultItemRenderer.DEFAULT_CHILD_STYLE_NAME_ICON_LABEL</code>.
-		 *
-		 * <p><strong>DEPRECATION WARNING:</strong> This property is deprecated
-		 * starting with Feathers 2.1. It will be removed in a future version of
-		 * Feathers according to the standard
-		 * <a target="_top" href="../../../help/deprecation-policy.html">Feathers deprecation policy</a>.</p>
-		 *
-		 * @see BaseDefaultItemRenderer#DEFAULT_CHILD_STYLE_NAME_ICON_LABEL
-		 */
-		public static const DEFAULT_CHILD_NAME_ICON_LABEL:String = DEFAULT_CHILD_STYLE_NAME_ICON_LABEL;
 
 		/**
 		 * The default value added to the <code>styleNameList</code> of the
@@ -64,16 +61,76 @@ package feathers.controls.renderers
 		public static const DEFAULT_CHILD_STYLE_NAME_ACCESSORY_LABEL:String = "feathers-item-renderer-accessory-label";
 
 		/**
-		 * DEPRECATED: Replaced by <code>BaseDefaultItemRenderer.DEFAULT_CHILD_STYLE_NAME_ACCESSORY_LABEL</code>.
+		 * @copy feathers.controls.Button#STATE_UP
 		 *
-		 * <p><strong>DEPRECATION WARNING:</strong> This property is deprecated
-		 * starting with Feathers 2.1. It will be removed in a future version of
-		 * Feathers according to the standard
-		 * <a target="_top" href="../../../help/deprecation-policy.html">Feathers deprecation policy</a>.</p>
-		 *
-		 * @see BaseDefaultItemRenderer#DEFAULT_CHILD_STYLE_NAME_ACCESSORY_LABEL
+		 * @see #stateToSkinFunction
+		 * @see #stateToIconFunction
+		 * @see #stateToLabelPropertiesFunction
 		 */
-		public static const DEFAULT_CHILD_NAME_ACCESSORY_LABEL:String = DEFAULT_CHILD_STYLE_NAME_ACCESSORY_LABEL;
+		public static const STATE_UP:String = "up";
+
+		/**
+		 * @copy feathers.controls.Button#STATE_DOWN
+		 *
+		 * @see #stateToSkinFunction
+		 * @see #stateToIconFunction
+		 * @see #stateToLabelPropertiesFunction
+		 */
+		public static const STATE_DOWN:String = "down";
+
+		/**
+		 * @copy feathers.controls.Button#STATE_HOVER
+		 *
+		 * @see #stateToSkinFunction
+		 * @see #stateToIconFunction
+		 * @see #stateToLabelPropertiesFunction
+		 */
+		public static const STATE_HOVER:String = "hover";
+
+		/**
+		 * @copy feathers.controls.Button#STATE_DISABLED
+		 *
+		 * @see #stateToSkinFunction
+		 * @see #stateToIconFunction
+		 * @see #stateToLabelPropertiesFunction
+		 */
+		public static const STATE_DISABLED:String = "disabled";
+
+		/**
+		 * @copy feathers.controls.Button#STATE_UP_AND_SELECTED
+		 *
+		 * @see #stateToSkinFunction
+		 * @see #stateToIconFunction
+		 * @see #stateToLabelPropertiesFunction
+		 */
+		public static const STATE_UP_AND_SELECTED:String = "upAndSelected";
+
+		/**
+		 * @copy feathers.controls.Button#STATE_DOWN_AND_SELECTED
+		 *
+		 * @see #stateToSkinFunction
+		 * @see #stateToIconFunction
+		 * @see #stateToLabelPropertiesFunction
+		 */
+		public static const STATE_DOWN_AND_SELECTED:String = "downAndSelected";
+
+		/**
+		 * @copy feathers.controls.Button#STATE_HOVER_AND_SELECTED
+		 *
+		 * @see #stateToSkinFunction
+		 * @see #stateToIconFunction
+		 * @see #stateToLabelPropertiesFunction
+		 */
+		public static const STATE_HOVER_AND_SELECTED:String = "hoverAndSelected";
+
+		/**
+		 * @copy feathers.controls.Button#STATE_DISABLED_AND_SELECTED
+		 *
+		 * @see #stateToSkinFunction
+		 * @see #stateToIconFunction
+		 * @see #stateToLabelPropertiesFunction
+		 */
+		public static const STATE_DISABLED_AND_SELECTED:String = "disabledAndSelected";
 
 		/**
 		 * @copy feathers.controls.Button#ICON_POSITION_TOP
@@ -252,6 +309,8 @@ package feathers.controls.renderers
 		public function BaseDefaultItemRenderer()
 		{
 			super();
+			this._explicitIsEnabled = this._isEnabled;
+			this.labelStyleName = DEFAULT_CHILD_STYLE_NAME_LABEL;
 			this.isFocusEnabled = false;
 			this.isQuickHitAreaEnabled = false;
 			this.addEventListener(Event.TRIGGERED, itemRenderer_triggeredHandler);
@@ -266,58 +325,12 @@ package feathers.controls.renderers
 		protected var iconLabelStyleName:String = DEFAULT_CHILD_STYLE_NAME_ICON_LABEL;
 
 		/**
-		 * DEPRECATED: Replaced by <code>iconLabelStyleName</code>.
-		 *
-		 * <p><strong>DEPRECATION WARNING:</strong> This property is deprecated
-		 * starting with Feathers 2.1. It will be removed in a future version of
-		 * Feathers according to the standard
-		 * <a target="_top" href="../../../help/deprecation-policy.html">Feathers deprecation policy</a>.</p>
-		 *
-		 * @see #iconLabelStyleName
-		 */
-		protected function get iconLabelName():String
-		{
-			return this.iconLabelStyleName;
-		}
-
-		/**
-		 * @private
-		 */
-		protected function set iconLabelName(value:String):void
-		{
-			this.iconLabelStyleName = value;
-		}
-
-		/**
 		 * The value added to the <code>styleNameList</code> of the accessory
 		 * label text renderer, if it exists.
 		 *
 		 * @see feathers.core.FeathersControl#styleNameList
 		 */
 		protected var accessoryLabelStyleName:String = DEFAULT_CHILD_STYLE_NAME_ACCESSORY_LABEL;
-
-		/**
-		 * DEPRECATED: Replaced by <code>accessoryLabelStyleName</code>.
-		 *
-		 * <p><strong>DEPRECATION WARNING:</strong> This property is deprecated
-		 * starting with Feathers 2.1. It will be removed in a future version of
-		 * Feathers according to the standard
-		 * <a target="_top" href="../../../help/deprecation-policy.html">Feathers deprecation policy</a>.</p>
-		 *
-		 * @see #accessoryLabelStyleName
-		 */
-		protected function get accessoryLabelName():String
-		{
-			return this.accessoryLabelStyleName;
-		}
-
-		/**
-		 * @private
-		 */
-		protected function set accessoryLabelName(value:String):void
-		{
-			this.accessoryLabelStyleName = value;
-		}
 
 		/**
 		 * @private
@@ -957,46 +970,6 @@ package feathers.controls.renderers
 		/**
 		 * @private
 		 */
-		override protected function set currentState(value:String):void
-		{
-			if(this._isEnabled && !this._isToggle && (!this.isSelectableWithoutToggle || (this._itemHasSelectable && !this.itemToSelectable(this._data))))
-			{
-				value = STATE_UP;
-			}
-			if(this._useStateDelayTimer)
-			{
-				if(this._stateDelayTimer && this._stateDelayTimer.running)
-				{
-					this._delayedCurrentState = value;
-					return;
-				}
-
-				if(value == Button.STATE_DOWN)
-				{
-					if(this._currentState == value)
-					{
-						return;
-					}
-					this._delayedCurrentState = value;
-					if(this._stateDelayTimer)
-					{
-						this._stateDelayTimer.reset();
-					}
-					else
-					{
-						this._stateDelayTimer = new Timer(DOWN_STATE_DELAY_MS, 1);
-						this._stateDelayTimer.addEventListener(TimerEvent.TIMER_COMPLETE, stateDelayTimer_timerCompleteHandler);
-					}
-					this._stateDelayTimer.start();
-					return;
-				}
-			}
-			super.currentState = value;
-		}
-
-		/**
-		 * @private
-		 */
 		protected var accessoryTouchPointID:int = -1;
 
 		/**
@@ -1593,6 +1566,52 @@ package feathers.controls.renderers
 		/**
 		 * @private
 		 */
+		protected var _customIconLabelStyleName:String;
+
+		/**
+		 * A style name to add to the item renderer's icon label text renderer
+		 * sub-component. Typically used by a theme to provide  different styles
+		 * to different item renderers.
+		 *
+		 * <p>In the following example, a custom icon label style name is passed
+		 * to the item renderer:</p>
+		 *
+		 * <listing version="3.0">
+		 * itemRenderer.customIconLabelStyleName = "my-custom-icon-label";</listing>
+		 *
+		 * <p>In your theme, you can target this sub-component style name to
+		 * provide different styles than the default:</p>
+		 *
+		 * <listing version="3.0">
+		 * getStyleProviderForClass( BitmapFontTextRenderer ).setFunctionForStyleName( "my-custom-icon-label", setCustomIconLabelStyles );</listing>
+		 *
+		 * @default null
+		 *
+		 * @see #DEFAULT_CHILD_STYLE_NAME_ICON_LABEL
+		 * @see feathers.core.FeathersControl#styleNameList
+		 * @see #iconLabelFactory
+		 */
+		public function get customIconLabelStyleName():String
+		{
+			return this._customIconLabelStyleName;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set customIconLabelStyleName(value:String):void
+		{
+			if(this._customIconLabelStyleName == value)
+			{
+				return;
+			}
+			this._customIconLabelStyleName = value;
+			this.invalidate(INVALIDATION_FLAG_TEXT_RENDERER);
+		}
+
+		/**
+		 * @private
+		 */
 		protected var _accessoryField:String = "accessory";
 
 		/**
@@ -2001,6 +2020,52 @@ package feathers.controls.renderers
 			}
 			this._accessoryLabelFunction = value;
 			this.invalidate(INVALIDATION_FLAG_DATA);
+		}
+
+		/**
+		 * @private
+		 */
+		protected var _customAccessoryLabelStyleName:String;
+
+		/**
+		 * A style name to add to the item renderer's accessory label text
+		 * renderer sub-component. Typically used by a theme to provide
+		 * different styles to different item renderers.
+		 *
+		 * <p>In the following example, a custom accessory label style name is
+		 * passed to the item renderer:</p>
+		 *
+		 * <listing version="3.0">
+		 * itemRenderer.customAccessoryLabelStyleName = "my-custom-accessory-label";</listing>
+		 *
+		 * <p>In your theme, you can target this sub-component style name to
+		 * provide different styles than the default:</p>
+		 *
+		 * <listing version="3.0">
+		 * getStyleProviderForClass( BitmapFontTextRenderer ).setFunctionForStyleName( "my-custom-accessory-label", setCustomAccessoryLabelStyles );</listing>
+		 *
+		 * @default null
+		 *
+		 * @see #DEFAULT_CHILD_STYLE_NAME_ACCESSORY_LABEL
+		 * @see feathers.core.FeathersControl#styleNameList
+		 * @see #accessoryLabelFactory
+		 */
+		public function get customAccessoryLabelStyleName():String
+		{
+			return this._customAccessoryLabelStyleName;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set customAccessoryLabelStyleName(value:String):void
+		{
+			if(this._customAccessoryLabelStyleName == value)
+			{
+				return;
+			}
+			this._customAccessoryLabelStyleName = value;
+			this.invalidate(INVALIDATION_FLAG_TEXT_RENDERER);
 		}
 
 		/**
@@ -2471,7 +2536,7 @@ package feathers.controls.renderers
 		/**
 		 * @private
 		 */
-		protected var _explicitIsEnabled:Boolean = false;
+		protected var _explicitIsEnabled:Boolean;
 
 		/**
 		 * @private
@@ -2485,7 +2550,6 @@ package feathers.controls.renderers
 			this._explicitIsEnabled = value;
 			super.isEnabled = value;
 			this.invalidate(INVALIDATION_FLAG_DATA);
-			this.invalidate(INVALIDATION_FLAG_STATE);
 		}
 
 		/**
@@ -2596,10 +2660,14 @@ package feathers.controls.renderers
 		protected var _iconLabelProperties:PropertyProxy;
 
 		/**
-		 * A set of key/value pairs to be passed down to a label icon, if one
-		 * exists. The title is an <code>ITextRenderer</code> instance. The
+		 * An object that stores properties for the icon label text renderer
+		 * sub-component (if using <code>iconLabelField</code> or
+		 * <code>iconLabelFunction</code>), and the properties will be passed
+		 * down to the text renderer when this component validates. The
 		 * available properties depend on which <code>ITextRenderer</code>
-		 * implementation is used.
+		 * implementation is returned by <code>iconLabelFactory</code>. Refer to
+		 * <a href="../../core/ITextRenderer.html"><code>feathers.core.ITextRenderer</code></a>
+		 * for a list of available text renderer implementations.
 		 *
 		 * <p>If the subcomponent has its own subcomponents, their properties
 		 * can be set too, using attribute <code>&#64;</code> notation. For example,
@@ -2775,10 +2843,14 @@ package feathers.controls.renderers
 		protected var _accessoryLabelProperties:PropertyProxy;
 
 		/**
-		 * A set of key/value pairs to be passed down to a label accessory. The
-		 * title is an <code>ITextRenderer</code> instance. The available
-		 * properties depend on which <code>ITextRenderer</code> implementation
-		 * is used.
+		 * An object that stores properties for the accessory label text
+		 * renderer sub-component (if using <code>accessoryLabelField</code> or
+		 * <code>accessoryLabelFunction</code>), and the properties will be
+		 * passed down to the text renderer when this component validates. The
+		 * available properties depend on which <code>ITextRenderer</code>
+		 * implementation is returned by <code>accessoryLabelFactory</code>.
+		 * Refer to <a href="../../core/ITextRenderer.html"><code>feathers.core.ITextRenderer</code></a>
+		 * for a list of available text renderer implementations.
 		 *
 		 * <p>If the subcomponent has its own subcomponents, their properties
 		 * can be set too, using attribute <code>&#64;</code> notation. For example,
@@ -3310,6 +3382,46 @@ package feathers.controls.renderers
 		/**
 		 * @private
 		 */
+		override protected function changeState(value:String):void
+		{
+			if(this._isEnabled && !this._isToggle && (!this.isSelectableWithoutToggle || (this._itemHasSelectable && !this.itemToSelectable(this._data))))
+			{
+				value = STATE_UP;
+			}
+			if(this._useStateDelayTimer)
+			{
+				if(this._stateDelayTimer && this._stateDelayTimer.running)
+				{
+					this._delayedCurrentState = value;
+					return;
+				}
+
+				if(value == Button.STATE_DOWN)
+				{
+					if(this._currentState == value)
+					{
+						return;
+					}
+					this._delayedCurrentState = value;
+					if(this._stateDelayTimer)
+					{
+						this._stateDelayTimer.reset();
+					}
+					else
+					{
+						this._stateDelayTimer = new Timer(DOWN_STATE_DELAY_MS, 1);
+						this._stateDelayTimer.addEventListener(TimerEvent.TIMER_COMPLETE, stateDelayTimer_timerCompleteHandler);
+					}
+					this._stateDelayTimer.start();
+					return;
+				}
+			}
+			super.changeState(value);
+		}
+
+		/**
+		 * @private
+		 */
 		protected function addIconWidth(width:Number):Number
 		{
 			if(!this.currentIcon)
@@ -3643,6 +3755,7 @@ package feathers.controls.renderers
 				this.touchable = true;
 			}
 			this.setInvalidationFlag(INVALIDATION_FLAG_STATE);
+			this.dispatchEventWith(FeathersEventType.STATE_CHANGE);
 		}
 
 		/**
@@ -3867,7 +3980,12 @@ package feathers.controls.renderers
 			{
 				var factory:Function = this._iconLabelFactory != null ? this._iconLabelFactory : FeathersControl.defaultTextRendererFactory;
 				this.iconLabel = ITextRenderer(factory());
-				this.iconLabel.styleNameList.add(this.iconLabelStyleName);
+				if(this.iconLabel is IStateObserver)
+				{
+					IStateObserver(this.iconLabel).stateContext = this;
+				}
+				var iconLabelStyleName:String = this._customIconLabelStyleName != null ? this._customIconLabelStyleName : this.iconLabelStyleName;
+				this.iconLabel.styleNameList.add(iconLabelStyleName);
 			}
 			this.iconLabel.text = label;
 		}
@@ -3895,7 +4013,12 @@ package feathers.controls.renderers
 			{
 				var factory:Function = this._accessoryLabelFactory != null ? this._accessoryLabelFactory : FeathersControl.defaultTextRendererFactory;
 				this.accessoryLabel = ITextRenderer(factory());
-				this.accessoryLabel.styleNameList.add(this.accessoryLabelStyleName);
+				if(this.accessoryLabel is IStateObserver)
+				{
+					IStateObserver(this.accessoryLabel).stateContext = this;
+				}
+				var accessoryLabelStyleName:String = this._customAccessoryLabelStyleName != null ? this._customAccessoryLabelStyleName : this.accessoryLabelStyleName;
+				this.accessoryLabel.styleNameList.add(accessoryLabelStyleName);
 			}
 			this.accessoryLabel.text = label;
 		}
@@ -4091,7 +4214,7 @@ package feathers.controls.renderers
 				}
 				this.accessoryLabel.maxWidth = calculatedWidth;
 				this.accessoryLabel.maxHeight = calculatedHeight;
-				if(this.currentIcon && !iconAffectsAccessoryLabelMaxWidth)
+				if(hasIconToLeftOrRight && this.currentIcon && !iconAffectsAccessoryLabelMaxWidth)
 				{
 					calculatedWidth -= (this.currentIcon.width + adjustedGap);
 				}
@@ -4125,7 +4248,7 @@ package feathers.controls.renderers
 				}
 				this.iconLabel.maxWidth = calculatedWidth;
 				this.iconLabel.maxHeight = calculatedHeight;
-				if(this.accessory && !accessoryAffectsIconLabelMaxWidth)
+				if(hasAccessoryToLeftOrRight && this.accessory && !accessoryAffectsIconLabelMaxWidth)
 				{
 					calculatedWidth -= (adjustedAccessoryGap + this.accessory.width);
 				}
@@ -4463,7 +4586,7 @@ package feathers.controls.renderers
 		 */
 		protected function stateDelayTimer_timerCompleteHandler(event:TimerEvent):void
 		{
-			super.currentState = this._delayedCurrentState;
+			super.changeState(this._delayedCurrentState);
 			this._delayedCurrentState = null;
 		}
 
@@ -4479,7 +4602,7 @@ package feathers.controls.renderers
 				var touch:Touch = event.getTouch(this.accessory);
 				if(touch)
 				{
-					this.currentState = Button.STATE_UP;
+					this.changeState(Button.STATE_UP);
 					return;
 				}
 			}

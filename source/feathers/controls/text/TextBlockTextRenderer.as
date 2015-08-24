@@ -1,6 +1,6 @@
 /*
 Feathers
-Copyright 2012-2015 Joshua Tynjala. All Rights Reserved.
+Copyright 2012-2015 Bowler Hat LLC. All Rights Reserved.
 
 This program is free software. You can redistribute and/or modify it in
 accordance with the terms of the accompanying license agreement.
@@ -8,8 +8,13 @@ accordance with the terms of the accompanying license agreement.
 package feathers.controls.text
 {
 	import feathers.core.FeathersControl;
+	import feathers.core.IStateContext;
+	import feathers.core.IStateObserver;
 	import feathers.core.ITextRenderer;
+	import feathers.core.IToggle;
+	import feathers.events.FeathersEventType;
 	import feathers.skins.IStyleProvider;
+	import feathers.utils.display.stageToStarling;
 	import feathers.utils.geom.matrixToScaleX;
 	import feathers.utils.geom.matrixToScaleY;
 
@@ -37,6 +42,7 @@ package feathers.controls.text
 	import starling.core.RenderSupport;
 	import starling.core.Starling;
 	import starling.display.Image;
+	import starling.events.Event;
 	import starling.textures.ConcreteTexture;
 	import starling.textures.Texture;
 	import starling.utils.getNextPowerOfTwo;
@@ -57,7 +63,7 @@ package feathers.controls.text
 	 * @see ../../../help/text-renderers.html Introduction to Feathers text renderers
 	 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/engine/TextBlock.html flash.text.engine.TextBlock
 	 */
-	public class TextBlockTextRenderer extends FeathersControl implements ITextRenderer
+	public class TextBlockTextRenderer extends FeathersControl implements ITextRenderer, IStateObserver
 	{
 		/**
 		 * @private
@@ -355,6 +361,11 @@ package feathers.controls.text
 		/**
 		 * @private
 		 */
+		protected var _elementFormatForState:Object;
+
+		/**
+		 * @private
+		 */
 		protected var _elementFormat:ElementFormat;
 
 		/**
@@ -368,7 +379,9 @@ package feathers.controls.text
 		 *
 		 * @default null
 		 *
+		 * @see #setElementFormatForState()
 		 * @see #disabledElementFormat
+		 * @see #selectedElementFormat
 		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/engine/ElementFormat.html flash.text.engine.ElementFormat
 		 */
 		public function get elementFormat():ElementFormat
@@ -408,6 +421,7 @@ package feathers.controls.text
 		 * @default null
 		 *
 		 * @see #elementFormat
+		 * @see #selectedElementFormat
 		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/engine/ElementFormat.html flash.text.engine.ElementFormat
 		 */
 		public function get disabledElementFormat():ElementFormat
@@ -425,6 +439,48 @@ package feathers.controls.text
 				return;
 			}
 			this._disabledElementFormat = value;
+			this.invalidate(INVALIDATION_FLAG_STYLES);
+		}
+
+		/**
+		 * @private
+		 */
+		protected var _selectedElementFormat:ElementFormat;
+
+		/**
+		 * The font and styles used to draw the text when the
+		 * <code>stateContext</code> implements the <code>IToggle</code>
+		 * interface, and it is selected. This property will be ignored if the
+		 * content is not a <code>TextElement</code> instance.
+		 *
+		 * <p>In the following example, the selected element format is changed:</p>
+		 *
+		 * <listing version="3.0">
+		 * textRenderer.selectedElementFormat = new ElementFormat( new FontDescription( "Source Sans Pro" ) );</listing>
+		 *
+		 * @default null
+		 *
+		 * @see #stateContext
+		 * @see feathers.core.IToggle
+		 * @see #elementFormat
+		 * @see #disabledElementFormat
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/engine/ElementFormat.html flash.text.engine.ElementFormat
+		 */
+		public function get selectedElementFormat():ElementFormat
+		{
+			return this._selectedElementFormat;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set selectedElementFormat(value:ElementFormat):void
+		{
+			if(this._selectedElementFormat == value)
+			{
+				return;
+			}
+			this._selectedElementFormat = value;
 			this.invalidate(INVALIDATION_FLAG_STYLES);
 		}
 
@@ -1058,6 +1114,48 @@ package feathers.controls.text
 		/**
 		 * @private
 		 */
+		protected var _stateContext:IStateContext;
+
+		/**
+		 * When the text renderer observes a state context, the text renderer
+		 * may change its <code>ElementFormat</code> based on the current state
+		 * of that context. Typically, a relevant component will automatically
+		 * assign itself as the state context of a text renderer, so this
+		 * property is typically meant for internal use only.
+		 *
+		 * @default null
+		 *
+		 * @see #setElementFormatForState()
+		 */
+		public function get stateContext():IStateContext
+		{
+			return this._stateContext;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set stateContext(value:IStateContext):void
+		{
+			if(this._stateContext === value)
+			{
+				return;
+			}
+			if(this._stateContext)
+			{
+				this._stateContext.removeEventListener(FeathersEventType.STATE_CHANGE, stateContext_stateChangeHandler);
+			}
+			this._stateContext = value;
+			if(this._stateContext)
+			{
+				this._stateContext.addEventListener(FeathersEventType.STATE_CHANGE, stateContext_stateChangeHandler);
+			}
+			this.invalidate(INVALIDATION_FLAG_STATE);
+		}
+
+		/**
+		 * @private
+		 */
 		protected var _updateSnapshotOnScaleChange:Boolean = false;
 
 		/**
@@ -1102,6 +1200,7 @@ package feathers.controls.text
 		 */
 		override public function dispose():void
 		{
+			this.stateContext = null;
 			if(this.textSnapshot)
 			{
 				this.textSnapshot.texture.dispose();
@@ -1261,6 +1360,44 @@ package feathers.controls.text
 		}
 
 		/**
+		 * Sets the <code>ElementFormat</code> to be used by the text renderer
+		 * when the <code>currentState</code> property of the
+		 * <code>stateContext</code> matches the specified state value. 
+		 * 
+		 * <p>If an <code>ElementFormat</code> is not defined for a specific
+		 * state, the value of the <code>elementFormat</code> property will be
+		 * used instead.</p>
+		 * 
+		 * <p>If the <code>disabledElementFormat</code> property is not
+		 * <code>null</code> and the <code>isEnabled</code> property is
+		 * <code>false</code>, all other element formats will be ignored.</p>
+		 * 
+		 * @see #stateContext
+		 * @see #elementFormat
+		 */
+		public function setElementFormatForState(state:String, elementFormat:ElementFormat):void
+		{
+			if(elementFormat)
+			{
+				if(!this._elementFormatForState)
+				{
+					this._elementFormatForState = {};
+				}
+				this._elementFormatForState[state] = elementFormat;
+			}
+			else
+			{
+				delete this._elementFormatForState[state];
+			}
+			//if the context's current state is the state that we're modifying,
+			//we need to use the new value immediately.
+			if(this._stateContext && this._stateContext.currentState === state)
+			{
+				this.invalidate(INVALIDATION_FLAG_STATE);
+			}
+		}
+
+		/**
 		 * @private
 		 */
 		override protected function initialize():void
@@ -1304,21 +1441,7 @@ package feathers.controls.text
 
 			if(dataInvalid || stylesInvalid || stateInvalid)
 			{
-				if(this._textElement)
-				{
-					if(!this._isEnabled && this._disabledElementFormat)
-					{
-						this._textElement.elementFormat = this._disabledElementFormat;
-					}
-					else
-					{
-						if(!this._elementFormat)
-						{
-							this._elementFormat = new ElementFormat();
-						}
-						this._textElement.elementFormat = this._elementFormat;
-					}
-				}
+				this.refreshElementFormat();
 			}
 
 			if(stylesInvalid)
@@ -1371,7 +1494,7 @@ package feathers.controls.text
 			this.refreshTextLines(this._measurementTextLines, this._measurementTextLineContainer, newWidth, newHeight);
 			if(needsWidth)
 			{
-				newWidth = this._measurementTextLineContainer.width;
+				newWidth = Math.ceil(this._measurementTextLineContainer.width);
 				if(newWidth > this._maxWidth)
 				{
 					newWidth = this._maxWidth;
@@ -1379,7 +1502,7 @@ package feathers.controls.text
 			}
 			if(needsHeight)
 			{
-				newHeight = this._measurementTextLineContainer.height;
+				newHeight = Math.ceil(this._measurementTextLineContainer.height);
 				if(newHeight <= 0 && this._elementFormat)
 				{
 					newHeight = this._elementFormat.fontSize;
@@ -1476,8 +1599,8 @@ package feathers.controls.text
 				}
 				var textureRoot:ConcreteTexture = this.textSnapshot ? this.textSnapshot.texture.root : null;
 				this._needsNewTexture = this._needsNewTexture || !this.textSnapshot ||
-				textureRoot.scale != scaleFactor ||
-				this._snapshotWidth != textureRoot.width || this._snapshotHeight != textureRoot.height;
+					(textureRoot && (textureRoot.scale != scaleFactor ||
+					this._snapshotWidth != textureRoot.nativeWidth || this._snapshotHeight != textureRoot.nativeHeight));
 				this._snapshotVisibleWidth = rectangleSnapshotWidth;
 				this._snapshotVisibleHeight = rectangleSnapshotHeight;
 			}
@@ -1578,6 +1701,44 @@ package feathers.controls.text
 		/**
 		 * @private
 		 */
+		protected function refreshElementFormat():void
+		{
+			if(!this._textElement)
+			{
+				return;
+			}
+			var elementFormat:ElementFormat;
+			if(this._stateContext && this._elementFormatForState)
+			{
+				var currentState:String = this._stateContext.currentState;
+				if(currentState in this._elementFormatForState)
+				{
+					elementFormat = ElementFormat(this._elementFormatForState[currentState]);
+				}
+			}
+			if(!elementFormat && !this._isEnabled && this._disabledElementFormat)
+			{
+				elementFormat = this._disabledElementFormat;
+			}
+			if(!elementFormat && this._selectedElementFormat &&
+				this._stateContext is IToggle && IToggle(this._stateContext).isSelected)
+			{
+				elementFormat = this._selectedElementFormat;
+			}
+			if(!elementFormat)
+			{
+				if(!this._elementFormat)
+				{
+					this._elementFormat = new ElementFormat();
+				}
+				elementFormat = this._elementFormat;
+			}
+			this._textElement.elementFormat = elementFormat;
+		}
+
+		/**
+		 * @private
+		 */
 		protected function createTextureOnRestoreCallback(snapshot:Image):void
 		{
 			var self:TextBlockTextRenderer = this;
@@ -1624,8 +1785,14 @@ package feathers.controls.text
 				//clear the bitmap data and reuse it
 				bitmapData.fillRect(bitmapData.rect, 0x00ff00ff);
 			}
-			HELPER_MATRIX.tx = -textLinesX - this._textSnapshotScrollX - this._textSnapshotOffsetX;
-			HELPER_MATRIX.ty = -textLinesY - this._textSnapshotScrollY - this._textSnapshotOffsetY;
+			var nativeScaleFactor:Number = 1;
+			var starling:Starling = stageToStarling(this.stage);
+			if(starling && starling.supportHighResolutions)
+			{
+				nativeScaleFactor = starling.nativeStage.contentsScaleFactor;
+			}
+			HELPER_MATRIX.tx = -textLinesX - this._textSnapshotScrollX * nativeScaleFactor - this._textSnapshotOffsetX;
+			HELPER_MATRIX.ty = -textLinesY - this._textSnapshotScrollY * nativeScaleFactor - this._textSnapshotOffsetY;
 			HELPER_RECTANGLE.setTo(0, 0, clipWidth, clipHeight);
 			bitmapData.draw(this._textLineContainer, HELPER_MATRIX, null, null, HELPER_RECTANGLE);
 			return bitmapData;
@@ -1962,6 +2129,14 @@ package feathers.controls.text
 					line.x = 0;
 				}
 			}
+		}
+
+		/**
+		 * @private
+		 */
+		protected function stateContext_stateChangeHandler(event:Event):void
+		{
+			this.invalidate(INVALIDATION_FLAG_STATE);
 		}
 	}
 }

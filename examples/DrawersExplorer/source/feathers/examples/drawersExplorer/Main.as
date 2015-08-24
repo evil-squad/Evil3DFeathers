@@ -12,6 +12,8 @@ package feathers.examples.drawersExplorer
 	{
 		public function Main()
 		{
+			//set up the theme right away!
+			new DrawersExplorerTheme();
 			super();
 			this.addEventListener(Event.ADDED_TO_STAGE, addedToStageHandler);
 		}
@@ -47,8 +49,6 @@ package feathers.examples.drawersExplorer
 		
 		private function addedToStageHandler(event:Event):void
 		{
-			new DrawersExplorerTheme();
-
 			this._drawers = new Drawers();
 
 			//a drawer may be opened by dragging from the edge of the content
@@ -66,6 +66,7 @@ package feathers.examples.drawersExplorer
 			this._drawers.rightDrawerToggleEventType = ContentView.TOGGLE_RIGHT_DRAWER;
 			this._drawers.bottomDrawerToggleEventType = ContentView.TOGGLE_BOTTOM_DRAWER;
 			this._drawers.leftDrawerToggleEventType = ContentView.TOGGLE_LEFT_DRAWER;
+			this._drawers.content.addEventListener(ContentView.OPEN_MODE_CHANGE, contentView_openDrawerChangeHandler);
 
 			var topDrawer:DrawerView = new DrawerView("Top");
 			topDrawer.styleNameList.add(DrawersExplorerTheme.THEME_NAME_TOP_AND_BOTTOM_DRAWER);
@@ -111,6 +112,12 @@ package feathers.examples.drawersExplorer
 		{
 			var drawer:DrawerView = DrawerView(event.currentTarget);
 			this.changeDockMode(drawer, Drawers.DOCK_MODE_BOTH);
+		}
+		
+		private function contentView_openDrawerChangeHandler(event:Event):void
+		{
+			var content:ContentView = ContentView(event.currentTarget);
+			this._drawers.openMode = content.openMode;
 		}
 	}
 }

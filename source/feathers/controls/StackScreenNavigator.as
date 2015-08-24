@@ -1,6 +1,6 @@
 /*
 Feathers
-Copyright 2012-2015 Joshua Tynjala. All Rights Reserved.
+Copyright 2012-2015 Bowler Hat LLC. All Rights Reserved.
 
 This program is free software. You can redistribute and/or modify it in
 accordance with the terms of the accompanying license agreement.
@@ -8,6 +8,7 @@ accordance with the terms of the accompanying license agreement.
 package feathers.controls
 {
 	import feathers.controls.supportClasses.BaseScreenNavigator;
+	import feathers.events.FeathersEventType;
 	import feathers.skins.IStyleProvider;
 
 	import starling.display.DisplayObject;
@@ -26,15 +27,6 @@ package feathers.controls
 	 * this.addChild( navigator );
 	 * 
 	 * navigator.rootScreenID = "mainMenu";</listing>
-	 *
-	 * <p><strong>Beta Component:</strong> This is a new component, and its APIs
-	 * may need some changes between now and the next version of Feathers to
-	 * account for overlooked requirements or other issues. Upgrading to future
-	 * versions of Feathers may involve manual changes to your code that uses
-	 * this component. The
-	 * <a target="_top" href="../../../help/deprecation-policy.html">Feathers deprecation policy</a>
-	 * will not go into effect until this component's status is upgraded from
-	 * beta to stable.</p>
 	 *
 	 * @see ../../../help/stack-screen-navigator.html How to use the Feathers StackScreenNavigator component
 	 * @see ../../../help/transitions.html Transitions for Feathers screen navigators
@@ -71,6 +63,7 @@ package feathers.controls
 		public function StackScreenNavigator()
 		{
 			super();
+			this.addEventListener(FeathersEventType.INITIALIZE, stackScreenNavigator_initializeHandler);
 		}
 
 		/**
@@ -87,11 +80,22 @@ package feathers.controls
 		protected var _pushTransition:Function;
 
 		/**
-		 * A function that is called when the screen navigator pushes a new
-		 * screen a new screen onto the stack. Typically used to provide some
-		 * kind of animation.
+		 * Typically used to provide some kind of animation or visual effect,
+		 * this function that is called when the screen navigator pushes a new
+		 * screen onto the stack. 
 		 *
-		 * <p>The function should have the following signature:</p>
+		 * <p>In the following example, the screen navigator is given a push
+		 * transition that slides the screens to the left:</p>
+		 *
+		 * <listing version="3.0">
+		 * navigator.pushTransition = Slide.createSlideLeftTransition();</listing>
+		 *
+		 * <p>A number of animated transitions may be found in the
+		 * <a href="../motion/package-detail.html">feathers.motion</a> package.
+		 * However, you are not limited to only these transitions. It's possible
+		 * to create custom transitions too.</p>
+		 *
+		 * <p>A custom transition function should have the following signature:</p>
 		 * <pre>function(oldScreen:DisplayObject, newScreen:DisplayObject, completeCallback:Function):void</pre>
 		 *
 		 * <p>Either of the <code>oldScreen</code> and <code>newScreen</code>
@@ -115,12 +119,6 @@ package feathers.controls
 		 * previous screen should be restored, pass <code>true</code> as the
 		 * first argument to the callback to inform the screen navigator that
 		 * the transition is cancelled.</p>
-		 *
-		 * <p>In the following example, a custom push transition is passed to
-		 * the screen navigator:</p>
-		 *
-		 * <listing version="3.0">
-		 * navigator.pushTransition = Slide.createSlideLeftTransition();</listing>
 		 *
 		 * @default null
 		 *
@@ -150,11 +148,22 @@ package feathers.controls
 		protected var _popTransition:Function;
 
 		/**
-		 * A function that is called when the screen navigator pops a screen
-		 * from the top of the stack. Typically used to provide some kind of
-		 * animation.
+		 * Typically used to provide some kind of animation or visual effect,
+		 * this function that is called when the screen navigator pops a screen
+		 * from the top of the stack.
 		 *
-		 * <p>The function should have the following signature:</p>
+		 * <p>In the following example, the screen navigator is given a pop
+		 * transition that slides the screens to the right:</p>
+		 *
+		 * <listing version="3.0">
+		 * navigator.popTransition = Slide.createSlideRightTransition();</listing>
+		 *
+		 * <p>A number of animated transitions may be found in the
+		 * <a href="../motion/package-detail.html">feathers.motion</a> package.
+		 * However, you are not limited to only these transitions. It's possible
+		 * to create custom transitions too.</p>
+		 *
+		 * <p>A custom transition function should have the following signature:</p>
 		 * <pre>function(oldScreen:DisplayObject, newScreen:DisplayObject, completeCallback:Function):void</pre>
 		 *
 		 * <p>Either of the <code>oldScreen</code> and <code>newScreen</code>
@@ -178,12 +187,6 @@ package feathers.controls
 		 * previous screen should be restored, pass <code>true</code> as the
 		 * first argument to the callback to inform the screen navigator that
 		 * the transition is cancelled.</p>
-		 *
-		 * <p>In the following example, a custom pop transition is passed to
-		 * the screen navigator:</p>
-		 *
-		 * <listing version="3.0">
-		 * navigator.popTransition = Slide.createSlideRightTransition();</listing>
 		 *
 		 * @default null
 		 *
@@ -213,14 +216,25 @@ package feathers.controls
 		protected var _popToRootTransition:Function = null;
 
 		/**
-		 * A function that is called when the screen navigator clears its stack,
+		 * Typically used to provide some kind of animation or visual effect, a
+		 * function that is called when the screen navigator clears its stack,
 		 * to show the first screen that was pushed onto the stack.
-		 * Typically used to provide some kind of animation.
 		 *
 		 * <p>If this property is <code>null</code>, the value of the
 		 * <code>popTransition</code> property will be used instead.</p>
 		 *
-		 * <p>The function should have the following signature:</p>
+		 * <p>In the following example, a custom pop to root transition is
+		 * passed to the screen navigator:</p>
+		 *
+		 * <listing version="3.0">
+		 * navigator.popToRootTransition = Fade.createFadeInTransition();</listing>
+		 *
+		 * <p>A number of animated transitions may be found in the
+		 * <a href="../motion/package-detail.html">feathers.motion</a> package.
+		 * However, you are not limited to only these transitions. It's possible
+		 * to create custom transitions too.</p>
+		 *
+		 * <p>A custom transition function should have the following signature:</p>
 		 * <pre>function(oldScreen:DisplayObject, newScreen:DisplayObject, completeCallback:Function):void</pre>
 		 *
 		 * <p>Either of the <code>oldScreen</code> and <code>newScreen</code>
@@ -244,12 +258,6 @@ package feathers.controls
 		 * previous screen should be restored, pass <code>true</code> as the
 		 * first argument to the callback to inform the screen navigator that
 		 * the transition is cancelled.</p>
-		 *
-		 * <p>In the following example, a custom pop to root transition is
-		 * passed to the screen navigator:</p>
-		 *
-		 * <listing version="3.0">
-		 * navigator.popToRootTransition = Fade.createFadeInTransition();</listing>
 		 *
 		 * @default null
 		 *
@@ -334,9 +342,18 @@ package feathers.controls
 		{
 			if(this._isInitialized)
 			{
+				//we may have delayed showing the root screen until after
+				//initialization, but this property could be set between when
+				//_isInitialized is set to true and when the screen is actually
+				//shown, so we need to clear this variable, just in case. 
+				this._tempRootScreenID = null;
+				
+				//this clears the whole stack and starts fresh
 				this._stack.length = 0;
 				if(value !== null)
 				{
+					//show without a transition because we're not navigating.
+					//we're forcibly replacing the root screen.
 					this.showScreenInternal(value, null);
 				}
 				else
@@ -406,9 +423,7 @@ package feathers.controls
 		}
 
 		/**
-		 * Displays a screen and returns a reference to it. If a previous
-		 * transition is running, the new screen will be queued, and no
-		 * reference will be returned.
+		 * Pushes a screen onto the top of the stack.
 		 *
 		 * <p>A set of key-value pairs representing properties on the previous
 		 * screen may be passed in. If the new screen is popped, these values
@@ -416,6 +431,10 @@ package feathers.controls
 		 *
 		 * <p>An optional transition may be specified. If <code>null</code> the
 		 * <code>pushTransition</code> property will be used instead.</p>
+		 *
+		 * <p>Returns a reference to the new screen, unless a transition is
+		 * currently active. In that case, the new screen will be queued until
+		 * the transition has completed, and no reference will be returned.</p>
 		 *
 		 * @see #pushTransition
 		 */
@@ -445,11 +464,15 @@ package feathers.controls
 		}
 
 		/**
-		 * Removes the current screen, leaving the <code>ScreenNavigator</code>
-		 * empty.
+		 * Pops the current screen from the top of the stack, returning to the
+		 * previous screen.
 		 *
 		 * <p>An optional transition may be specified. If <code>null</code> the
 		 * <code>popTransition</code> property will be used instead.</p>
+		 *
+		 * <p>Returns a reference to the new screen, unless a transition is
+		 * currently active. In that case, the new screen will be queued until
+		 * the transition has completed, and no reference will be returned.</p>
 		 *
 		 * @see #popTransition
 		 */
@@ -476,12 +499,15 @@ package feathers.controls
 		}
 
 		/**
-		 * Removes the current screen, leaving the <code>ScreenNavigator</code>
-		 * empty.
+		 * Returns to the root screen, at the bottom of the stack.
 		 *
-		 * <p>An optional transition may be specified. If <code>null</code> the
+		 * <p>An optional transition may be specified. If <code>null</code>, the
 		 * <code>popToRootTransition</code> or <code>popTransition</code>
 		 * property will be used instead.</p>
+		 *
+		 * <p>Returns a reference to the new screen, unless a transition is
+		 * currently active. In that case, the new screen will be queued until
+		 * the transition has completed, and no reference will be returned.</p>
 		 *
 		 * @see #popToRootTransition
 		 * @see #popTransition
@@ -506,18 +532,88 @@ package feathers.controls
 		}
 
 		/**
-		 * @private
+		 * Pops all screens from the stack, leaving the
+		 * <code>StackScreenNavigator</code> empty.
+		 *
+		 * <p>An optional transition may be specified. If <code>null</code>, the
+		 * <code>popTransition</code> property will be used instead.</p>
+		 *
+		 * @see #popTransition
 		 */
-		override protected function initialize():void
+		public function popAll(transition:Function = null):void
 		{
-			super.initialize();
-			
-			if(this._tempRootScreenID !== null)
+			if(!this._activeScreen)
 			{
-				var screenID:String = this._tempRootScreenID;
-				this._tempRootScreenID = null;
-				this.showScreenInternal(screenID, null);
+				return;
 			}
+			if(transition == null)
+			{
+				transition = this.popTransition;
+			}
+			var item:StackItem = this._stack[0];
+			this._stack.length = 0;
+			this.clearScreenInternal(transition);
+		}
+
+		/**
+		 * Returns to the root screen, at the bottom of the stack, but replaces
+		 * it with a new root screen.
+		 *
+		 * <p>An optional transition may be specified. If <code>null</code>, the
+		 * <code>popToRootTransition</code> or <code>popTransition</code>
+		 * property will be used instead.</p>
+		 *
+		 * <p>Returns a reference to the new screen, unless a transition is
+		 * currently active. In that case, the new screen will be queued until
+		 * the transition has completed, and no reference will be returned.</p>
+		 *
+		 * @see #popToRootTransition
+		 * @see #popTransition
+		 */
+		public function popToRootScreenAndReplace(id:String, transition:Function = null):DisplayObject
+		{
+			if(transition == null)
+			{
+				transition = this.popToRootTransition;
+				if(transition == null)
+				{
+					transition = this.popTransition;
+				}
+			}
+			this._stack.length = 0;
+			return this.showScreenInternal(id, transition);
+		}
+
+		/**
+		 * Replaces the current screen on the top of the stack with a new
+		 * screen. May be used in the case where you want to navigate from
+		 * screen A to screen B and then to screen C, but when popping screen C,
+		 * you want to skip screen B and return to screen A.
+		 * 
+		 * <p>Returns a reference to the new screen, unless a transition is
+		 * currently active. In that case, the new screen will be queued until
+		 * the transition has completed, and no reference will be returned.</p>
+		 *
+		 * <p>An optional transition may be specified. If <code>null</code> the
+		 * <code>pushTransition</code> property will be used instead.</p>
+		 *
+		 * @see #pushTransition
+		 */
+		public function replaceScreen(id:String, transition:Function = null):DisplayObject
+		{
+			if(transition === null)
+			{
+				var item:StackScreenNavigatorItem = this.getScreen(id);
+				if(item && item.pushTransition !== null)
+				{
+					transition = item.pushTransition;
+				}
+				else
+				{
+					transition = this.pushTransition;
+				}
+			}
+			return this.showScreenInternal(id, transition);
 		}
 
 		/**
@@ -756,6 +852,19 @@ package feathers.controls
 		protected function popToRootSignalListener(...rest:Array):void
 		{
 			this.popToRootScreen();
+		}
+
+		/**
+		 * @private
+		 */
+		protected function stackScreenNavigator_initializeHandler(event:Event):void
+		{
+			if(this._tempRootScreenID !== null)
+			{
+				var screenID:String = this._tempRootScreenID;
+				this._tempRootScreenID = null;
+				this.showScreenInternal(screenID, null);
+			}
 		}
 	}
 }
