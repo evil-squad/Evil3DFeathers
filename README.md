@@ -32,3 +32,4 @@ Say hello to [Feathers UI](http://feathersui.com/), a library of light-weight, s
 ## Downloads
 
 To download the latest stable version of Feathers UI, visit [feathersui.com](http://feathersui.com/).
+
