@@ -36,7 +36,7 @@ package feathers.controls.text
 	import starling.events.Event;
 	import starling.textures.ConcreteTexture;
 	import starling.textures.Texture;
-	import starling.utils.DynamicFont;
+	import feathers.themes.DynamicFont;
 	import starling.utils.getNextPowerOfTwo;
 
 	/**

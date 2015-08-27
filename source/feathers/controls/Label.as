@@ -16,7 +16,7 @@ package feathers.controls
 	import feathers.skins.IStyleProvider;
 	
 	import starling.display.DisplayObject;
-	import starling.utils.DynamicFont;
+	import feathers.themes.DynamicFont;
 
 	/**
 	 * Displays text using a text renderer.
