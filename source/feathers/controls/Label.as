@@ -7,15 +7,16 @@ accordance with the terms of the accompanying license agreement.
 */
 package feathers.controls
 {
+	import flash.geom.Point;
+	
 	import feathers.core.FeathersControl;
 	import feathers.core.ITextBaselineControl;
 	import feathers.core.ITextRenderer;
 	import feathers.core.PropertyProxy;
 	import feathers.skins.IStyleProvider;
-
-	import flash.geom.Point;
-
+	
 	import starling.display.DisplayObject;
+	import starling.utils.DynamicFont;
 
 	/**
 	 * Displays text using a text renderer.
@@ -629,6 +630,8 @@ package feathers.controls
 			sizeInvalid = this.autoSizeIfNeeded() || sizeInvalid;
 
 			this.layoutChildren();
+			
+			layer = DynamicFont.LAYER_TEXTFIELD;
 		}
 
 		/**

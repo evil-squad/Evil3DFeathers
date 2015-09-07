@@ -15,8 +15,8 @@ package feathers.controls.text
 	import feathers.events.FeathersEventType;
 	import feathers.skins.IStyleProvider;
 	import feathers.utils.geom.matrixToScaleX;
-	import feathers.utils.geom.matrixToScaleY;
-
+	import feathers.utils.geom.matrixToScaleY;	
+	
 	import flash.display.BitmapData;
 	import flash.display3D.Context3DProfile;
 	import flash.filters.BitmapFilter;
@@ -29,13 +29,14 @@ package feathers.controls.text
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
-
+	
 	import starling.core.RenderSupport;
 	import starling.core.Starling;
 	import starling.display.Image;
 	import starling.events.Event;
 	import starling.textures.ConcreteTexture;
 	import starling.textures.Texture;
+	import starling.utils.DynamicFont;
 	import starling.utils.getNextPowerOfTwo;
 
 	/**
@@ -1402,6 +1403,8 @@ package feathers.controls.text
 			sizeInvalid = this.autoSizeIfNeeded() || sizeInvalid;
 
 			this.layout(sizeInvalid);
+			
+			layer = DynamicFont.LAYER_TEXTFIELD;
 		}
 
 		/**
