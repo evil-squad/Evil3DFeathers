@@ -7,12 +7,13 @@ accordance with the terms of the accompanying license agreement.
 */
 package feathers.controls
 {
+	import flash.errors.IllegalOperationError;
+	import flash.utils.Dictionary;
+	
 	import feathers.core.IGroupedToggle;
 	import feathers.core.ToggleGroup;
 	import feathers.skins.IStyleProvider;
-
-	import flash.errors.IllegalOperationError;
-
+	
 	import starling.events.Event;
 
 	[Exclude(name="isToggle",kind="property")]
@@ -236,6 +237,9 @@ package feathers.controls
 		 * @see feathers.core.FeathersControl#styleProvider
 		 */
 		public static var globalStyleProvider:IStyleProvider;
+		
+		private var _groupName:String;
+		public static var RADIO_GROUP_NAMES:Dictionary = new Dictionary();
 
 		/**
 		 * Constructor.
@@ -307,6 +311,23 @@ package feathers.controls
 				this._toggleGroup.addItem(this);
 			}
 		}
+		
+		public function get groupName():String
+		{
+			return _groupName;
+		}
+		
+		public function set groupName(value:String):void
+		{
+			_groupName = value;
+			if(value in RADIO_GROUP_NAMES)
+			{
+				toggleGroup = RADIO_GROUP_NAMES[value];
+			}else
+			{
+				toggleGroup = RADIO_GROUP_NAMES[value] = new ToggleGroup();
+			}
+		}
 
 		/**
 		 * @private
@@ -316,6 +337,10 @@ package feathers.controls
 			if(!this._toggleGroup)
 			{
 				this.toggleGroup = defaultRadioGroup;
+			}
+			if(_groupName)
+			{
+				groupName = _groupName;
 			}
 		}
 
@@ -327,6 +352,9 @@ package feathers.controls
 			if(this._toggleGroup == defaultRadioGroup)
 			{
 				this._toggleGroup.removeItem(this);
+			}else if(_groupName && _toggleGroup != null)
+			{
+				_toggleGroup.removeItem(this);
 			}
 		}
 	}
