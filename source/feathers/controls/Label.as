@@ -159,6 +159,48 @@ package feathers.controls
 			this.textRendererProperties.isHTML = true;
 			this.invalidate(INVALIDATION_FLAG_DATA);
 		}
+		
+		/**
+		 * @private
+		 */
+		protected var _nativeFilters:Array;
+		
+		/**
+		 * Native filters to pass to the <code>flash.text.TextField</code>
+		 * before creating the texture snapshot.
+		 *
+		 * <p>In the following example, the native filters are changed:</p>
+		 *
+		 * <listing version="3.0">
+		 * renderer.nativeFilters = [ new GlowFilter() ];</listing>
+		 *
+		 * @default null
+		 *
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/display/DisplayObject.html#filters Full description of flash.display.DisplayObject.filters in Adobe's Flash Platform API Reference
+		 */
+		public function get nativeFilters():Array
+		{
+			return this._nativeFilters;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set nativeFilters(value:Array):void
+		{
+			if(this._nativeFilters == value)
+			{
+				return;
+			}
+			this._nativeFilters = value;
+			if(this.textRendererProperties.hasOwnProperty("nativeFilters"))
+			{
+				this.textRendererProperties["nativeFilters"] = value;
+				this.invalidate(INVALIDATION_FLAG_STYLES);
+			}else{
+				trace("Current Label:"+name+" nonsupport property[nativeFilters] of then ITextRenderer" );
+			}
+		}
 
 		/**
 		 * @private
