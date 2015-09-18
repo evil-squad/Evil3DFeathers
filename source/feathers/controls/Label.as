@@ -193,13 +193,8 @@ package feathers.controls
 				return;
 			}
 			this._nativeFilters = value;
-			if(this.textRendererProperties.hasOwnProperty("nativeFilters"))
-			{
-				this.textRendererProperties["nativeFilters"] = value;
-				this.invalidate(INVALIDATION_FLAG_STYLES);
-			}else{
-				trace("Current Label:"+name+" nonsupport property[nativeFilters] of then ITextRenderer" );
-			}
+			this.textRendererProperties["nativeFilters"] = value;
+			this.invalidate(INVALIDATION_FLAG_STYLES);
 		}
 
 		/**
