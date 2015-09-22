@@ -205,7 +205,7 @@ package feathers.display
 		/**
 		 * @private
 		 */
-		private var _smoothing:String = TextureSmoothing.BILINEAR;
+		private var _smoothing:String = TextureSmoothing.NONE;
 
 		/**
 		 * The smoothing value to pass to the tiled images.
@@ -215,7 +215,7 @@ package feathers.display
 		 * <listing version="3.0">
 		 * image.smoothing = TextureSmoothing.NONE;</listing>
 		 *
-		 * @default starling.textures.TextureSmoothing.BILINEAR
+		 * @default starling.textures.TextureSmoothing.NONE
 		 *
 		 * @see http://doc.starling-framework.org/core/starling/textures/TextureSmoothing.html starling.textures.TextureSmoothing
 		 */

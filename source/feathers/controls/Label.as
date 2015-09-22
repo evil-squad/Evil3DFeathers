@@ -160,11 +160,48 @@ package feathers.controls
 			this.textRendererProperties.isHTML = true;
 			this.invalidate(INVALIDATION_FLAG_DATA);
 		}
+		
+		/**
+		 * @private
+		 */
+		protected var _nativeFilters:Array;
+		
+		/**
+		 * Native filters to pass to the <code>flash.text.TextField</code>
+		 * before creating the texture snapshot.
+		 *
+		 * <p>In the following example, the native filters are changed:</p>
+		 *
+		 * <listing version="3.0">
+		 * renderer.nativeFilters = [ new GlowFilter() ];</listing>
+		 *
+		 * @default null
+		 *
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/display/DisplayObject.html#filters Full description of flash.display.DisplayObject.filters in Adobe's Flash Platform API Reference
+		 */
+		public function get nativeFilters():Array
+		{
+			return this._nativeFilters;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set nativeFilters(value:Array):void
+		{
+			if(this._nativeFilters == value)
+			{
+				return;
+			}
+			this._nativeFilters = value;
+			this.textRendererProperties["nativeFilters"] = value;
+			this.invalidate(INVALIDATION_FLAG_STYLES);
+		}
 
 		/**
 		 * @private
 		 */
-		protected var _wordWrap:Boolean = false;
+		protected var _wordWrap:Boolean = true;
 
 		/**
 		 * Determines if the text wraps to the next line when it reaches the

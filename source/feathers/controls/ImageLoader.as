@@ -620,7 +620,7 @@ package feathers.controls
 		/**
 		 * @private
 		 */
-		private var _smoothing:String = TextureSmoothing.BILINEAR;
+		private var _smoothing:String = TextureSmoothing.NONE;
 
 		/**
 		 * The smoothing value to use on the internal <code>Image</code>.
@@ -631,7 +631,7 @@ package feathers.controls
 		 * <listing version="3.0">
 		 * loader.smoothing = TextureSmoothing.NONE;</listing>
 		 *
-		 * @default starling.textures.TextureSmoothing.BILINEAR
+		 * @default starling.textures.TextureSmoothing.NONE
 		 *
 		 * @see http://doc.starling-framework.org/core/starling/textures/TextureSmoothing.html starling.textures.TextureSmoothing
 		 * @see http://doc.starling-framework.org/core/starling/display/Image.html#smoothing starling.display.Image.smoothing

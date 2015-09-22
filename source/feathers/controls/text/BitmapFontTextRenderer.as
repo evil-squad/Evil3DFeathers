@@ -295,7 +295,7 @@ package feathers.controls.text
 		/**
 		 * @private
 		 */
-		protected var _smoothing:String = TextureSmoothing.BILINEAR;
+		protected var _smoothing:String = TextureSmoothing.NONE;
 
 		[Inspectable(type="String",enumeration="bilinear,trilinear,none")]
 		/**
@@ -306,7 +306,7 @@ package feathers.controls.text
 		 * <listing version="3.0">
 		 * textRenderer.smoothing = TextureSmoothing.NONE;</listing>
 		 *
-		 * @default starling.textures.TextureSmoothing.BILINEAR
+		 * @default starling.textures.TextureSmoothing.NONE
 		 *
 		 * @see http://doc.starling-framework.org/core/starling/textures/TextureSmoothing.html starling.textures.TextureSmoothing
 		 */

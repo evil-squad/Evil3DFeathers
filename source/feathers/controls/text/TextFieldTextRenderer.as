@@ -7,16 +7,6 @@ accordance with the terms of the accompanying license agreement.
 */
 package feathers.controls.text
 {
-	import feathers.core.FeathersControl;
-	import feathers.core.IStateContext;
-	import feathers.core.IStateObserver;
-	import feathers.core.ITextRenderer;
-	import feathers.core.IToggle;
-	import feathers.events.FeathersEventType;
-	import feathers.skins.IStyleProvider;
-	import feathers.utils.geom.matrixToScaleX;
-	import feathers.utils.geom.matrixToScaleY;	
-	
 	import flash.display.BitmapData;
 	import flash.display3D.Context3DProfile;
 	import flash.filters.BitmapFilter;
@@ -29,6 +19,16 @@ package feathers.controls.text
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
+	
+	import feathers.core.FeathersControl;
+	import feathers.core.IStateContext;
+	import feathers.core.IStateObserver;
+	import feathers.core.ITextRenderer;
+	import feathers.core.IToggle;
+	import feathers.events.FeathersEventType;
+	import feathers.skins.IStyleProvider;
+	import feathers.utils.geom.matrixToScaleX;
+	import feathers.utils.geom.matrixToScaleY;
 	
 	import starling.core.RenderSupport;
 	import starling.core.Starling;

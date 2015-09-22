@@ -204,7 +204,7 @@ package feathers.core
 				throw new IllegalOperationError("Cannot add an item to a ToggleGroup more than once.");
 			}
 			this._items.push(item);
-			if(this._selectedIndex < 0 && this._isSelectionRequired)
+			if((this._selectedIndex < 0 && this._isSelectionRequired) || item.isSelected)
 			{
 				this.selectedItem = item;
 			}
