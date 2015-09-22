@@ -36,6 +36,7 @@ package feathers.controls.text
 	import starling.events.Event;
 	import starling.textures.ConcreteTexture;
 	import starling.textures.Texture;
+	import starling.utils.DynamicFont;
 	import starling.utils.getNextPowerOfTwo;
 
 	/**
@@ -1402,6 +1403,8 @@ package feathers.controls.text
 			sizeInvalid = this.autoSizeIfNeeded() || sizeInvalid;
 
 			this.layout(sizeInvalid);
+			
+			layer = DynamicFont.LAYER_TEXTFIELD;
 		}
 
 		/**
