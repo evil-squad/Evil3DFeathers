@@ -200,7 +200,7 @@ package feathers.controls
 		/**
 		 * @private
 		 */
-		protected var _wordWrap:Boolean = false;
+		protected var _wordWrap:Boolean = true;
 
 		/**
 		 * Determines if the text wraps to the next line when it reaches the

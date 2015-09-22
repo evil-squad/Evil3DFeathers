@@ -469,7 +469,7 @@ package feathers.controls
 		/**
 		 * @private
 		 */
-		public function set hmtlText(value:String):void
+		public function set htmlText(value:String):void
 		{
 			if(!value)
 			{
