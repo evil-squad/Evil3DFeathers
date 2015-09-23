@@ -7,17 +7,17 @@ accordance with the terms of the accompanying license agreement.
 */
 package feathers.controls
 {
+	import flash.events.TimerEvent;
+	import flash.geom.Point;
+	import flash.utils.Timer;
+	
 	import feathers.core.FeathersControl;
 	import feathers.core.PropertyProxy;
 	import feathers.events.FeathersEventType;
 	import feathers.skins.IStyleProvider;
 	import feathers.utils.math.clamp;
 	import feathers.utils.math.roundToNearest;
-
-	import flash.events.TimerEvent;
-	import flash.geom.Point;
-	import flash.utils.Timer;
-
+	
 	import starling.display.DisplayObject;
 	import starling.events.Event;
 	import starling.events.Touch;
@@ -2413,6 +2413,21 @@ package feathers.controls
 			//final validation to avoid juggler next frame issues
 			this.minimumTrack.validate();
 			this.maximumTrack.validate();
+		}
+		
+		private var _scrollBarVisible:Boolean = true;;
+		public function set scrollBarVisible(value:Boolean):void
+		{
+			if(_scrollBarVisible != value)
+			{
+				_scrollBarVisible = value;
+				this.thumb.visible = this.incrementButton.visible = this.decrementButton.visible = this.minimumTrack.visible = value;
+				if(this.maximumTrack)this.maximumTrack.visible = value;
+			}
+		}
+		public function get scrollBarVisible():Boolean
+		{
+			return _scrollBarVisible;
 		}
 
 		/**

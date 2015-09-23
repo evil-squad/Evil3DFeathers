@@ -7,6 +7,12 @@ accordance with the terms of the accompanying license agreement.
 */
 package feathers.controls
 {
+	import flash.events.MouseEvent;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
+	import flash.ui.Keyboard;
+	import flash.utils.getTimer;
+	
 	import feathers.controls.supportClasses.IViewPort;
 	import feathers.core.FeathersControl;
 	import feathers.core.IFocusDisplayObject;
@@ -17,13 +23,7 @@ package feathers.controls
 	import feathers.utils.math.roundDownToNearest;
 	import feathers.utils.math.roundToNearest;
 	import feathers.utils.math.roundUpToNearest;
-
-	import flash.events.MouseEvent;
-	import flash.geom.Point;
-	import flash.geom.Rectangle;
-	import flash.ui.Keyboard;
-	import flash.utils.getTimer;
-
+	
 	import starling.animation.Transitions;
 	import starling.animation.Tween;
 	import starling.core.Starling;
@@ -2039,7 +2039,7 @@ package feathers.controls
 		/**
 		 * @private
 		 */
-		protected var _interactionMode:String = INTERACTION_MODE_TOUCH;
+		protected var _interactionMode:String = INTERACTION_MODE_MOUSE;
 
 		[Inspectable(type="String",enumeration="touch,mouse,touchAndScrollBars")]
 		/**
@@ -3379,6 +3379,16 @@ package feathers.controls
 				this.verticalScrollBar.addEventListener(FeathersEventType.END_INTERACTION, verticalScrollBar_endInteractionHandler);
 				this.addRawChildInternal(DisplayObject(this.verticalScrollBar));
 			}
+		}
+		
+		public function getVerticalScrollBar():IScrollBar
+		{
+			return this.verticalScrollBar;
+		}
+		
+		public function getHorizontalScrollBar():IScrollBar
+		{
+			return this.horizontalScrollBar;
 		}
 
 		/**
