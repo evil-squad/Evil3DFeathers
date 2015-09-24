@@ -19,6 +19,7 @@ package feathers.controls
 	import feathers.core.PropertyProxy;
 	import feathers.events.ExclusiveTouch;
 	import feathers.events.FeathersEventType;
+	import feathers.layout.ILayout;
 	import feathers.system.DeviceCapabilities;
 	import feathers.utils.math.roundDownToNearest;
 	import feathers.utils.math.roundToNearest;
@@ -709,6 +710,7 @@ package feathers.controls
 		 * @private
 		 */
 		protected var _viewPort:IViewPort;
+		
 
 		/**
 		 * The display object displayed and scrolled within the Scroller.
@@ -2438,6 +2440,183 @@ package feathers.controls
 			this._paddingLeft = value;
 			this.invalidate(INVALIDATION_FLAG_STYLES);
 		}
+		
+		//------------------------------------------------scrollBarPadding--------------------------------------------
+		/**
+		 * @private
+		 */
+		protected var _scrollBarPadding:Number = 0;
+		
+		/**
+		 * Quickly sets all padding properties to the same value. The
+		 * <code>scrollBarPadding</code> getter always returns the value of
+		 * <code>scrollBarPadding</code>, but the other padding values may be
+		 * different.
+		 *
+		 * <p>In the following example, the padding is set to 20 pixels:</p>
+		 *
+		 * <listing version="3.0">
+		 * scroller.scrollBarPadding = 20;</listing>
+		 *
+		 * @default 0
+		 *
+		 * @see #scrollBarPaddingTop
+		 * @see #scrollBarPaddingRight
+		 * @see #scrollBarPaddingLeft
+		 * @see #scrollBarPaddingBottom
+		 */
+		public function get scrollBarPadding():Number
+		{
+			return this._scrollBarPadding;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set scrollBarPadding(value:Number):void
+		{
+			this.scrollBarPaddingTop = value;
+			this.scrollBarPaddingRight = value;
+			this.scrollBarPaddingLeft = value;
+			this.scrollBarPaddingBottom = value;
+		}
+		
+		/**
+		 * @private
+		 */
+		protected var _scrollBarPaddingTop:Number = 0;
+		
+		/**
+		 * The minimum space, in pixels, between the container's top edge and the
+		 * container's content.
+		 *
+		 * <p>In the following example, the top padding is set to 20 pixels:</p>
+		 *
+		 * <listing version="3.0">
+		 * scroller.scrollBarPaddingTop = 20;</listing>
+		 *
+		 * @default 0
+		 */
+		public function get scrollBarPaddingTop():Number
+		{
+			return this._scrollBarPaddingTop;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set scrollBarPaddingTop(value:Number):void
+		{
+			if(this._scrollBarPaddingTop == value)
+			{
+				return;
+			}
+			this._scrollBarPaddingTop = value;
+			this.invalidate(INVALIDATION_FLAG_STYLES);
+		}
+		
+		/**
+		 * @private
+		 */
+		protected var _scrollBarPaddingRight:Number = 0;
+		
+		/**
+		 * The minimum space, in pixels, between the container's right edge and
+		 * the container's content.
+		 *
+		 * <p>In the following example, the right padding is set to 20 pixels:</p>
+		 *
+		 * <listing version="3.0">
+		 * scroller.scrollBarPaddingRight = 20;</listing>
+		 *
+		 * @default 0
+		 */
+		public function get scrollBarPaddingRight():Number
+		{
+			return this._scrollBarPaddingRight;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set scrollBarPaddingRight(value:Number):void
+		{
+			if(this._scrollBarPaddingRight == value)
+			{
+				return;
+			}
+			this._scrollBarPaddingRight = value;
+			this.invalidate(INVALIDATION_FLAG_STYLES);
+		}
+		
+		/**
+		 * @private
+		 */
+		protected var _scrollBarPaddingBottom:Number = 0;
+		
+		/**
+		 * The minimum space, in pixels, between the container's bottom edge and
+		 * the container's content.
+		 *
+		 * <p>In the following example, the bottom padding is set to 20 pixels:</p>
+		 *
+		 * <listing version="3.0">
+		 * scroller.scrollBarPaddingBottom = 20;</listing>
+		 *
+		 * @default 0
+		 */
+		public function get scrollBarPaddingBottom():Number
+		{
+			return this._scrollBarPaddingBottom;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set scrollBarPaddingBottom(value:Number):void
+		{
+			if(this._scrollBarPaddingBottom == value)
+			{
+				return;
+			}
+			this._scrollBarPaddingBottom = value;
+			this.invalidate(INVALIDATION_FLAG_STYLES);
+		}
+		
+		/**
+		 * @private
+		 */
+		protected var _scrollBarPaddingLeft:Number = 0;
+		
+		/**
+		 * The minimum space, in pixels, between the container's left edge and the
+		 * container's content.
+		 *
+		 * <p>In the following example, the left padding is set to 20 pixels:</p>
+		 *
+		 * <listing version="3.0">
+		 * scroller.scrollBarPaddingLeft = 20;</listing>
+		 *
+		 * @default 0
+		 */
+		public function get scrollBarPaddingLeft():Number
+		{
+			return this._scrollBarPaddingLeft;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set scrollBarPaddingLeft(value:Number):void
+		{
+			if(this._scrollBarPaddingLeft == value)
+			{
+				return;
+			}
+			this._scrollBarPaddingLeft = value;
+			this.invalidate(INVALIDATION_FLAG_STYLES);
+		}
+		//end--------------------------------------------scrollBarPadding-----------------------------------------------------
 
 		/**
 		 * @private
@@ -4198,23 +4377,23 @@ package feathers.controls
 
 			if(this.horizontalScrollBar)
 			{
-				this.horizontalScrollBar.x = this._leftViewPortOffset;
-				this.horizontalScrollBar.y = this._topViewPortOffset + this._viewPort.visibleHeight;
+				this.horizontalScrollBar.x = this._leftViewPortOffset + this._scrollBarPaddingLeft;
+				this.horizontalScrollBar.y = this._topViewPortOffset + this._viewPort.visibleHeight + this._scrollBarPaddingTop;
 				if(this._scrollBarDisplayMode != SCROLL_BAR_DISPLAY_MODE_FIXED)
 				{
-					this.horizontalScrollBar.y -= this.horizontalScrollBar.height;
+					this.horizontalScrollBar.y -= this.horizontalScrollBar.height + this._scrollBarPaddingTop;
 					if((this._hasVerticalScrollBar || this._verticalScrollBarHideTween) && this.verticalScrollBar)
 					{
-						this.horizontalScrollBar.width = this._viewPort.visibleWidth - this.verticalScrollBar.width;
+						this.horizontalScrollBar.width = this._viewPort.visibleWidth - this.verticalScrollBar.width - this._scrollBarPaddingBottom;
 					}
 					else
 					{
-						this.horizontalScrollBar.width = this._viewPort.visibleWidth;
+						this.horizontalScrollBar.width = this._viewPort.visibleWidth - this._scrollBarPaddingBottom;
 					}
 				}
 				else
 				{
-					this.horizontalScrollBar.width = this._viewPort.visibleWidth;
+					this.horizontalScrollBar.width = this._viewPort.visibleWidth - this._scrollBarPaddingBottom;
 				}
 			}
 
@@ -4222,28 +4401,28 @@ package feathers.controls
 			{
 				if(this._verticalScrollBarPosition == VERTICAL_SCROLL_BAR_POSITION_LEFT)
 				{
-					this.verticalScrollBar.x = this._paddingLeft;
+					this.verticalScrollBar.x = this._paddingLeft + this.scrollBarPaddingLeft;
 				}
 				else
 				{
-					this.verticalScrollBar.x = this._leftViewPortOffset + this._viewPort.visibleWidth;
+					this.verticalScrollBar.x = this._leftViewPortOffset + this._viewPort.visibleWidth + this._scrollBarPaddingLeft;
 				}
-				this.verticalScrollBar.y = this._topViewPortOffset;
+				this.verticalScrollBar.y = this._topViewPortOffset + this._scrollBarPaddingTop;
 				if(this._scrollBarDisplayMode != SCROLL_BAR_DISPLAY_MODE_FIXED)
 				{
-					this.verticalScrollBar.x -= this.verticalScrollBar.width;
+					this.verticalScrollBar.x -= this.verticalScrollBar.width + this._scrollBarPaddingLeft;
 					if((this._hasHorizontalScrollBar || this._horizontalScrollBarHideTween) && this.horizontalScrollBar)
 					{
-						this.verticalScrollBar.height = this._viewPort.visibleHeight - this.horizontalScrollBar.height;
+						this.verticalScrollBar.height = this._viewPort.visibleHeight - this.horizontalScrollBar.height - this._scrollBarPaddingBottom;
 					}
 					else
 					{
-						this.verticalScrollBar.height = this._viewPort.visibleHeight;
+						this.verticalScrollBar.height = this._viewPort.visibleHeight - this._scrollBarPaddingBottom;
 					}
 				}
 				else
 				{
-					this.verticalScrollBar.height = this._viewPort.visibleHeight;
+					this.verticalScrollBar.height = this._viewPort.visibleHeight - this._scrollBarPaddingBottom;
 				}
 			}
 		}
