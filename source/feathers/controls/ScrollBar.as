@@ -7,17 +7,17 @@ accordance with the terms of the accompanying license agreement.
 */
 package feathers.controls
 {
+	import flash.events.TimerEvent;
+	import flash.geom.Point;
+	import flash.utils.Timer;
+	
 	import feathers.core.FeathersControl;
 	import feathers.core.PropertyProxy;
 	import feathers.events.FeathersEventType;
 	import feathers.skins.IStyleProvider;
 	import feathers.utils.math.clamp;
 	import feathers.utils.math.roundToNearest;
-
-	import flash.events.TimerEvent;
-	import flash.geom.Point;
-	import flash.utils.Timer;
-
+	
 	import starling.display.DisplayObject;
 	import starling.events.Event;
 	import starling.events.Touch;
@@ -2311,8 +2311,8 @@ package feathers.controls
 			//this will auto-size the thumb, if needed
 			this.thumb.validate();
 
-			var contentWidth:Number = this.actualWidth - this._paddingLeft - this._paddingRight;
-			var contentHeight:Number = this.actualHeight - this._paddingTop - this._paddingBottom;
+			var contentWidth:Number = this.actualWidth - this._paddingLeft - this._paddingRight - this.minimumTrack.paddingLeft - this.minimumTrack.paddingRight;
+			var contentHeight:Number = this.actualHeight - this._paddingTop - this._paddingBottom  - this.minimumTrack.paddingTop - this.minimumTrack.paddingBottom;
 			var adjustedPage:Number = this._page;
 			if(this._page == 0)
 			{
@@ -2327,20 +2327,20 @@ package feathers.controls
 				contentHeight -= (this.decrementButton.height + this.incrementButton.height);
 				var thumbMinHeight:Number = this.thumb.minHeight > 0 ? this.thumb.minHeight : this.thumbOriginalHeight;
 				this.thumb.width = this.thumbOriginalWidth;
-				this.thumb.height = Math.max(thumbMinHeight, contentHeight * adjustedPage / range);
+				this.thumb.height = Math.max(thumbMinHeight, contentHeight * adjustedPage / range - this.thumb.paddingTop - this.thumb.paddingBottom) ;
 				var trackScrollableHeight:Number = contentHeight - this.thumb.height;
 				this.thumb.x = this._paddingLeft + (this.actualWidth - this._paddingLeft - this._paddingRight - this.thumb.width) / 2;
-				this.thumb.y = this.decrementButton.height + this._paddingTop + Math.max(0, Math.min(trackScrollableHeight, trackScrollableHeight * (this._value - this._minimum) / range));
+				this.thumb.y = this.decrementButton.height + this.thumb.paddingTop + this._paddingTop + Math.max(0, Math.min(trackScrollableHeight, trackScrollableHeight * (this._value - this._minimum) / range));
 			}
 			else //horizontal
 			{
 				contentWidth -= (this.decrementButton.width + this.decrementButton.width);
 				var thumbMinWidth:Number = this.thumb.minWidth > 0 ? this.thumb.minWidth : this.thumbOriginalWidth;
-				this.thumb.width = Math.max(thumbMinWidth, contentWidth * adjustedPage / range);
+				this.thumb.width = Math.max(thumbMinWidth, contentWidth * adjustedPage / range) - this.thumb.paddingLeft - this.thumb.paddingRight;
 				this.thumb.height = this.thumbOriginalHeight;
 				var trackScrollableWidth:Number = contentWidth - this.thumb.width;
-				this.thumb.x = this.decrementButton.width + this._paddingLeft + Math.max(0, Math.min(trackScrollableWidth, trackScrollableWidth * (this._value - this._minimum) / range));
-				this.thumb.y = this._paddingTop + (this.actualHeight - this._paddingTop - this._paddingBottom - this.thumb.height) / 2;
+				this.thumb.x = this.decrementButton.width + this.thumb.paddingLeft + this._paddingLeft + Math.max(0, Math.min(trackScrollableWidth, trackScrollableWidth * (this._value - this._minimum) / range));
+				this.thumb.y = this._paddingTop + this.thumb.paddingLeft + (this.actualHeight - this._paddingTop - this._paddingBottom - this.thumb.height) / 2;
 			}
 		}
 
@@ -2414,6 +2414,21 @@ package feathers.controls
 			this.minimumTrack.validate();
 			this.maximumTrack.validate();
 		}
+		
+		private var _scrollBarVisible:Boolean = true;;
+		public function set scrollBarVisible(value:Boolean):void
+		{
+			if(_scrollBarVisible != value)
+			{
+				_scrollBarVisible = value;
+				this.thumb.visible = this.incrementButton.visible = this.decrementButton.visible = this.minimumTrack.visible = value;
+				if(this.maximumTrack)this.maximumTrack.visible = value;
+			}
+		}
+		public function get scrollBarVisible():Boolean
+		{
+			return _scrollBarVisible;
+		}
 
 		/**
 		 * @private
@@ -2429,7 +2444,7 @@ package feathers.controls
 				this.minimumTrack.x = 0;
 				if(showButtons)
 				{
-					this.minimumTrack.y = this.decrementButton.height;
+					this.minimumTrack.y = this.decrementButton.height + this.minimumTrack.paddingTop;
 				}
 				else
 				{
@@ -2438,7 +2453,7 @@ package feathers.controls
 				this.minimumTrack.width = this.actualWidth;
 				if(showButtons)
 				{
-					this.minimumTrack.height = this.actualHeight - this.minimumTrack.y - this.incrementButton.height;
+					this.minimumTrack.height = this.actualHeight - this.minimumTrack.y - this.incrementButton.height - this.minimumTrack.paddingBottom;
 				}
 				else
 				{
@@ -2449,7 +2464,7 @@ package feathers.controls
 			{
 				if(showButtons)
 				{
-					this.minimumTrack.x = this.decrementButton.width;
+					this.minimumTrack.x = this.decrementButton.width + this.minimumTrack.paddingLeft;
 				}
 				else
 				{
@@ -2458,7 +2473,7 @@ package feathers.controls
 				this.minimumTrack.y = 0;
 				if(showButtons)
 				{
-					this.minimumTrack.width = this.actualWidth - this.minimumTrack.x - this.incrementButton.width;
+					this.minimumTrack.width = this.actualWidth - this.minimumTrack.x - this.incrementButton.width - this.minimumTrack.paddingRight;
 				}
 				else
 				{
