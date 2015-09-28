@@ -822,6 +822,10 @@ package feathers.controls
 			this.textRenderer.y = this._paddingTop;
 			this.textRenderer.width = this.actualWidth - this._paddingLeft - this._paddingRight;
 			this.textRenderer.height = this.actualHeight - this._paddingTop - this._paddingBottom;
+			if(this.actualHeight == 60)
+			{
+				trace(this.textRenderer.maxHeight, this.textRenderer.y);
+			}
 			this.textRenderer.validate();
 		}
 

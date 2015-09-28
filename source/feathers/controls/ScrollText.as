@@ -7,14 +7,15 @@ accordance with the terms of the accompanying license agreement.
 */
 package feathers.controls
 {
-	import feathers.controls.supportClasses.TextFieldViewPort;
-	import feathers.skins.IStyleProvider;
-
 	import flash.text.AntiAliasType;
 	import flash.text.GridFitType;
 	import flash.text.StyleSheet;
 	import flash.text.TextFormat;
-
+	
+	import feathers.controls.supportClasses.TextFieldViewPort;
+	import feathers.controls.text.Fontter;
+	import feathers.skins.IStyleProvider;
+	
 	import starling.events.Event;
 
 	/**
@@ -431,7 +432,7 @@ package feathers.controls
 		/**
 		 * @private
 		 */
-		protected var _embedFonts:Boolean = false;
+		protected var _embedFonts:Boolean = Fontter.embedFonts;
 
 		/**
 		 * Determines if the TextField should use an embedded font or not. If
@@ -811,7 +812,7 @@ package feathers.controls
 		/**
 		 * @private
 		 */
-		private var _sharpness:Number = 0;
+		private var _sharpness:Number = Fontter.sharpness;
 
 		/**
 		 * The sharpness of the glyph edges in this text field. This property

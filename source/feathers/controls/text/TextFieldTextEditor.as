@@ -468,7 +468,7 @@ package feathers.controls.text
 		/**
 		 * @private
 		 */
-		protected var _embedFonts:Boolean = false;
+		protected var _embedFonts:Boolean = Fontter.embedFonts;
 
 		/**
 		 * Determines if the TextField should use an embedded font or not. If
@@ -875,7 +875,7 @@ package feathers.controls.text
 		/**
 		 * @private
 		 */
-		private var _sharpness:Number = 0;
+		private var _sharpness:Number = Fontter.sharpness;
 
 		/**
 		 * The sharpness of the glyph edges in this text field. This property
