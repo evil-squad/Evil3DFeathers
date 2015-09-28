@@ -827,6 +827,10 @@ package feathers.controls.supportClasses
 					}
 					else if(this._textFormat)
 					{
+						if(this._embedFonts)
+						{
+							Fontter.transTextFormat( this._textFormat);
+						}
 						this._textField.defaultTextFormat = this._textFormat;
 					}
 				}

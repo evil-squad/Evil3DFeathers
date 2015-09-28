@@ -15,6 +15,7 @@ package feathers.core
 	import avmplus.getQualifiedClassName;
 	
 	import feathers.controls.text.BitmapFontTextRenderer;
+	import feathers.controls.text.StageTextTextEditor;
 	import feathers.controls.text.TextFieldTextEditor;
 	import feathers.controls.text.TextFieldTextRenderer;
 	import feathers.events.FeathersEventType;
@@ -238,7 +239,7 @@ package feathers.core
 		 */
 		public static var defaultTextEditorFactory:Function = function():ITextEditor
 		{
-			return new TextFieldTextEditor();
+			return new StageTextTextEditor();
 		}
 
 		/**

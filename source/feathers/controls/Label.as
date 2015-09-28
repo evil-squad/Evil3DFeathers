@@ -9,6 +9,7 @@ package feathers.controls
 {
 	import flash.geom.Point;
 	
+	import feathers.controls.text.TextFieldTextRenderer;
 	import feathers.core.FeathersControl;
 	import feathers.core.ITextBaselineControl;
 	import feathers.core.ITextRenderer;
@@ -336,6 +337,8 @@ package feathers.controls
 			if(!this._textRendererProperties)
 			{
 				this._textRendererProperties = new PropertyProxy(textRendererProperties_onChange);
+				this._textRendererProperties.wordWrap = _wordWrap;
+				this._textRendererProperties.autoScrollToMax = _autoScrollToMax;
 			}
 			return this._textRendererProperties;
 		}
@@ -363,6 +366,16 @@ package feathers.controls
 				this._textRendererProperties.addOnChangeCallback(textRendererProperties_onChange);
 			}
 			this.invalidate(INVALIDATION_FLAG_STYLES);
+		}
+		
+		private var _autoScrollToMax:Boolean;
+		public function set autoScrollToMax(value:Boolean):void
+		{
+			_autoScrollToMax = value;
+			if(this._textRendererProperties)
+			{
+				this._textRendererProperties.autoScrollToMax = value;
+			}
 		}
 
 		/**
@@ -822,10 +835,6 @@ package feathers.controls
 			this.textRenderer.y = this._paddingTop;
 			this.textRenderer.width = this.actualWidth - this._paddingLeft - this._paddingRight;
 			this.textRenderer.height = this.actualHeight - this._paddingTop - this._paddingBottom;
-			if(this.actualHeight == 60)
-			{
-				trace(this.textRenderer.maxHeight, this.textRenderer.y);
-			}
 			this.textRenderer.validate();
 		}
 
