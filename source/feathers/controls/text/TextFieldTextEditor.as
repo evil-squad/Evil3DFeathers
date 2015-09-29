@@ -7,18 +7,6 @@ accordance with the terms of the accompanying license agreement.
 */
 package feathers.controls.text
 {
-	import feathers.core.FeathersControl;
-	import feathers.core.FocusManager;
-	import feathers.core.INativeFocusOwner;
-	import feathers.core.IStateContext;
-	import feathers.core.IStateObserver;
-	import feathers.core.ITextEditor;
-	import feathers.events.FeathersEventType;
-	import feathers.skins.IStyleProvider;
-	import feathers.utils.geom.matrixToRotation;
-	import feathers.utils.geom.matrixToScaleX;
-	import feathers.utils.geom.matrixToScaleY;
-
 	import flash.display.BitmapData;
 	import flash.display.InteractiveObject;
 	import flash.display.Stage;
@@ -38,7 +26,19 @@ package feathers.controls.text
 	import flash.text.TextFieldType;
 	import flash.text.TextFormat;
 	import flash.ui.Keyboard;
-
+	
+	import feathers.core.FeathersControl;
+	import feathers.core.FocusManager;
+	import feathers.core.INativeFocusOwner;
+	import feathers.core.IStateContext;
+	import feathers.core.IStateObserver;
+	import feathers.core.ITextEditor;
+	import feathers.events.FeathersEventType;
+	import feathers.skins.IStyleProvider;
+	import feathers.utils.geom.matrixToRotation;
+	import feathers.utils.geom.matrixToScaleX;
+	import feathers.utils.geom.matrixToScaleY;
+	
 	import starling.core.RenderSupport;
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
@@ -468,7 +468,7 @@ package feathers.controls.text
 		/**
 		 * @private
 		 */
-		protected var _embedFonts:Boolean = false;
+		protected var _embedFonts:Boolean = Fontter.embedFonts;
 
 		/**
 		 * Determines if the TextField should use an embedded font or not. If
@@ -875,7 +875,7 @@ package feathers.controls.text
 		/**
 		 * @private
 		 */
-		private var _sharpness:Number = 0;
+		private var _sharpness:Number = Fontter.sharpness;
 
 		/**
 		 * The sharpness of the glyph edges in this text field. This property
@@ -1787,6 +1787,10 @@ package feathers.controls.text
 				//I guess text field creates a different TextFormat object.
 				var isFormatDifferent:Boolean = this._previousTextFormat != this.currentTextFormat;
 				this._previousTextFormat = this.currentTextFormat;
+			}
+			if(this._embedFonts)
+			{
+				Fontter.transTextFormat( this.currentTextFormat);
 			}
 			textField.defaultTextFormat = this.currentTextFormat;
 			

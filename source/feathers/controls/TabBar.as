@@ -7,6 +7,8 @@ accordance with the terms of the accompanying license agreement.
 */
 package feathers.controls
 {
+	import flash.ui.Keyboard;
+	
 	import feathers.core.FeathersControl;
 	import feathers.core.IFocusDisplayObject;
 	import feathers.core.PropertyProxy;
@@ -15,13 +17,12 @@ package feathers.controls
 	import feathers.events.CollectionEventType;
 	import feathers.events.FeathersEventType;
 	import feathers.layout.HorizontalLayout;
+	import feathers.layout.ILayout;
 	import feathers.layout.LayoutBoundsResult;
 	import feathers.layout.VerticalLayout;
 	import feathers.layout.ViewPortBounds;
 	import feathers.skins.IStyleProvider;
-
-	import flash.ui.Keyboard;
-
+	
 	import starling.display.DisplayObject;
 	import starling.events.Event;
 	import starling.events.KeyboardEvent;
@@ -444,6 +445,31 @@ package feathers.controls
 			}
 			this._direction = value;
 			this.invalidate(INVALIDATION_FLAG_STYLES);
+		}
+		
+		public function set layout(value:ILayout):void
+		{
+			if(value is VerticalLayout)
+			{
+				direction = DIRECTION_VERTICAL;
+				var verticalLayout:VerticalLayout = VerticalLayout(value);
+				gap = verticalLayout.gap;
+				padding = verticalLayout.padding;
+				paddingLeft = verticalLayout.paddingLeft;
+				paddingRight = verticalLayout.paddingRight;
+				paddingTop = verticalLayout.paddingTop;
+				paddingBottom = verticalLayout.paddingBottom;
+			}else if(value is HorizontalLayout){
+				var horizontalLayout:HorizontalLayout = HorizontalLayout(value);
+				gap = horizontalLayout.gap;
+				padding = horizontalLayout.padding;
+				paddingLeft = horizontalLayout.paddingLeft;
+				paddingRight = horizontalLayout.paddingRight;
+				paddingTop = horizontalLayout.paddingTop;
+				paddingBottom = horizontalLayout.paddingBottom;
+			}else{
+				trace("not support layout");
+			}
 		}
 
 		/**
