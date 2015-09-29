@@ -156,6 +156,11 @@ package feathers.controls.text
 		 * @private
 		 */
 		protected var _hasMeasured:Boolean = false;
+		
+		/**
+		 * @private
+		 */
+		protected var _scrollToMax:Boolean = false;
 
 		/**
 		 * @private
@@ -423,7 +428,7 @@ package feathers.controls.text
 		/**
 		 * @private
 		 */
-		protected var _embedFonts:Boolean = false;
+		protected var _embedFonts:Boolean = Fontter.embedFonts;
 
 		/**
 		 * Determines if the TextField should use an embedded font or not. If
@@ -506,6 +511,18 @@ package feathers.controls.text
 			}
 			this._wordWrap = value;
 			this.invalidate(INVALIDATION_FLAG_STYLES);
+		}
+		
+		
+		public function set autoScrollToMax(value:Boolean):void
+		{
+			if(this._scrollToMax == value)
+			{
+				return;
+			}
+			this._scrollToMax = value;
+			this.invalidate(INVALIDATION_FLAG_STYLES);
+			
 		}
 
 		/**
@@ -852,7 +869,7 @@ package feathers.controls.text
 		/**
 		 * @private
 		 */
-		private var _sharpness:Number = 0;
+		private var _sharpness:Number = Fontter.sharpness;
 
 		/**
 		 * The sharpness of the glyph edges in this text field. This property
@@ -1447,6 +1464,10 @@ package feathers.controls.text
 				else
 				{
 					this.textField.styleSheet = null;
+					if(this._embedFonts)
+					{
+						Fontter.transTextFormat( this.currentTextFormat);
+					}
 					this.textField.defaultTextFormat = this.currentTextFormat;
 				}
 				if(this._isHTML)
@@ -1833,8 +1854,9 @@ package feathers.controls.text
 			{
 				gutterPositionOffset = 0;
 			}
+			var _scrollV:int = _scrollToMax ?  (this.textField.textHeight-this.actualHeight) : 0;
 			HELPER_MATRIX.tx = -(textFieldX + gutterPositionOffset) - this._textSnapshotOffsetX;
-			HELPER_MATRIX.ty = -(textFieldY + gutterPositionOffset) - this._textSnapshotOffsetY;
+			HELPER_MATRIX.ty = -(textFieldY + gutterPositionOffset) - this._textSnapshotOffsetY - _scrollV;
 			HELPER_RECTANGLE.setTo(0, 0, clipWidth, clipHeight);
 			bitmapData.draw(this.textField, HELPER_MATRIX, null, null, HELPER_RECTANGLE);
 			return bitmapData;

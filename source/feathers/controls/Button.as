@@ -538,6 +538,7 @@ package feathers.controls
 				return;
 			}
 			this._label = value;
+			hasLabelTextRenderer = (value != null && value != "");
 			this.invalidate(INVALIDATION_FLAG_DATA);
 		}
 		

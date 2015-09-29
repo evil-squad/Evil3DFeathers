@@ -7,11 +7,6 @@ accordance with the terms of the accompanying license agreement.
 */
 package feathers.controls.supportClasses
 {
-	import feathers.core.FeathersControl;
-	import feathers.utils.geom.matrixToRotation;
-	import feathers.utils.geom.matrixToScaleX;
-	import feathers.utils.geom.matrixToScaleY;
-
 	import flash.display.Sprite;
 	import flash.events.TextEvent;
 	import flash.geom.Matrix;
@@ -23,7 +18,13 @@ package feathers.controls.supportClasses
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
-
+	
+	import feathers.controls.text.Fontter;
+	import feathers.core.FeathersControl;
+	import feathers.utils.geom.matrixToRotation;
+	import feathers.utils.geom.matrixToScaleX;
+	import feathers.utils.geom.matrixToScaleY;
+	
 	import starling.core.RenderSupport;
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
@@ -185,7 +186,7 @@ package feathers.controls.supportClasses
 		/**
 		 * @private
 		 */
-		private var _embedFonts:Boolean = false;
+		private var _embedFonts:Boolean = Fontter.embedFonts;
 
 		/**
 		 * @see feathers.controls.ScrollText#embedFonts
@@ -445,7 +446,7 @@ package feathers.controls.supportClasses
 		/**
 		 * @private
 		 */
-		private var _sharpness:Number = 0;
+		private var _sharpness:Number = Fontter.sharpness;
 
 		/**
 		 * @see feathers.controls.ScrollText#sharpness
@@ -826,6 +827,10 @@ package feathers.controls.supportClasses
 					}
 					else if(this._textFormat)
 					{
+						if(this._embedFonts)
+						{
+							Fontter.transTextFormat( this._textFormat);
+						}
 						this._textField.defaultTextFormat = this._textFormat;
 					}
 				}
