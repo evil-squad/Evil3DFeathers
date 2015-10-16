@@ -599,7 +599,7 @@ package feathers.controls
 		/**
 		 * @private
 		 */
-		protected var _iconPosition:String = ICON_POSITION_LEFT;
+		protected var _iconPosition:String = ICON_POSITION_MANUAL;
 
 		[Inspectable(type="String",enumeration="top,right,bottom,left,rightBaseline,leftBaseline,manual")]
 		/**
@@ -2623,11 +2623,11 @@ package feathers.controls
 			{
 				if(this._iconPosition == ICON_POSITION_MANUAL)
 				{
-					this.currentIcon.x = this._paddingLeft;
-					this.currentIcon.y = this._paddingTop;
+					//this.currentIcon.x = this._paddingLeft;
+					//this.currentIcon.y = this._paddingTop;
+					this.currentIcon.x = this._iconOffsetX;
+					this.currentIcon.y = this._iconOffsetY;
 				}
-				this.currentIcon.x += this._iconOffsetX;
-				this.currentIcon.y += this._iconOffsetY;
 			}
 			if(this._label && this.labelTextRenderer)
 			{
