@@ -7,6 +7,10 @@ accordance with the terms of the accompanying license agreement.
 */
 package feathers.controls
 {
+	import flash.geom.Point;
+	import flash.ui.Keyboard;
+	import flash.utils.getTimer;
+	
 	import feathers.core.FeathersControl;
 	import feathers.core.IFeathersControl;
 	import feathers.core.IFocusDisplayObject;
@@ -19,11 +23,8 @@ package feathers.controls
 	import feathers.events.FeathersEventType;
 	import feathers.skins.IStyleProvider;
 	import feathers.skins.StateWithToggleValueSelector;
-
-	import flash.geom.Point;
-	import flash.ui.Keyboard;
-	import flash.utils.getTimer;
-
+	import feathers.utils.filter.GrayFilter;
+	
 	import starling.core.RenderSupport;
 	import starling.display.DisplayObject;
 	import starling.events.Event;
@@ -480,6 +481,7 @@ package feathers.controls
 				this.touchable = false;
 				this.changeState(STATE_DISABLED);
 				this.touchPointID = -1;
+				GrayFilter.gray(this);
 			}
 			else
 			{
@@ -490,6 +492,7 @@ package feathers.controls
 					this.changeState(STATE_UP);
 				}
 				this.touchable = true;
+				GrayFilter.unGray(this);
 			}
 		}
 		
@@ -2623,11 +2626,11 @@ package feathers.controls
 			{
 				if(this._iconPosition == ICON_POSITION_MANUAL)
 				{
-					this.currentIcon.x = this._paddingLeft;
-					this.currentIcon.y = this._paddingTop;
+					//this.currentIcon.x = this._paddingLeft;
+					//this.currentIcon.y = this._paddingTop;
+					this.currentIcon.x = this._iconOffsetX;
+					this.currentIcon.y = this._iconOffsetY;
 				}
-				this.currentIcon.x += this._iconOffsetX;
-				this.currentIcon.y += this._iconOffsetY;
 			}
 			if(this._label && this.labelTextRenderer)
 			{

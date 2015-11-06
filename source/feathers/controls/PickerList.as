@@ -7,11 +7,14 @@ accordance with the terms of the accompanying license agreement.
 */
 package feathers.controls
 {
+	import flash.ui.Keyboard;
+	
 	import feathers.controls.popups.CalloutPopUpContentManager;
 	import feathers.controls.popups.IPersistentPopUpContentManager;
 	import feathers.controls.popups.IPopUpContentManager;
 	import feathers.controls.popups.IPopUpContentManagerWithPrompt;
 	import feathers.controls.popups.VerticalCenteredPopUpContentManager;
+	import feathers.controls.supportClasses.GroupedListDataViewPort;
 	import feathers.core.FeathersControl;
 	import feathers.core.IFocusDisplayObject;
 	import feathers.core.IToggle;
@@ -21,9 +24,7 @@ package feathers.controls
 	import feathers.events.FeathersEventType;
 	import feathers.skins.IStyleProvider;
 	import feathers.system.DeviceCapabilities;
-
-	import flash.ui.Keyboard;
-
+	
 	import starling.core.Starling;
 	import starling.events.Event;
 	import starling.events.EventDispatcher;
@@ -231,6 +232,11 @@ package feathers.controls
 		 * @see #createButton()
 		 */
 		protected var button:Button;
+		
+		public function getButton():Button
+		{
+			return button;
+		}
 
 		/**
 		 * The list sub-component.
@@ -241,6 +247,11 @@ package feathers.controls
 		 * @see #createList()
 		 */
 		protected var list:List;
+		
+		public function getList():List
+		{
+			return list;
+		}
 
 		/**
 		 * @private
@@ -1258,7 +1269,6 @@ package feathers.controls
 					this.popUpContentManager = new VerticalCenteredPopUpContentManager();
 				}
 			}
-
 		}
 		
 		/**

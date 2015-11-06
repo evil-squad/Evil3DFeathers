@@ -2327,10 +2327,10 @@ package feathers.controls
 				contentHeight -= (this.decrementButton.height + this.incrementButton.height);
 				var thumbMinHeight:Number = this.thumb.minHeight > 0 ? this.thumb.minHeight : this.thumbOriginalHeight;
 				this.thumb.width = this.thumbOriginalWidth;
-				this.thumb.height = Math.max(thumbMinHeight, contentHeight * adjustedPage / range - this.thumb.paddingTop - this.thumb.paddingBottom) ;
-				var trackScrollableHeight:Number = contentHeight - this.thumb.height;
+				this.thumb.height = Math.max(thumbMinHeight, contentHeight * adjustedPage / range) ;
+				var trackScrollableHeight:Number = contentHeight - this.thumb.height- this.thumb.paddingTop - this.thumb.paddingBottom;
 				this.thumb.x = this._paddingLeft + (this.actualWidth - this._paddingLeft - this._paddingRight - this.thumb.width) / 2;
-				this.thumb.y = this.decrementButton.height + this.thumb.paddingTop + this._paddingTop + Math.max(0, Math.min(trackScrollableHeight, trackScrollableHeight * (this._value - this._minimum) / range));
+				this.thumb.y = this.decrementButton.height + this.minimumTrack.paddingTop+this.thumb.paddingTop + this._paddingTop + Math.max(0, Math.min(trackScrollableHeight, trackScrollableHeight * (this._value - this._minimum) / range));
 			}
 			else //horizontal
 			{
@@ -2339,7 +2339,7 @@ package feathers.controls
 				this.thumb.width = Math.max(thumbMinWidth, contentWidth * adjustedPage / range) - this.thumb.paddingLeft - this.thumb.paddingRight;
 				this.thumb.height = this.thumbOriginalHeight;
 				var trackScrollableWidth:Number = contentWidth - this.thumb.width;
-				this.thumb.x = this.decrementButton.width + this.thumb.paddingLeft + this._paddingLeft + Math.max(0, Math.min(trackScrollableWidth, trackScrollableWidth * (this._value - this._minimum) / range));
+				this.thumb.x = this.decrementButton.width + this.thumb.paddingLeft + this.thumb.paddingRight + this._paddingLeft + Math.max(0, Math.min(trackScrollableWidth, trackScrollableWidth * (this._value - this._minimum) / range));
 				this.thumb.y = this._paddingTop + this.thumb.paddingLeft + (this.actualHeight - this._paddingTop - this._paddingBottom - this.thumb.height) / 2;
 			}
 		}
