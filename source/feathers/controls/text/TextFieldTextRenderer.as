@@ -1699,7 +1699,7 @@ package feathers.controls.text
 				}
 			}
 		}
-
+		
 		/**
 		 * If the component's dimensions have not been set explicitly, it will
 		 * measure its content and determine an ideal size for itself. If the
