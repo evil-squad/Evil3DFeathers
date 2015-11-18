@@ -7,6 +7,9 @@ accordance with the terms of the accompanying license agreement.
 */
 package feathers.controls
 {
+	import flash.geom.Point;
+	import flash.ui.Keyboard;
+	
 	import feathers.controls.renderers.DefaultListItemRenderer;
 	import feathers.controls.supportClasses.ListDataViewPort;
 	import feathers.core.IFocusContainer;
@@ -18,10 +21,8 @@ package feathers.controls
 	import feathers.layout.IVariableVirtualLayout;
 	import feathers.layout.VerticalLayout;
 	import feathers.skins.IStyleProvider;
-
-	import flash.geom.Point;
-	import flash.ui.Keyboard;
-
+	
+	import starling.display.DisplayObject;
 	import starling.events.Event;
 	import starling.events.KeyboardEvent;
 
@@ -662,6 +663,12 @@ package feathers.controls
 			}
 			this.selectedIndex = this._dataProvider.getItemIndex(value);
 		}
+		
+		/**
+		 * 供外部自定义寄存的数据
+		 */
+		public var customSelectedItemRender:DisplayObject;
+		public var customData:Object;
 
 		/**
 		 * @private
@@ -1239,6 +1246,8 @@ package feathers.controls
 			this._selectedIndex = -1;
 			this.dataProvider = null;
 			this.layout = null;
+			this.customSelectedItemRender = null;
+			this.customData = null;
 			super.dispose();
 		}
 		
