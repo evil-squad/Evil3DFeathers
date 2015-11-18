@@ -7,6 +7,12 @@ accordance with the terms of the accompanying license agreement.
 */
 package feathers.controls
 {
+	import flash.display.InteractiveObject;
+	import flash.geom.Point;
+	import flash.ui.Mouse;
+	import flash.ui.MouseCursor;
+	
+	import feathers.controls.text.Fontter;
 	import feathers.controls.text.ITextEditorViewPort;
 	import feathers.controls.text.TextFieldTextEditorViewPort;
 	import feathers.core.INativeFocusOwner;
@@ -15,12 +21,7 @@ package feathers.controls
 	import feathers.core.PropertyProxy;
 	import feathers.events.FeathersEventType;
 	import feathers.skins.IStyleProvider;
-
-	import flash.display.InteractiveObject;
-	import flash.geom.Point;
-	import flash.ui.Mouse;
-	import flash.ui.MouseCursor;
-
+	
 	import starling.display.DisplayObject;
 	import starling.events.Event;
 	import starling.events.KeyboardEvent;
@@ -589,6 +590,122 @@ package feathers.controls
 			}
 			this._restrict = value;
 			this.invalidate(INVALIDATION_FLAG_STYLES);
+		}
+		
+		//======================================textFormat properties===========================
+		//
+		protected var mFontName:String = Fontter.FONT_YaHei;
+		/** The name of the font (true type or bitmap font). */
+		public function get fontName():String { return mFontName; }
+		public function set fontName(value:String):void
+		{
+			if (mFontName != value)
+			{
+				mFontName = value;
+				textEditorProperties.textFormat["font"] = mFontName;
+			}
+		}
+		
+		protected var mFontSize:int = 12;
+		/** The size of the font. For bitmap fonts, use <code>BitmapFont.NATIVE_SIZE</code> for 
+		 *  the original size. */
+		public function get fontSize():Number { return mFontSize; }
+		public function set fontSize(value:Number):void
+		{
+			if (mFontSize != value)
+			{
+				mFontSize = value;
+				textEditorProperties.textFormat["size"] = mFontSize;
+			}
+		}
+		
+		protected var mColor:uint = 0xFFFFFF;
+		/** The color of the text. Note that bitmap fonts should be exported in plain white so
+		 *  that tinting works correctly. If your bitmap font contains colors, set this property
+		 *  to <code>Color.WHITE</code> to get the desired result. @default black */
+		public function get color():uint { return mColor; }
+		public function set color(value:uint):void
+		{
+			if (mColor != value)
+			{
+				mColor = value;
+				textEditorProperties.textFormat["color"] = mColor;
+			}
+		}
+		
+		/**
+		 * @private
+		 */
+		protected var mBold:Boolean = false;
+		/** Indicates whether the text is bold. @default false */
+		public function get bold():Boolean { return mBold; }
+		public function set bold(value:Boolean):void 
+		{
+			if (mBold != value)
+			{
+				mBold = value;
+				textEditorProperties.textFormat["bold"] = mBold;
+			}
+		}
+		
+		protected var mItalic:Boolean = false;
+		/** Indicates whether the text is italicized. @default false */
+		public function get italic():Boolean { return mItalic; }
+		public function set italic(value:Boolean):void
+		{
+			if (mItalic != value)
+			{
+				mItalic = value;
+				textEditorProperties.textFormat["italic"] = mItalic;
+			}
+		}
+		
+		protected var mUnderline:Boolean = false;
+		/** Indicates whether the text is underlined. @default false */
+		public function get underline():Boolean { return mUnderline; }
+		public function set underline(value:Boolean):void
+		{
+			if (mUnderline != value)
+			{
+				mUnderline = value;
+				textEditorProperties.textFormat["underline"] = mUnderline;
+			}
+		}
+		
+		protected var mKerning:Boolean = false;
+		/** Indicates whether kerning is enabled. @default true */
+		public function get kerning():Boolean { return mKerning; }
+		public function set kerning(value:Boolean):void
+		{
+			if (mKerning != value)
+			{
+				mKerning = value;
+				textEditorProperties.textFormat["kerning"] = mKerning;
+			}
+		}
+		
+		protected var mLetterSpacing:Number = 0;
+		/** Indicates whether kerning is enabled. @default 0 */
+		public function get letterSpacing():Number { return mLetterSpacing; }
+		public function set letterSpacing(value:Number):void
+		{
+			if (mLetterSpacing != value)
+			{
+				mLetterSpacing = value;
+				textEditorProperties.textFormat["letterSpacing"] = mLetterSpacing;
+			}
+		}
+		
+		protected var mLeading:Boolean = false;
+		/** The amount of vertical space (called 'leading') between lines. @default 0 */
+		public function get leading():Boolean { return mLeading; }
+		public function set leading(value:Boolean):void
+		{
+			if (mLeading != value)
+			{
+				mLeading = value;
+				textEditorProperties.textFormat["leading"] = mLeading;
+			}
 		}
 
 		/**
