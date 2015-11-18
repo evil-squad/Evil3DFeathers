@@ -2349,6 +2349,10 @@ package feathers.controls
 		 */
 		protected function layoutTrackWithMinMax():void
 		{
+			var showButtons:Boolean = this._maximum != this._minimum;
+			this.minimumTrack.visible = this.maximumTrack.visible = showButtons;
+			if(!showButtons)return;
+			
 			var range:Number = this._maximum - this._minimum;
 			this.minimumTrack.touchable = range > 0 && range < Number.POSITIVE_INFINITY;
 			if(this.maximumTrack)
@@ -2356,7 +2360,7 @@ package feathers.controls
 				this.maximumTrack.touchable = range > 0 && range < Number.POSITIVE_INFINITY;
 			}
 
-			var showButtons:Boolean = this._maximum != this._minimum;
+			
 			if(this._direction == DIRECTION_VERTICAL)
 			{
 				this.minimumTrack.x = 0;
@@ -2435,10 +2439,13 @@ package feathers.controls
 		 */
 		protected function layoutTrackWithSingle():void
 		{
+			var showButtons:Boolean = this._maximum != this._minimum;
+			this.minimumTrack.visible = showButtons;
+			if(!showButtons)return;
+			
 			var range:Number = this._maximum - this._minimum;
 			this.minimumTrack.touchable = range > 0 && range < Number.POSITIVE_INFINITY;
-
-			var showButtons:Boolean = this._maximum != this._minimum;
+			
 			if(this._direction == DIRECTION_VERTICAL)
 			{
 				this.minimumTrack.x = 0;
