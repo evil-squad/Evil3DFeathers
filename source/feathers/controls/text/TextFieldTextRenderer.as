@@ -1421,7 +1421,7 @@ package feathers.controls.text
 
 			this.layout(sizeInvalid);
 			
-			layer = DynamicFont.LAYER_TEXTFIELD;
+//			layer = DynamicFont.LAYER_TEXTFIELD;
 		}
 
 		/**
