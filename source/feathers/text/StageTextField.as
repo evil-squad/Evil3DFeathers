@@ -20,6 +20,8 @@ package feathers.text
 	import flash.text.TextFormatAlign;
 	import flash.text.engine.FontPosture;
 	import flash.text.engine.FontWeight;
+	
+	import feathers.controls.text.Fontter;
 
 	/**
 	 * A StageText replacement for Flash Player with matching properties, since
@@ -388,7 +390,7 @@ package feathers.text
 			this._textField.addEventListener(FocusEvent.FOCUS_OUT, textField_eventHandler);
 			this._textField.addEventListener(KeyboardEvent.KEY_DOWN, textField_eventHandler);
 			this._textField.addEventListener(KeyboardEvent.KEY_UP, textField_eventHandler);
-			this._textFormat = new TextFormat(null, 11, 0x000000, false, false, false);
+			this._textFormat = new TextFormat(Fontter.FONT_YaHei, 11, 0x000000, false, false, false);
 			this._textField.defaultTextFormat = this._textFormat;
 		}
 
