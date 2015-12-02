@@ -1407,8 +1407,10 @@ package feathers.controls.text
 					{
 						gutterPositionOffset = 0;
 					}
-					var positionX:Number = position.x - this.textSnapshot.x + gutterPositionOffset;
-					var positionY:Number = position.y - this.textSnapshot.y + gutterPositionOffset;
+					var textSnapshotX:Number = textSnapshot ? textSnapshot.x : 0;
+					var textSnapshotY:Number = textSnapshot ? textSnapshot.y : 0;
+					var positionX:Number = position.x - textSnapshotX + gutterPositionOffset;
+					var positionY:Number = position.y - textSnapshotY + gutterPositionOffset;
 					if(positionX < 0)
 					{
 						this._pendingSelectionBeginIndex = this._pendingSelectionEndIndex = 0;

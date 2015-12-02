@@ -14,8 +14,6 @@ package feathers.core
 	
 	import avmplus.getQualifiedClassName;
 	
-	import feathers.controls.text.BitmapFontTextRenderer;
-	import feathers.controls.text.StageTextTextEditor;
 	import feathers.controls.text.TextFieldTextEditor;
 	import feathers.controls.text.TextFieldTextRenderer;
 	import feathers.events.FeathersEventType;
@@ -116,12 +114,12 @@ package feathers.core
 		/**
 		 * @private
 		 */
-		private static const HELPER_MATRIX:Matrix = new Matrix();
+		protected static const HELPER_MATRIX:Matrix = new Matrix();
 
 		/**
 		 * @private
 		 */
-		private static const HELPER_POINT:Point = new Point();
+		protected static const HELPER_POINT:Point = new Point();
 
 		/**
 		 * Flag to indicate that everything is invalid and should be redrawn.
@@ -239,8 +237,13 @@ package feathers.core
 		 */
 		public static var defaultTextEditorFactory:Function = function():ITextEditor
 		{
-			return new StageTextTextEditor();
+			return new TextFieldTextEditor();
 		}
+			
+		/**
+		 *外部对此对象设置styleClass后的处理函数
+		 */		
+		public static var defautStyleClassParseFunction:Function = null;
 
 		/**
 		 * Constructor.
@@ -299,7 +302,13 @@ package feathers.core
 		public function set styleClass(value:Class):void
 		{
 			if(!value)return;
-			styleName = getQualifiedClassName(value).replace("::", ".");
+			if(defautStyleClassParseFunction != null)
+			{
+				defautStyleClassParseFunction(this, value);
+			}else
+			{
+				styleName = getQualifiedClassName(value).replace("::", ".");
+			}
 		}
 
 		/**
