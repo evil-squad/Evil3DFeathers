@@ -239,6 +239,11 @@ package feathers.core
 		{
 			return new TextFieldTextEditor();
 		}
+			
+		/**
+		 *外部对此对象设置styleClass后的处理函数
+		 */		
+		public static var defautStyleClassParseFunction:Function = null;
 
 		/**
 		 * Constructor.
@@ -297,7 +302,13 @@ package feathers.core
 		public function set styleClass(value:Class):void
 		{
 			if(!value)return;
-			styleName = getQualifiedClassName(value).replace("::", ".");
+			if(defautStyleClassParseFunction != null)
+			{
+				defautStyleClassParseFunction(this, value);
+			}else
+			{
+				styleName = getQualifiedClassName(value).replace("::", ".");
+			}
 		}
 
 		/**
