@@ -1394,7 +1394,6 @@ package feathers.controls.text
 		 */
 		public function setFocus(position:Point = null):void
 		{
-			if(!isEditable)return;
 			if(this.textField)
 			{
 				if(!this.textField.parent)
