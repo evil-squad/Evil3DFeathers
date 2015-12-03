@@ -18,8 +18,10 @@ package feathers.controls.text
 		public static const FONT_huaLisu:String = "STLiti";//华文隶书
 		public static const FONT_Arial:String = "Arial";
 		
+		public static var DEFAULT_FONT_NAME:String = Fontter.FONT_YaHei;//MSYaHei SimSun
+		
 		public static  var embedFonts:Boolean = false;
-		public static var sharpness:Number = 400;
+		public static var sharpness:Number = 0;
 		
 		private static var _embedFonts:Dictionary = new Dictionary();
 		
