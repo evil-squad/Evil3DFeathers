@@ -54,5 +54,12 @@ package feathers.events
 		 * (but they have not been replaced by different items).
 		 */
 		public static const UPDATE_ALL:String = "updateAll";
+		
+		
+		
+		public static const CLOSE_ITEM:String = "closeItem";
+		
+		public static const OPEN_ITEM:String = "openItem";
+		
 	}
 }

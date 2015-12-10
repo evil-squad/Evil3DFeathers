@@ -7,7 +7,8 @@ accordance with the terms of the accompanying license agreement.
 */
 package feathers.controls.renderers
 {
-	import feathers.controls.*;
+	
+	import feathers.controls.List;
 	import feathers.core.IToggle;
 
 	/**
@@ -40,6 +41,18 @@ package feathers.controls.renderers
 	public interface IListItemRenderer extends IToggle
 	{
 		/**
+		 * The list that contains this item renderer.
+		 *
+		 * <p>This property is set by the list, and should not be set manually.</p>
+		 */
+		function get owner():List;
+		
+		/**
+		 * @private
+		 */
+		function set owner(value:List):void;
+		
+		/**
 		 * An item from the list's data provider. The data may change if this
 		 * item renderer is reused for a new item because it's no longer needed
 		 * for the original item.
@@ -67,17 +80,5 @@ package feathers.controls.renderers
 		 * @private
 		 */
 		function set index(value:int):void;
-		
-		/**
-		 * The list that contains this item renderer.
-		 *
-		 * <p>This property is set by the list, and should not be set manually.</p>
-		 */
-		function get owner():List;
-		
-		/**
-		 * @private
-		 */
-		function set owner(value:List):void;
 	}
 }
