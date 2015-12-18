@@ -16,19 +16,18 @@ package feathers.data
 		//子结点
 		private var _children:Vector.<TreeNode>;
 		
-		//层深
-		private var _depth:int;
+		//层深 -1表示树根，－棵树只能有一个根
+		private var _depth:int= -1;
 		
 		//此节点应用数据
 		private var _data:Object;
 		
 		//是否已经展开
 		public var expanded:Boolean;
-		public var index:int;
 		
-		public function addChildren(data:Object):TreeNode
+		public function addChildren(childNodeData:Object):TreeNode
 		{
-			var node:TreeNode = new TreeNode(data);
+			var node:TreeNode = new TreeNode(childNodeData);
 			node._parent = this;
 			node._depth = this._depth + 1;
 			
@@ -38,12 +37,12 @@ package feathers.data
 			return node;
 		}
 		
-		public function addChildrens(dataArr:Array):Vector.<TreeNode>
+		public function addChildrens(childrensNodeDataList:Array):Vector.<TreeNode>
 		{
-			var len:int = dataArr.length;
+			var len:int = childrensNodeDataList.length;
 			for(var i:int = 0; i< len; i++)
 			{
-				addChildren(dataArr[i]);
+				addChildren(childrensNodeDataList[i]);
 			}
 			return _children;
 		}

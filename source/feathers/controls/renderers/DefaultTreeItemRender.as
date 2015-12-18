@@ -2,7 +2,6 @@ package feathers.controls.renderers
 {
 	import feathers.controls.ToggleButton;
 	import feathers.controls.Tree;
-	import feathers.controls.renderers.LayoutGroupListItemRenderer;
 	import feathers.data.TreeNode;
 	
 	import starling.events.Event;
@@ -12,7 +11,7 @@ package feathers.controls.renderers
 	 * @author wewell@163.com
 	 * 
 	 */	
-	public class DefaultTreeItemRender extends LayoutGroupListItemRenderer
+	public class DefaultTreeItemRender extends DefaultListItemRenderer
 	{
 		private var _toggleButton:ToggleButton;
 		protected var  depthPaddingLeft:int = 30;
@@ -21,16 +20,11 @@ package feathers.controls.renderers
 		{
 		}
 		
-		override protected function initialize():void
-		{
-			this.addEventListener(Event.TRIGGERED, onClick);
-		}
-		
 		override protected function commitData():void
 		{
 			if(this._data && this._owner)
 			{
-				update(_data as TreeNode, owner as Tree);
+				renderTreeNode(_data as TreeNode);
 			}
 		}
 		
@@ -79,38 +73,7 @@ package feathers.controls.renderers
 			return _owner as Tree;
 		}
 		
-		private function onClick():void
-		{
-			//清除上次的选中状态
-			var clickedItemRender:DefaultTreeItemRender = this._owner.customSelectedItemRender as DefaultTreeItemRender;
-			if(clickedItemRender)
-			{
-				clickedItemRender.isSelected = false;
-			}
-			
-			//当前项被选中
-			clickedItemRender = this;
-			clickedItemRender.isSelected = true;
-			//保存当前被选中的ItemRender
-			_owner.customSelectedItemRender = clickedItemRender ;
-			
-			//设置选中下标，List会发送Event.Change事件
-			_owner.selectedIndex = this._data ?  this._data.index : -1;
-			_owner.selectedItem = this._data;
-		}
-		
-		override public function set isSelected(value:Boolean):void
-		{
-			if(_isSelected == value)return;
-			_isSelected = value;
-		}
-		
-		override public function get isSelected():Boolean
-		{
-			return _isSelected;
-		}
-		
-		protected function update(node:TreeNode, owner:Tree):void
+		protected function renderTreeNode(node:TreeNode):void
 		{
 			
 		}

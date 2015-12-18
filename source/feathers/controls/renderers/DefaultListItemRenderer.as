@@ -55,10 +55,17 @@ package feathers.controls.renderers
 			onClick();
 		}
 		
+		
 		private function onClick():void
 		{
 			//清除上次的选中状态
 			var clickedItemRender:DefaultListItemRenderer = this.owner.customSelectedItemRender as DefaultListItemRenderer;
+			if(clickedItemRender != null && clickedItemRender == this && owner.selectedItem == this._data)
+			{
+				//过滤同一项
+				return;
+			}
+			
 			if(clickedItemRender)
 			{
 				clickedItemRender.isSelected = false;
@@ -67,11 +74,12 @@ package feathers.controls.renderers
 			//当前项被选中
 			clickedItemRender = this;
 			clickedItemRender.isSelected = true;
-			//保存当前被选中的ItemRender
-			owner.customSelectedItemRender = clickedItemRender ;
 			
 			//设置选中数据项，List会发送Event.Change事件
 			owner.selectedItem = this._data;
+			
+			//保存当前被选中的ItemRender,会发送Event.Select事件
+			owner.customSelectedItemRender = clickedItemRender ;
 		}
 		
 		override public function set isSelected(value:Boolean):void
