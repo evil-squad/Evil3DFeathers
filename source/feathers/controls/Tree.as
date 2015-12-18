@@ -23,20 +23,22 @@ package feathers.controls
 			_rootNode = node;
 		}
 		
-		
 		private var _nodeList:Vector.<TreeNode>;
 		private function updateNodeList():Vector.<TreeNode>
 		{
 			if(_nodeList == null)_nodeList = new Vector.<TreeNode>();
 			_nodeList.length = 0;
-			
+			if(!_rootNode.expanded)_rootNode.expanded = true;
 			findAllExpandedNode(_rootNode);
 			return _nodeList;
 		}
 		
 		private function findAllExpandedNode(node:TreeNode):void
 		{
-			_nodeList.push(node);
+			if(node.depth >= 0)
+			{
+				_nodeList.push(node);
+			}
 			if(node.expanded)
 			{
 				var len:int = node.children ? node.children.length : 0;
@@ -68,9 +70,13 @@ package feathers.controls
 			for(var i:int=0; i< len; i++)
 			{
 				node = _nodeList[i];
-				node.index = i;
 				dataProvider.addItem(node);
 			}
+		}
+		
+		public function getSelectedNode():TreeNode
+		{
+			return selectedItem as TreeNode;
 		}
 	}
 }

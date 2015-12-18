@@ -1,333 +1,109 @@
-/*
-Feathers
-Copyright 2012-2015 Bowler Hat LLC. All Rights Reserved.
-
-This program is free software. You can redistribute and/or modify it in
-accordance with the terms of the accompanying license agreement.
-*/
 package feathers.controls.renderers
 {
 	import feathers.controls.List;
-	import feathers.events.FeathersEventType;
-	import feathers.skins.IStyleProvider;
-
+	
+	import starling.display.DisplayObject;
+	import starling.display.DisplayObjectContainer;
+	import starling.events.Touch;
+	import starling.events.TouchEvent;
+	import starling.events.TouchPhase;
+	
 	/**
-	 * The default item renderer for List control. Supports up to three optional
-	 * sub-views, including a label to display text, an icon to display an
-	 * image, and an "accessory" to display a UI control or another display
-	 * object (with shortcuts for including a second image or a second label).
+	 * 自定义的支持布局列表渲染项 
+	 * @author wewell@163.com
 	 * 
-	 * @see feathers.controls.List
-	 */
-	public class DefaultListItemRenderer extends BaseDefaultItemRenderer implements IListItemRenderer
+	 */	
+	public class DefaultListItemRenderer extends BaseDefaultListItemRenderer
 	{
-		/**
-		 * @copy feathers.controls.Button#STATE_UP
-		 *
-		 * @see #stateToSkinFunction
-		 * @see #stateToIconFunction
-		 * @see #stateToLabelPropertiesFunction
-		 */
-		public static const STATE_UP:String = "up";
-
-		/**
-		 * @copy feathers.controls.Button#STATE_DOWN
-		 *
-		 * @see #stateToSkinFunction
-		 * @see #stateToIconFunction
-		 * @see #stateToLabelPropertiesFunction
-		 */
-		public static const STATE_DOWN:String = "down";
-
-		/**
-		 * @copy feathers.controls.Button#STATE_HOVER
-		 *
-		 * @see #stateToSkinFunction
-		 * @see #stateToIconFunction
-		 * @see #stateToLabelPropertiesFunction
-		 */
-		public static const STATE_HOVER:String = "hover";
-
-		/**
-		 * @copy feathers.controls.Button#STATE_DISABLED
-		 *
-		 * @see #stateToSkinFunction
-		 * @see #stateToIconFunction
-		 * @see #stateToLabelPropertiesFunction
-		 */
-		public static const STATE_DISABLED:String = "disabled";
-
-		/**
-		 * @copy feathers.controls.Button#STATE_UP_AND_SELECTED
-		 *
-		 * @see #stateToSkinFunction
-		 * @see #stateToIconFunction
-		 * @see #stateToLabelPropertiesFunction
-		 */
-		public static const STATE_UP_AND_SELECTED:String = "upAndSelected";
-
-		/**
-		 * @copy feathers.controls.Button#STATE_DOWN_AND_SELECTED
-		 *
-		 * @see #stateToSkinFunction
-		 * @see #stateToIconFunction
-		 * @see #stateToLabelPropertiesFunction
-		 */
-		public static const STATE_DOWN_AND_SELECTED:String = "downAndSelected";
-
-		/**
-		 * @copy feathers.controls.Button#STATE_HOVER_AND_SELECTED
-		 *
-		 * @see #stateToSkinFunction
-		 * @see #stateToIconFunction
-		 * @see #stateToLabelPropertiesFunction
-		 */
-		public static const STATE_HOVER_AND_SELECTED:String = "hoverAndSelected";
-
-		/**
-		 * @copy feathers.controls.Button#STATE_DISABLED_AND_SELECTED
-		 *
-		 * @see #stateToSkinFunction
-		 * @see #stateToIconFunction
-		 * @see #stateToLabelPropertiesFunction
-		 */
-		public static const STATE_DISABLED_AND_SELECTED:String = "disabledAndSelected";
-		
-		/**
-		 * @copy feathers.controls.Button#ICON_POSITION_TOP
-		 *
-		 * @see feathers.controls.Button#iconPosition
-		 */
-		public static const ICON_POSITION_TOP:String = "top";
-
-		/**
-		 * @copy feathers.controls.Button#ICON_POSITION_RIGHT
-		 *
-		 * @see feathers.controls.Button#iconPosition
-		 */
-		public static const ICON_POSITION_RIGHT:String = "right";
-
-		/**
-		 * @copy feathers.controls.Button#ICON_POSITION_BOTTOM
-		 *
-		 * @see feathers.controls.Button#iconPosition
-		 */
-		public static const ICON_POSITION_BOTTOM:String = "bottom";
-
-		/**
-		 * @copy feathers.controls.Button#ICON_POSITION_LEFT
-		 *
-		 * @see feathers.controls.Button#iconPosition
-		 */
-		public static const ICON_POSITION_LEFT:String = "left";
-
-		/**
-		 * @copy feathers.controls.Button#ICON_POSITION_MANUAL
-		 *
-		 * @see feathers.controls.Button#iconPosition
-		 * @see feathers.controls.Button#iconOffsetX
-		 * @see feathers.controls.Button#iconOffsetY
-		 */
-		public static const ICON_POSITION_MANUAL:String = "manual";
-
-		/**
-		 * @copy feathers.controls.Button#ICON_POSITION_LEFT_BASELINE
-		 *
-		 * @see feathers.controls.Button#iconPosition
-		 */
-		public static const ICON_POSITION_LEFT_BASELINE:String = "leftBaseline";
-
-		/**
-		 * @copy feathers.controls.Button#ICON_POSITION_RIGHT_BASELINE
-		 *
-		 * @see feathers.controls.Button#iconPosition
-		 */
-		public static const ICON_POSITION_RIGHT_BASELINE:String = "rightBaseline";
-
-		/**
-		 * @copy feathers.controls.Button#HORIZONTAL_ALIGN_LEFT
-		 *
-		 * @see feathers.controls.Button#horizontalAlign
-		 */
-		public static const HORIZONTAL_ALIGN_LEFT:String = "left";
-
-		/**
-		 * @copy feathers.controls.Button#HORIZONTAL_ALIGN_CENTER
-		 *
-		 * @see feathers.controls.Button#horizontalAlign
-		 */
-		public static const HORIZONTAL_ALIGN_CENTER:String = "center";
-
-		/**
-		 * @copy feathers.controls.Button#HORIZONTAL_ALIGN_RIGHT
-		 *
-		 * @see feathers.controls.Button#horizontalAlign
-		 */
-		public static const HORIZONTAL_ALIGN_RIGHT:String = "right";
-
-		/**
-		 * @copy feathers.controls.Button#VERTICAL_ALIGN_TOP
-		 *
-		 * @see feathers.controls.Button#verticalAlign
-		 */
-		public static const VERTICAL_ALIGN_TOP:String = "top";
-
-		/**
-		 * @copy feathers.controls.Button#VERTICAL_ALIGN_MIDDLE
-		 *
-		 * @see feathers.controls.Button#verticalAlign
-		 */
-		public static const VERTICAL_ALIGN_MIDDLE:String = "middle";
-
-		/**
-		 * @copy feathers.controls.Button#VERTICAL_ALIGN_BOTTOM
-		 *
-		 * @see feathers.controls.Button#verticalAlign
-		 */
-		public static const VERTICAL_ALIGN_BOTTOM:String = "bottom";
-
-		/**
-		 * @copy feathers.controls.renderers.BaseDefaultItemRenderer#ACCESSORY_POSITION_TOP
-		 *
-		 * @see feathers.controls.renderers.BaseDefaultItemRenderer#accessoryPosition
-		 */
-		public static const ACCESSORY_POSITION_TOP:String = "top";
-
-		/**
-		 * @copy feathers.controls.renderers.BaseDefaultItemRenderer#ACCESSORY_POSITION_RIGHT
-		 *
-		 * @see feathers.controls.renderers.BaseDefaultItemRenderer#accessoryPosition
-		 */
-		public static const ACCESSORY_POSITION_RIGHT:String = "right";
-
-		/**
-		 * @copy feathers.controls.renderers.BaseDefaultItemRenderer#ACCESSORY_POSITION_BOTTOM
-		 *
-		 * @see feathers.controls.renderers.BaseDefaultItemRenderer#accessoryPosition
-		 */
-		public static const ACCESSORY_POSITION_BOTTOM:String = "bottom";
-
-		/**
-		 * @copy feathers.controls.renderers.BaseDefaultItemRenderer#ACCESSORY_POSITION_LEFT
-		 *
-		 * @see feathers.controls.renderers.BaseDefaultItemRenderer#accessoryPosition
-		 */
-		public static const ACCESSORY_POSITION_LEFT:String = "left";
-
-		/**
-		 * @copy feathers.controls.renderers.BaseDefaultItemRenderer#ACCESSORY_POSITION_MANUAL
-		 *
-		 * @see feathers.controls.renderers.BaseDefaultItemRenderer#accessoryPosition
-		 * @see feathers.controls.renderers.BaseDefaultItemRenderer#accessoryOffsetX
-		 * @see feathers.controls.renderers.BaseDefaultItemRenderer#accessoryOffsetY
-		 */
-		public static const ACCESSORY_POSITION_MANUAL:String = "manual";
-
-		/**
-		 * @copy feathers.controls.renderers.BaseDefaultItemRenderer#LAYOUT_ORDER_LABEL_ACCESSORY_ICON
-		 *
-		 * @see feathers.controls.renderers.BaseDefaultItemRenderer#layoutOrder
-		 */
-		public static const LAYOUT_ORDER_LABEL_ACCESSORY_ICON:String = "labelAccessoryIcon";
-
-		/**
-		 * @copy feathers.controls.renderers.BaseDefaultItemRenderer#LAYOUT_ORDER_LABEL_ICON_ACCESSORY
-		 *
-		 * @see feathers.controls.renderers.BaseDefaultItemRenderer#layoutOrder
-		 */
-		public static const LAYOUT_ORDER_LABEL_ICON_ACCESSORY:String = "labelIconAccessory";
-
-		/**
-		 * The default <code>IStyleProvider</code> for all <code>DefaultListItemRenderer</code>
-		 * components.
-		 *
-		 * @default null
-		 * @see feathers.core.FeathersControl#styleProvider
-		 */
-		public static var globalStyleProvider:IStyleProvider;
-
-		/**
-		 * Constructor.
-		 */
 		public function DefaultListItemRenderer()
 		{
-			super();
-		}
-
-		/**
-		 * @private
-		 */
-		override protected function get defaultStyleProvider():IStyleProvider
-		{
-			return DefaultListItemRenderer.globalStyleProvider;
+			this.addEventListener(starling.events.TouchEvent.TOUCH, onTouch);
 		}
 		
-		/**
-		 * @private
-		 */
-		protected var _index:int = -1;
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get index():int
+		override protected function commitData():void
 		{
-			return this._index;
-		}
-		
-		/**
-		 * @private
-		 */
-		public function set index(value:int):void
-		{
-			this._index = value;
-		}
-		
-		/**
-		 * @inheritDoc
-		 */
-		public function get owner():List
-		{
-			return List(this._owner);
-		}
-		
-		/**
-		 * @private
-		 */
-		public function set owner(value:List):void
-		{
-			if(this._owner == value)
+			if(this._data && this._owner)
 			{
+				update(_data, owner);
+			}
+		}
+		
+		/**
+		 *当面板被点击时
+		 */		
+		protected function onTouch(e:TouchEvent):void
+		{
+			var t:Touch = e.getTouch(this, TouchPhase.ENDED);
+			if(t != null && t.target != null && this.stage != null)
+			{
+				t.getLocation(this.stage, HELPER_POINT);
+				var isInBounds:Boolean = true;
+				if(t.target is DisplayObjectContainer)
+				{
+					isInBounds = DisplayObjectContainer(t.target).contains(this.stage.hitTest(HELPER_POINT, true));
+				}
+				if(isInBounds)onTouchTarget(t.target);
+			}
+		}
+		
+		/**
+		 *当子对象被点击后的处理。默认已实现关闭按钮被点击后的处理，关闭按钮名称为"btnClose"或"closeBtn"时生效
+		 *子类可以覆盖此方法以实现特定目标被点击后的处理
+		 */		
+		protected function onTouchTarget(target:DisplayObject):void
+		{
+			onClick();
+		}
+		
+		
+		private function onClick():void
+		{
+			//清除上次的选中状态
+			var clickedItemRender:DefaultListItemRenderer = this.owner.customSelectedItemRender as DefaultListItemRenderer;
+			if(clickedItemRender != null && clickedItemRender == this && owner.selectedItem == this._data)
+			{
+				//过滤同一项
 				return;
 			}
-			if(this._owner)
+			
+			if(clickedItemRender)
 			{
-				this._owner.removeEventListener(FeathersEventType.SCROLL_START, owner_scrollStartHandler);
-				this._owner.removeEventListener(FeathersEventType.SCROLL_COMPLETE, owner_scrollCompleteHandler);
+				clickedItemRender.isSelected = false;
 			}
-			this._owner = value;
-			if(this._owner)
-			{
-				var list:List = List(this._owner);
-				this.isSelectableWithoutToggle = list.isSelectable;
-				if(list.allowMultipleSelection)
-				{
-					//toggling is forced in this case
-					this.isToggle = true;
-				}
-				this._owner.addEventListener(FeathersEventType.SCROLL_START, owner_scrollStartHandler);
-				this._owner.addEventListener(FeathersEventType.SCROLL_COMPLETE, owner_scrollCompleteHandler);
-			}
-			this.invalidate(INVALIDATION_FLAG_DATA);
+			
+			//当前项被选中
+			clickedItemRender = this;
+			clickedItemRender.isSelected = true;
+			
+			//设置选中数据项，List会发送Event.Change事件
+			owner.selectedItem = this._data;
+			
+			//保存当前被选中的ItemRender,会发送Event.Select事件
+			owner.customSelectedItemRender = clickedItemRender ;
 		}
-
-		/**
-		 * @private
-		 */
+		
+		override public function set isSelected(value:Boolean):void
+		{
+			if(_isSelected == value)return;
+			_isSelected = value;
+		}
+		
+		override public function get isSelected():Boolean
+		{
+			return _isSelected;
+		}
+		
+		protected function update(data:Object, owner:List):void
+		{
+			
+		}
+		
 		override public function dispose():void
 		{
-			this.owner = null;
+			this.removeEventListener(starling.events.TouchEvent.TOUCH, onTouch);
 			super.dispose();
 		}
 	}
 }
+
+
