@@ -25,6 +25,7 @@ package feathers.controls.renderers
 			if(this._data && this._owner)
 			{
 				renderTreeNode(_data as TreeNode);
+				if(_toggleButton && treeNode)_toggleButton.isSelected = treeNode.expanded ;
 			}
 		}
 		
@@ -50,8 +51,6 @@ package feathers.controls.renderers
 		private function onNodeBtnClick(e:Event):void
 		{
 			this.treeNode.expanded = !treeNode.expanded;
-			
-			if(_toggleButton)_toggleButton.isToggle = !_toggleButton.isToggle;
 			
 			refleshTree();
 			
