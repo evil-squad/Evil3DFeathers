@@ -481,7 +481,7 @@ package feathers.controls
 				this.touchable = false;
 				this.changeState(STATE_DISABLED);
 				this.touchPointID = -1;
-				GrayFilter.gray(this);
+				//GrayFilter.gray(this);
 			}
 			else
 			{
@@ -492,7 +492,7 @@ package feathers.controls
 					this.changeState(STATE_UP);
 				}
 				this.touchable = true;
-				GrayFilter.unGray(this);
+				//GrayFilter.unGray(this);
 			}
 		}
 		

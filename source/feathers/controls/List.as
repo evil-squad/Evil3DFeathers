@@ -667,7 +667,19 @@ package feathers.controls
 		/**
 		 * 供外部自定义寄存的数据
 		 */
-		public var customSelectedItemRender:DisplayObject;
+		private var _customSelectedItemRender:DisplayObject;
+		public function set customSelectedItemRender(value:DisplayObject):void
+		{
+			if(_customSelectedItemRender == value)return;
+			_customSelectedItemRender = value;
+			dispatchEventWith(Event.SELECT, false, selectedItem);
+		}
+		
+		public function get customSelectedItemRender():DisplayObject
+		{
+			return _customSelectedItemRender;
+		}
+		
 		public var customData:Object;
 
 		/**

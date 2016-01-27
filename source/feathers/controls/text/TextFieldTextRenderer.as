@@ -1801,7 +1801,7 @@ package feathers.controls.text
 				//text format has been specified
 				if(!this._textFormat)
 				{
-					this._textFormat = new TextFormat();
+					this._textFormat = new TextFormat(Fontter.DEFAULT_FONT_NAME, Fontter.DEFAULT_FONT_SIZE);
 				}
 				textFormat = this._textFormat;
 			}

@@ -1,5 +1,7 @@
 package feathers.controls.text
 {
+	import flash.filters.BitmapFilterQuality;
+	import flash.filters.GlowFilter;
 	import flash.text.TextFormat;
 	import flash.utils.Dictionary;
 
@@ -11,15 +13,19 @@ package feathers.controls.text
 	public class Fontter
 	{
 		//字体英文名
-		public static const FONT_Hei:String = "SimHei";
+		public static const FONT_Hei:String = "SimHei,黑体";
 		public static const FONT_YaHei:String = "Microsoft YaHei";
 		public static const FONT_Sun:String = "SimSun";
 		public static const FONT_Lisu:String = "LiSu";
 		public static const FONT_huaLisu:String = "STLiti";//华文隶书
 		public static const FONT_Arial:String = "Arial";
 		
+		public static var DEFAULT_FONT_NAME:String = Fontter.FONT_YaHei;//MSYaHei SimSun
+		public static var DEFAULT_FONT_SIZE:int = 12;
+		public static var DEFAULT_FONT_FILTER:Array = null;//[new GlowFilter(0x0A0A0A,1,1,1,20,BitmapFilterQuality.MEDIUM,false,false)];
+		
 		public static  var embedFonts:Boolean = false;
-		public static var sharpness:Number = 400;
+		public static var sharpness:Number = 0;
 		
 		private static var _embedFonts:Dictionary = new Dictionary();
 		

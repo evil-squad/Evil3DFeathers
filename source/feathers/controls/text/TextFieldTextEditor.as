@@ -1790,10 +1790,6 @@ package feathers.controls.text
 				var isFormatDifferent:Boolean = this._previousTextFormat != this.currentTextFormat;
 				this._previousTextFormat = this.currentTextFormat;
 			}
-			if(this._embedFonts)
-			{
-				Fontter.transTextFormat( this.currentTextFormat);
-			}
 			textField.defaultTextFormat = this.currentTextFormat;
 			
 			if(this._isHTML)
@@ -1851,9 +1847,13 @@ package feathers.controls.text
 				//text format has been specified
 				if(!this._textFormat)
 				{
-					this._textFormat = new TextFormat();
+					this._textFormat = new TextFormat(Fontter.DEFAULT_FONT_NAME, Fontter.DEFAULT_FONT_SIZE);
 				}
 				textFormat = this._textFormat;
+			}
+			if(this._embedFonts)
+			{
+				Fontter.transTextFormat( textFormat);
 			}
 			this.currentTextFormat = textFormat;
 		}

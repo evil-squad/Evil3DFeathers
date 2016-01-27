@@ -786,7 +786,7 @@ package feathers.controls
 		
 		//======================================textFormat properties===========================
 		//
-		protected var mFontName:String = Fontter.FONT_YaHei;
+		protected var mFontName:String = Fontter.DEFAULT_FONT_NAME;
 		/** The name of the font (true type or bitmap font). */
 		public function get fontName():String { return mFontName; }
 		public function set fontName(value:String):void
