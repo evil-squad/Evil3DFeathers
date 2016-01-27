@@ -1451,6 +1451,7 @@ package feathers.controls.text
 				this.textField.sharpness = this._sharpness;
 				this.textField.thickness = this._thickness;
 				this.textField.filters = this._nativeFilters;
+				this.textField.embedFonts = this._embedFonts;
 			}
 
 			if(dataInvalid || stylesInvalid || stateInvalid)
