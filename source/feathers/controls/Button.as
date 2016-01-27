@@ -23,7 +23,6 @@ package feathers.controls
 	import feathers.events.FeathersEventType;
 	import feathers.skins.IStyleProvider;
 	import feathers.skins.StateWithToggleValueSelector;
-	import feathers.utils.filter.GrayFilter;
 	
 	import starling.core.RenderSupport;
 	import starling.display.DisplayObject;
@@ -2565,6 +2564,12 @@ package feathers.controls
 				var propertyValue:Object = properties[propertyName];
 				this.labelTextRenderer[propertyName] = propertyValue;
 			}
+		}
+		
+		public function refreshLaybeInitStyles():void
+		{
+			this.invalidate(INVALIDATION_FLAG_STYLES);
+			draw();
 		}
 		
 		/**
