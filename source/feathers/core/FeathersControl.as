@@ -945,6 +945,13 @@ package feathers.core
 			super.scaleY = value;
 			this.setSizeInternal(this.actualWidth, this.actualHeight, false);
 		}
+		
+		/** textFilter */
+		public function get textFilter():String { return null; }
+		public function set textFilter(value:String):void
+		{
+			
+		}
 
 		/**
 		 * @private

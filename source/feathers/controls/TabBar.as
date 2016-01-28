@@ -2130,5 +2130,12 @@ package feathers.controls
 		{
 			this.invalidate(INVALIDATION_FLAG_DATA);
 		}
+		
+		/** btnWidth */
+		public function get btnWidth():Number { return 0; }
+		public function set btnWidth(value:Number):void
+		{
+			
+		}
 	}
 }

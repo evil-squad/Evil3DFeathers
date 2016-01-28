@@ -948,6 +948,41 @@ public class Label extends DisplayObjectContainer
 			mRequiresRedraw = true;
 		}
 	}
+
+	/** textFilter */
+	public function get textFilter():String { return null; }
+	public function set textFilter(value:String):void
+	{
+		
+	}
+
+	/** glowColor */
+	public function get glowColor():uint { return null; }
+	public function set glowColor(value:uint):void
+	{
+		
+	}
+
+	/** truncateToFit */
+	public function get truncateToFit():Boolean { return false; }
+	public function set truncateToFit(value:Boolean):void
+	{
+		
+	}
+
+	/** maxDisplayedLines */
+	public function get maxDisplayedLines():int { return 0; }
+	public function set maxDisplayedLines(value:int):void
+	{
+		
+	}
+
+	/** itemCreationPolicy */
+	public function get itemCreationPolicy():String { return null; }
+	public function set itemCreationPolicy(value:String):void
+	{
+		
+	}
 	
 	/** The Context3D texture format that is used for rendering of all TrueType texts.
 	 *  The default (<pre>Context3DTextureFormat.BGRA_PACKED</pre>) provides a good

@@ -1775,6 +1775,13 @@ package feathers.controls
 			this._paddingLeft = value;
 			this.invalidate(INVALIDATION_FLAG_STYLES);
 		}
+		
+		/** glowColor */
+		public function get glowColor():uint { return null; }
+		public function set glowColor(value:uint):void
+		{
+			
+		}
 
 		/**
 		 * @private
