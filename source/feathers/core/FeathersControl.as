@@ -2159,5 +2159,11 @@ package feathers.core
 			}
 			this._styleProvider.applyStyles(this);
 		}
+		
+		public function toString():String
+		{
+			var classname:String = getQualifiedClassName(this);
+			return classname.substring(classname.indexOf("::")+2, classname.length);
+		}
 	}
 }

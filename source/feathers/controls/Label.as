@@ -119,12 +119,13 @@ public class Label extends DisplayObjectContainer
 	
 	private var mImage:Image;
 	private var mQuadBatch:QuadBatch;
+	private var mTextWidth:Number;
+	private var mTextHeight:Number;
 	
 	public var 	minWidth:int = 10;
 	public var 	minHeight:int = 10;
 	public var 	maxWidth:int = 1024;
 	public var 	maxHeight:int = 512;
-
 	
 	/** Helper objects. */
 	private static var sHelperMatrix:Matrix = new Matrix();
@@ -150,6 +151,16 @@ public class Label extends DisplayObjectContainer
 		mVAlign = VAlign.TOP;
 		
 		addEventListener(Event.FLATTEN, onFlatten);
+	}
+	
+	public function get textHeight():Number
+	{
+		return sNativeTextField.textWidth;
+	}
+	
+	public function get textWidth():Number
+	{
+		return sNativeTextField.textHeight;
 	}
 	
 	private var _verticalAlign:String = VerticalLayout.VERTICAL_ALIGN_TOP;
@@ -227,6 +238,7 @@ public class Label extends DisplayObjectContainer
 	{
 		this.text = value;
 		isHtmlText = true;
+		sNativeTextField.htmlText = value;
 	}
 	
 	/**
@@ -453,7 +465,8 @@ public class Label extends DisplayObjectContainer
 		
 		if (mAutoScale)
 			autoScaleNativeTextField(sNativeTextField);
-		
+		mTextWidth = sNativeTextField.textWidth;
+		mTextHeight = sNativeTextField.textHeight;
 		var textWidth:Number  = sNativeTextField.textWidth + 4;
 		var textHeight:Number = sNativeTextField.textHeight + 4;
 		
@@ -728,6 +741,7 @@ public class Label extends DisplayObjectContainer
 		if (mText != value)
 		{
 			mText = value;
+			sNativeTextField.text = value;
 			mRequiresRedraw = true;
 		}
 	}
@@ -763,6 +777,16 @@ public class Label extends DisplayObjectContainer
 	 *  to <code>Color.WHITE</code> to get the desired result. @default black */
 	public function get color():uint { return mColor; }
 	public function set color(value:uint):void
+	{
+		if (mColor != value)
+		{
+			mColor = value;
+			mRequiresRedraw = true;
+		}
+	}
+	
+	public function get textColor():uint { return mColor; }
+	public function set textColor(value:uint):void
 	{
 		if (mColor != value)
 		{
@@ -983,6 +1007,8 @@ public class Label extends DisplayObjectContainer
 	{
 		
 	}
+
+	public function get numLines():int { return sNativeTextField.numLines; }
 	
 	/** The Context3D texture format that is used for rendering of all TrueType texts.
 	 *  The default (<pre>Context3DTextureFormat.BGRA_PACKED</pre>) provides a good
