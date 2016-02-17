@@ -44,10 +44,7 @@ package feathers.controls.renderers
 			{
 				t.getLocation(this.stage, HELPER_POINT);
 				var isInBounds:Boolean = true;
-				if(t.target is DisplayObjectContainer)
-				{
-					isInBounds = DisplayObjectContainer(t.target).contains(this.stage.hitTest(HELPER_POINT, true));
-				}
+				isInBounds = DisplayObjectContainer(this).contains(this.stage.hitTest(HELPER_POINT, true));
 				if(isInBounds)onTouchItem(t.target);
 			}
 		}

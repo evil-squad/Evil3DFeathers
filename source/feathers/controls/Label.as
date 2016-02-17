@@ -138,8 +138,8 @@ public class Label extends DisplayObjectContainer
 		mColor = 0xFFFFFF;
 		mBorder = null;
 		mKerning = true;
-		mLetterSpacing = 0;
-		mLeading = 0.0;
+		mLetterSpacing = 2;
+		mLeading = 2;
 		mBold = false;
 		mAutoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
 		mHitArea = new Rectangle(0, 0, 0, 0);
@@ -430,6 +430,7 @@ public class Label extends DisplayObjectContainer
 			mFontSize * scale, mColor, mBold, mItalic, mUnderline, null, null, hAlign);
 		textFormat.kerning = mKerning;
 		textFormat.leading = mLeading;
+		textFormat.letterSpacing = mLetterSpacing;
 		
 		sNativeTextField.defaultTextFormat = textFormat;
 		sNativeTextField.width = width;
@@ -917,24 +918,9 @@ public class Label extends DisplayObjectContainer
 	public function get nativeFilters():Array { return mNativeFilters; }
 	public function set nativeFilters(value:Array) : void
 	{
-		mNativeFilters = value != null? value.concat() : null;
+		mNativeFilters = value != null? value : null;
 		mRequiresRedraw = true;
 	}
-	
-	private var _nativeFiltersId:String;
-	public function set nativeFiltersId(value:String):void
-	{
-		if(_nativeFiltersId == value)return;
-		_nativeFiltersId = value;
-		var fileterArr:Array = Fontter.filterObj[value];
-		nativeFilters = fileterArr;
-	}
-	
-	public function get nativeFiltersId():String
-	{
-		return _nativeFiltersId;
-	}
-	
 	
 	/** Indicates if the assigned text should be interpreted as HTML code. For a description
 	 *  of the supported HTML subset, refer to the classic Flash 'TextField' documentation.
