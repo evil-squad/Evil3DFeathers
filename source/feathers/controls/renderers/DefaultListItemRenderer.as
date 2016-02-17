@@ -3,9 +3,6 @@ package feathers.controls.renderers
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	
-	import feathers.controls.Label;
-	import feathers.controls.List;
-	
 	import starling.core.Starling;
 	import starling.display.DisplayObject;
 	import starling.display.DisplayObjectContainer;
@@ -15,7 +12,7 @@ package feathers.controls.renderers
 	import starling.events.TouchPhase;
 	
 	/**
-	 * 默认的列表渲染项 
+	 * 默认的列表渲染项 ,有一个无皮肤的ToggleButton,实现单击选中效果切换和双击doubleClickFunction回调
 	 * @author wewell@163.com
 	 * 
 	 */	
@@ -23,27 +20,18 @@ package feathers.controls.renderers
 	{
 		private static var HELP_POINT:Point =  new Point(0,0);
 		
-		private var _textFiled:Label;
-		
 		public function DefaultListItemRenderer()
 		{
 			this.addEventListener(starling.events.TouchEvent.TOUCH, onTouch);
 		}
 		
-		override protected function initialize():void
+		override public function get height():Number
 		{
-			_textFiled = new Label();
-			addChild(_textFiled);
-			this.width = 80;
-			this.height = 20;
-		}
-		
-		override protected function commitData():void
-		{
-			if(this._data && this._owner)
+			if(super.height <= 0)
 			{
-				update(_data, owner);
+				throw new Error("you  must override the function 'get height()' and return a correct height value");
 			}
+			return super.height;
 		}
 		
 		/**
@@ -144,27 +132,8 @@ package feathers.controls.renderers
 			//此逻辑以改用onTouch方法以实现子对象的点击判定， 因此不再执行tirgger方法
 		}
 		
-		override public function set isSelected(value:Boolean):void
-		{
-			if(_isSelected == value)return;
-			_isSelected = value;
-			if(_textFiled)_textFiled.color = value ? 0x00FF00 : 0xFFFFFF;
-		}
-		
-		override public function get isSelected():Boolean
-		{
-			return _isSelected;
-		}
-		
-		protected function update(data:Object, owner:List):void
-		{
-			if(_textFiled)_textFiled.text = String(data);
-		}
-		
 		override public function dispose():void
 		{
-			if(_textFiled)_textFiled.dispose();
-			_textFiled = null;
 			this.removeEventListener(starling.events.TouchEvent.TOUCH, onTouch);
 			Starling.current.nativeStage.removeEventListener( MouseEvent.DOUBLE_CLICK, _onDoubleClick);
 			super.dispose();

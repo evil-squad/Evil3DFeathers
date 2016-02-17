@@ -134,7 +134,6 @@ public class Label extends DisplayObjectContainer
 	{
 		mFontName = Fontter.DEFAULT_FONT_NAME;
 		mFontSize = Fontter.DEFAULT_FONT_SIZE;
-		nativeFilters = Fontter.DEFAULT_FONT_FILTER;
 		
 		mColor = 0xFFFFFF;
 		mBorder = null;
@@ -142,7 +141,7 @@ public class Label extends DisplayObjectContainer
 		mLetterSpacing = 0;
 		mLeading = 0.0;
 		mBold = false;
-		mAutoSize = TextFieldAutoSize.VERTICAL;
+		mAutoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
 		mHitArea = new Rectangle(0, 0, 0, 0);
 		mText = "";
 		
@@ -358,6 +357,15 @@ public class Label extends DisplayObjectContainer
 		
 		mHitArea.width  = bitmapData.width  / scale;
 		mHitArea.height = bitmapData.height / scale;
+		if(mHitArea.width > maxWidth)
+		{
+			mHitArea.width = maxWidth;
+		}
+		if(mHitArea.height > maxHeight)
+		{
+			mHitArea.height = maxHeight
+		}
+		
 		if (Starling.context.driverInfo == "disposed")
 		{
 			throw new Error("Starling.context.driverInfo is disposed");
@@ -407,68 +415,58 @@ public class Label extends DisplayObjectContainer
 		var hAlign:String = mHAlign;
 		var vAlign:String = mVAlign;
 		
-		/*            if (isHorizontalAutoSize)
+		if (isHorizontalAutoSize)
 		{
-		width = int.MAX_VALUE;
-		hAlign = HAlign.LEFT;
+			width = maxWidth ? maxWidth : int.MAX_VALUE;
+			hAlign = HAlign.LEFT;
 		}
 		if (isVerticalAutoSize)
 		{
-		height = int.MAX_VALUE;
-		vAlign = VAlign.TOP;
-		}*/
+			height = maxHeight ? maxHeight : int.MAX_VALUE;
+			vAlign = VAlign.TOP;
+		}
 		
 		var textFormat:TextFormat = new TextFormat(mFontName,
 			mFontSize * scale, mColor, mBold, mItalic, mUnderline, null, null, hAlign);
 		textFormat.kerning = mKerning;
 		textFormat.leading = mLeading;
-		textFormat.letterSpacing = mLetterSpacing;
-		
-		
-		sNativeTextField.width =  width < maxWidth ? width : maxWidth;
-		sNativeTextField.height = height < maxHeight ? height : maxHeight;
-		sNativeTextField.antiAliasType = AntiAliasType.ADVANCED;
-		sNativeTextField.selectable = false;  
-		sNativeTextField.multiline = true;            
-		sNativeTextField.wordWrap = _wordWrap;     
-		sNativeTextField.embedFonts = mEmbedFonted;
-		if(mEmbedFonted)
-		{
-			Fontter.transTextFormat(textFormat);
-		}
 		
 		sNativeTextField.defaultTextFormat = textFormat;
+		sNativeTextField.width = width;
+		sNativeTextField.height = height;
+		sNativeTextField.antiAliasType = AntiAliasType.ADVANCED;
+		sNativeTextField.selectable = false;            
+		sNativeTextField.multiline = true;            
+		sNativeTextField.wordWrap = true;         
 		
 		if (mIsHtmlText) sNativeTextField.htmlText = mText;
 		else             sNativeTextField.text     = mText;
 		
 		sNativeTextField.filters = mNativeFilters;
-		
 		if (mEmbedFonted)
 		{
+			sNativeTextField.embedFonts = true;
 			// we try embedded fonts first, non-embedded fonts are just a fallback
 			if (sNativeTextField.textWidth == 0.0 || sNativeTextField.textHeight == 0.0)
 				sNativeTextField.embedFonts = false;
 		}
 		
+		formatText(sNativeTextField, textFormat);
+		
 		if (mAutoScale)
 			autoScaleNativeTextField(sNativeTextField);
 		
-		var textWidth:Number  = sNativeTextField.textWidth + 4;
-		var textHeight:Number = sNativeTextField.textHeight + 4;
+		var textWidth:Number  = sNativeTextField.textWidth;
+		var textHeight:Number = sNativeTextField.textHeight;
 		
-		if(!width || width < textWidth)
-			width =  Math.ceil(textWidth);
-		if(!height || height < textHeight)
-			height = Math.ceil(textHeight);
 		if (isHorizontalAutoSize)
-			sNativeTextField.width = Math.ceil(textWidth);
+			sNativeTextField.width = width = Math.ceil(textWidth + 5);
 		if (isVerticalAutoSize)
-			sNativeTextField.height = Math.ceil(textHeight);
+			sNativeTextField.height = height = Math.ceil(textHeight + 4);
 		
 		// avoid invalid texture size
-		if (width  < 1) width  = minWidth;
-		if (height < 1) height = minHeight;
+		if (width  < 1) width  = 1.0;
+		if (height < 1) height = 1.0;
 		
 		var textOffsetX:Number = 0.0;
 		if (hAlign == HAlign.LEFT)        textOffsetX = 2; // flash adds a 2 pixel offset
@@ -486,7 +484,7 @@ public class Label extends DisplayObjectContainer
 		// finally: draw text field to bitmap data
 		var bitmapData:BitmapData = new BitmapData(width, height, true, 0x0);
 		var drawMatrix:Matrix = new Matrix(1, 0, 0, 1,
-			filterOffset.x, filterOffset.y);
+			filterOffset.x, filterOffset.y + int(textOffsetY)-2);
 		var drawWithQualityFunc:Function = 
 			"drawWithQuality" in bitmapData ? bitmapData["drawWithQuality"] : null;
 		
@@ -703,10 +701,10 @@ public class Label extends DisplayObjectContainer
 		mRequiresRedraw = true;
 	}
 	
-	public override function get width():Number
+/*	public override function get width():Number
 	{
 		return mHitArea.width;
-	}
+	}*/
 	
 	/** @inheritDoc */
 	public override function set height(value:Number):void
@@ -715,10 +713,10 @@ public class Label extends DisplayObjectContainer
 		mRequiresRedraw = true;
 	}
 
-	public override function get height():Number
+/*	public override function get height():Number
 	{
 		return mHitArea.height;
-	}
+	}*/
 	
 	/** The displayed text. */
 	public function get text():String { return mText; }
@@ -922,6 +920,21 @@ public class Label extends DisplayObjectContainer
 		mNativeFilters = value != null? value.concat() : null;
 		mRequiresRedraw = true;
 	}
+	
+	private var _nativeFiltersId:String;
+	public function set nativeFiltersId(value:String):void
+	{
+		if(_nativeFiltersId == value)return;
+		_nativeFiltersId = value;
+		var fileterArr:Array = Fontter.filterObj[value];
+		nativeFilters = fileterArr;
+	}
+	
+	public function get nativeFiltersId():String
+	{
+		return _nativeFiltersId;
+	}
+	
 	
 	/** Indicates if the assigned text should be interpreted as HTML code. For a description
 	 *  of the supported HTML subset, refer to the classic Flash 'TextField' documentation.

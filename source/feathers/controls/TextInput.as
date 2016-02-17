@@ -23,6 +23,7 @@ package feathers.controls
 	import feathers.core.ITextBaselineControl;
 	import feathers.core.ITextEditor;
 	import feathers.core.ITextRenderer;
+	import feathers.core.IToggle;
 	import feathers.core.IValidating;
 	import feathers.core.PropertyProxy;
 	import feathers.events.FeathersEventType;
@@ -223,7 +224,7 @@ package feathers.controls
 	 * @see feathers.controls.AutoComplete
 	 * @see feathers.controls.TextArea
 	 */
-	public class TextInput extends FeathersControl implements ITextBaselineControl, INativeFocusOwner, IStateContext
+	public class TextInput extends FeathersControl implements IToggle,ITextBaselineControl, INativeFocusOwner, IStateContext
 	{
 		/**
 		 * @private
@@ -598,6 +599,20 @@ package feathers.controls
 			this.textEditorProperties["nativeFilters"] = value;
 			this.invalidate(INVALIDATION_FLAG_STYLES);
 		}
+		
+		private var _nativeFiltersId:String;
+		public function set nativeFiltersId(value:String):void
+		{
+			if(_nativeFiltersId == value)return;
+			_nativeFiltersId = value;
+			var fileterArr:Array = Fontter.filterObj[value];
+			nativeFilters = fileterArr;
+		}
+		
+		public function get nativeFiltersId():String
+		{
+			return _nativeFiltersId;
+		}
 
 		/**
 		 * The baseline measurement of the text, in pixels.
@@ -948,6 +963,27 @@ package feathers.controls
 			}
 			this._isEditable = value;
 			this.invalidate(INVALIDATION_FLAG_STYLES);
+		}
+		
+		
+		/**
+		 * Indicates if the IToggle is selected or not.
+		 */
+		private var _isSelected:Boolean;
+		public function get isSelected():Boolean
+		{
+			return _isSelected;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set isSelected(value:Boolean):void
+		{
+			if(value == _isSelected)return;
+			_isSelected = value;
+			this.invalidate(INVALIDATION_FLAG_SELECTED);
+			this.dispatchEventWith(Event.CHANGE);
 		}
 
 		/**

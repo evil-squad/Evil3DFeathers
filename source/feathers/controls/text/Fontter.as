@@ -1,7 +1,5 @@
 package feathers.controls.text
 {
-	import flash.filters.BitmapFilterQuality;
-	import flash.filters.GlowFilter;
 	import flash.text.TextFormat;
 	import flash.utils.Dictionary;
 
@@ -22,7 +20,15 @@ package feathers.controls.text
 		
 		public static var DEFAULT_FONT_NAME:String = Fontter.FONT_YaHei;//MSYaHei SimSun
 		public static var DEFAULT_FONT_SIZE:int = 12;
-		public static var DEFAULT_FONT_FILTER:Array = null;//[new GlowFilter(0x0A0A0A,1,1,1,20,BitmapFilterQuality.MEDIUM,false,false)];
+		public static var DEFAULT_FONT_COLOR:uint = 0x000000;
+		
+		//常用文本滤镜
+		public static var filterObj:Object = {};//<id(String)-->filter(Object)>
+		
+		//常用文本颜色及其描边颜色
+		public static var textFormatObj:Object = {};//<id(String)-->textFormat(Object)>
+		
+		public static var truncateToFit:Boolean = true;
 		
 		public static  var embedFonts:Boolean = false;
 		public static var sharpness:Number = 0;
@@ -46,7 +52,5 @@ package feathers.controls.text
 			tf.font = tf.bold ? embedNames[1] : embedNames[0];
 			return tf;
 		}
-		
-		
 	}
 }

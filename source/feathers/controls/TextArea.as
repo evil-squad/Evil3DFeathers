@@ -523,6 +523,20 @@ package feathers.controls
 			this.textEditorProperties["nativeFilters"] = value;
 			this.invalidate(INVALIDATION_FLAG_STYLES);
 		}
+		
+		private var _nativeFiltersId:String;
+		public function set nativeFiltersId(value:String):void
+		{
+			if(_nativeFiltersId == value)return;
+			_nativeFiltersId = value;
+			var fileterArr:Array = Fontter.filterObj[value];
+			nativeFilters = fileterArr;
+		}
+		
+		public function get nativeFiltersId():String
+		{
+			return _nativeFiltersId;
+		}
 
 		/**
 		 * @private
@@ -707,7 +721,7 @@ package feathers.controls
 				textEditorProperties.textFormat["leading"] = mLeading;
 			}
 		}
-
+		
 		/**
 		 * @private
 		 */
