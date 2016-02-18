@@ -244,7 +244,8 @@ package feathers.core
 		 *外部对此对象设置styleClass后的处理函数
 		 */		
 		public static var defautStyleClassParseFunction:Function = null;
-
+		
+		public var userData:*;
 		/**
 		 * Constructor.
 		 */

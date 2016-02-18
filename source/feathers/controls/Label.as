@@ -11,6 +11,7 @@ package feathers.controls
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
+	import flash.text.TextLineMetrics;
 	import flash.utils.Dictionary;
 	
 	import feathers.controls.text.Fontter;
@@ -1007,7 +1008,10 @@ public class Label extends DisplayObjectContainer
 	{
 		
 	}
-
+	public function getLineMetrics(lineIndex:int):TextLineMetrics
+	{
+		return sNativeTextField ? sNativeTextField.getLineMetrics(lineIndex) : null;
+	}
 	public function get numLines():int { return sNativeTextField.numLines; }
 	
 	/** The Context3D texture format that is used for rendering of all TrueType texts.
