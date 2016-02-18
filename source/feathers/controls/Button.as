@@ -8,6 +8,7 @@ accordance with the terms of the accompanying license agreement.
 package feathers.controls
 {
 	import flash.geom.Point;
+	import flash.text.TextFormatAlign;
 	import flash.ui.Keyboard;
 	import flash.utils.getTimer;
 	
@@ -1085,6 +1086,21 @@ package feathers.controls
 			{
 				mFontSize = value;
 				setTextFormatProperty("size", mFontSize);
+			}
+		}
+		
+		private var mTextAlign:String = TextFormatAlign.CENTER;
+		public function get textAlign():String
+		{
+			return mTextAlign;
+		}
+		
+		public function set textAlign(value:String):void
+		{
+			if (mTextAlign != value)
+			{
+				mTextAlign = value;
+				setTextFormatProperty("textAlign", mTextAlign);
 			}
 		}
 		

@@ -52,30 +52,32 @@ package feathers.controls.renderers
 		private function onTouchItem(target:DisplayObject):void
 		{
 			onTouchTarget(target);
-			this.dispatchEventWith(Event.TRIGGERED);
 			
 			//清除上次的选中状态
 			var clickedItemRender:DefaultListItemRenderer = this.owner.customSelectedItemRender as DefaultListItemRenderer;
 			if(clickedItemRender != null && clickedItemRender == this && owner.selectedItem == this._data)
 			{
-				//过滤同一项
-				return;
+				//选择同一项
+			}else
+			{//选择不同项
+				if(clickedItemRender)
+				{
+					clickedItemRender.isSelected = false;
+				}
+				
+				//当前项被选中
+				clickedItemRender = this;
+				clickedItemRender.isSelected = true;
+				
+				//设置选中数据项，List会发送Event.Change事件
+				owner.selectedItem = this._data;
 			}
-			
-			if(clickedItemRender)
-			{
-				clickedItemRender.isSelected = false;
-			}
-			
-			//当前项被选中
-			clickedItemRender = this;
-			clickedItemRender.isSelected = true;
-			
-			//设置选中数据项，List会发送Event.Change事件
-			owner.selectedItem = this._data;
 			
 			//保存当前被选中的ItemRender,会发送Event.Select事件
 			owner.customSelectedItemRender = clickedItemRender ;
+			
+			//发送单击事件
+			this.dispatchEventWith(Event.TRIGGERED);
 		}
 		
 		private function _onDoubleClick( e:MouseEvent ):void

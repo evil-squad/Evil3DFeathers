@@ -10,6 +10,7 @@ package feathers.controls
 	import flash.display.InteractiveObject;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.text.TextFormatAlign;
 	import flash.ui.Mouse;
 	import flash.ui.MouseCursor;
 	
@@ -823,6 +824,21 @@ package feathers.controls
 			{
 				mFontSize = value;
 				setTextFormatProperty("size", mFontSize);
+			}
+		}
+		
+		private var mTextAlign:String = TextFormatAlign.LEFT;
+		public function get textAlign():String
+		{
+			return mTextAlign;
+		}
+		
+		public function set textAlign(value:String):void
+		{
+			if (mTextAlign != value)
+			{
+				mTextAlign = value;
+				setTextFormatProperty("textAlign", mTextAlign);
 			}
 		}
 		
