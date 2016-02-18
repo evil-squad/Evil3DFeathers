@@ -286,8 +286,8 @@ package feathers.core
 				var childCount:int = container.numChildren;
 				for(var i:int = 0; i < childCount; i++)
 				{
-					var child:DisplayObject = container.getChildAt(i);
-					this.clearFocusManager(child);
+					var child:DisplayObject = i < container.numChildren ? container.getChildAt(i) : null;
+					if(child != null)this.clearFocusManager(child);
 				}
 				if(container is IFocusExtras)
 				{

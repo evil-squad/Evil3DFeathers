@@ -19,7 +19,6 @@ package feathers.controls
 	import feathers.core.PropertyProxy;
 	import feathers.events.ExclusiveTouch;
 	import feathers.events.FeathersEventType;
-	import feathers.layout.ILayout;
 	import feathers.system.DeviceCapabilities;
 	import feathers.utils.math.roundDownToNearest;
 	import feathers.utils.math.roundToNearest;

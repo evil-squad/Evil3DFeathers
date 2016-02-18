@@ -9,6 +9,8 @@ package feathers.controls
 {
 	import flash.display.InteractiveObject;
 	import flash.geom.Point;
+	import flash.text.TextFormat;
+	import flash.text.TextFormatAlign;
 	import flash.ui.Mouse;
 	import flash.ui.MouseCursor;
 	
@@ -602,7 +604,7 @@ package feathers.controls
 			if (mFontName != value)
 			{
 				mFontName = value;
-				textEditorProperties.textFormat["font"] = mFontName;
+				setTextFormatProperty("font", mFontName);
 			}
 		}
 		
@@ -615,7 +617,22 @@ package feathers.controls
 			if (mFontSize != value)
 			{
 				mFontSize = value;
-				textEditorProperties.textFormat["size"] = mFontSize;
+				setTextFormatProperty("size", mFontSize);
+			}
+		}
+		
+		private var mTextAlign:String = TextFormatAlign.LEFT;
+		public function get textAlign():String
+		{
+			return mTextAlign;
+		}
+		
+		public function set textAlign(value:String):void
+		{
+			if (mTextAlign != value)
+			{
+				mTextAlign = value;
+				setTextFormatProperty("textAlign", mTextAlign);
 			}
 		}
 		
@@ -629,7 +646,7 @@ package feathers.controls
 			if (mColor != value)
 			{
 				mColor = value;
-				textEditorProperties.textFormat["color"] = mColor;
+				setTextFormatProperty("color", mColor);
 			}
 		}
 		
@@ -644,7 +661,7 @@ package feathers.controls
 			if (mBold != value)
 			{
 				mBold = value;
-				textEditorProperties.textFormat["bold"] = mBold;
+				setTextFormatProperty("bold", mBold);
 			}
 		}
 		
@@ -656,7 +673,7 @@ package feathers.controls
 			if (mItalic != value)
 			{
 				mItalic = value;
-				textEditorProperties.textFormat["italic"] = mItalic;
+				setTextFormatProperty("italic", mItalic);
 			}
 		}
 		
@@ -668,7 +685,7 @@ package feathers.controls
 			if (mUnderline != value)
 			{
 				mUnderline = value;
-				textEditorProperties.textFormat["underline"] = mUnderline;
+				setTextFormatProperty("underline", mUnderline);
 			}
 		}
 		
@@ -680,7 +697,7 @@ package feathers.controls
 			if (mKerning != value)
 			{
 				mKerning = value;
-				textEditorProperties.textFormat["kerning"] = mKerning;
+				setTextFormatProperty("kerning",mKerning);
 			}
 		}
 		
@@ -692,7 +709,7 @@ package feathers.controls
 			if (mLetterSpacing != value)
 			{
 				mLetterSpacing = value;
-				textEditorProperties.textFormat["letterSpacing"] = mLetterSpacing;
+				setTextFormatProperty("letterSpacing",mLetterSpacing);
 			}
 		}
 		
@@ -704,10 +721,26 @@ package feathers.controls
 			if (mLeading != value)
 			{
 				mLeading = value;
-				textEditorProperties.textFormat["leading"] = mLeading;
+				setTextFormatProperty("leading", mLeading);
 			}
 		}
-
+		
+		private var _textFormatCacheProperties:Object;
+		private function setTextFormatProperty(name:String, value:*):void
+		{
+			if(setTextFormatProperty)
+			{
+				textEditorProperties.textFormat[name] = value;
+			}else{
+				if(!_textFormatCacheProperties)
+				{
+					_textFormatCacheProperties={}
+				}
+				_textFormatCacheProperties[name] = value;
+			}
+			this.invalidate(INVALIDATION_FLAG_TEXT_EDITOR);
+		}
+		
 		/**
 		 * @private
 		 */
@@ -958,6 +991,10 @@ package feathers.controls
 			if(!this._textEditorProperties)
 			{
 				this._textEditorProperties = new PropertyProxy(childProperties_onChange);
+			}
+			if(!this._textEditorProperties.textFormat)
+			{
+				this._textEditorProperties.textFormat = new TextFormat(Fontter.DEFAULT_FONT_NAME, Fontter.DEFAULT_FONT_SIZE, Fontter.DEFAULT_FONT_COLOR);
 			}
 			return this._textEditorProperties;
 		}
@@ -1219,6 +1256,14 @@ package feathers.controls
 			{
 				var propertyValue:Object = this._textEditorProperties[propertyName];
 				this.textEditorViewPort[propertyName] = propertyValue;
+				if(propertyName == "textFormat" && _textFormatCacheProperties)
+				{
+					for (var prop:String in _textFormatCacheProperties)
+					{
+						propertyValue[prop] = _textFormatCacheProperties[prop];
+					}
+					_textFormatCacheProperties = null;
+				}
 			}
 		}
 

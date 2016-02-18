@@ -1317,10 +1317,12 @@ package feathers.controls.text
 				this._measureTextField.multiline = false;
 				this._measureTextField.wordWrap = false;
 				this._measureTextField.embedFonts = false;
-				this._measureTextField.defaultTextFormat = new TextFormat(null, 11, 0x000000, false, false, false);
 				Starling.current.nativeStage.addChild(this._measureTextField);
 			}
-
+			if(!this._measureTextField.defaultTextFormat)
+			{
+				this._measureTextField.defaultTextFormat = new TextFormat(null, 12, 0xFFFFFF, false, false, false);
+			}
 			this.createStageText();
 		}
 

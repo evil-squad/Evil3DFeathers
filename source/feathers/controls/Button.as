@@ -8,9 +8,11 @@ accordance with the terms of the accompanying license agreement.
 package feathers.controls
 {
 	import flash.geom.Point;
+	import flash.text.TextFormatAlign;
 	import flash.ui.Keyboard;
 	import flash.utils.getTimer;
 	
+	import feathers.controls.text.Fontter;
 	import feathers.core.FeathersControl;
 	import feathers.core.IFeathersControl;
 	import feathers.core.IFocusDisplayObject;
@@ -23,7 +25,6 @@ package feathers.controls
 	import feathers.events.FeathersEventType;
 	import feathers.skins.IStyleProvider;
 	import feathers.skins.StateWithToggleValueSelector;
-	import feathers.utils.filter.GrayFilter;
 	
 	import starling.core.RenderSupport;
 	import starling.display.DisplayObject;
@@ -1060,6 +1061,154 @@ package feathers.controls
 			this._labelOffsetY = value;
 			this.invalidate(INVALIDATION_FLAG_STYLES);
 		}
+		
+		//======================================textFormat properties===========================
+		//
+		protected var mFontName:String = Fontter.DEFAULT_FONT_NAME;
+		/** The name of the font (true type or bitmap font). */
+		public function get fontName():String { return mFontName; }
+		public function set fontName(value:String):void
+		{
+			if (mFontName != value)
+			{
+				mFontName = value;
+				setTextFormatProperty("font", mFontName);
+			}
+		}
+		
+		protected var mFontSize:int = 12;
+		/** The size of the font. For bitmap fonts, use <code>BitmapFont.NATIVE_SIZE</code> for 
+		 *  the original size. */
+		public function get fontSize():Number { return mFontSize; }
+		public function set fontSize(value:Number):void
+		{
+			if (mFontSize != value)
+			{
+				mFontSize = value;
+				setTextFormatProperty("size", mFontSize);
+			}
+		}
+		
+		private var mTextAlign:String = TextFormatAlign.CENTER;
+		public function get textAlign():String
+		{
+			return mTextAlign;
+		}
+		
+		public function set textAlign(value:String):void
+		{
+			if (mTextAlign != value)
+			{
+				mTextAlign = value;
+				setTextFormatProperty("textAlign", mTextAlign);
+			}
+		}
+		
+		protected var mColor:uint = 0xFFFFFF;
+		/** The color of the text. Note that bitmap fonts should be exported in plain white so
+		 *  that tinting works correctly. If your bitmap font contains colors, set this property
+		 *  to <code>Color.WHITE</code> to get the desired result. @default black */
+		public function get color():uint { return mColor; }
+		public function set color(value:uint):void
+		{
+			if (mColor != value)
+			{
+				mColor = value;
+				setTextFormatProperty("color", mColor);
+			}
+		}
+		
+		/**
+		 * @private
+		 */
+		protected var mBold:Boolean = false;
+		/** Indicates whether the text is bold. @default false */
+		public function get bold():Boolean { return mBold; }
+		public function set bold(value:Boolean):void 
+		{
+			if (mBold != value)
+			{
+				mBold = value;
+				setTextFormatProperty("bold", mBold);
+			}
+		}
+		
+		protected var mItalic:Boolean = false;
+		/** Indicates whether the text is italicized. @default false */
+		public function get italic():Boolean { return mItalic; }
+		public function set italic(value:Boolean):void
+		{
+			if (mItalic != value)
+			{
+				mItalic = value;
+				setTextFormatProperty("italic", mItalic);
+			}
+		}
+		
+		protected var mUnderline:Boolean = false;
+		/** Indicates whether the text is underlined. @default false */
+		public function get underline():Boolean { return mUnderline; }
+		public function set underline(value:Boolean):void
+		{
+			if (mUnderline != value)
+			{
+				mUnderline = value;
+				setTextFormatProperty("underline", mUnderline);
+			}
+		}
+		
+		protected var mKerning:Boolean = false;
+		/** Indicates whether kerning is enabled. @default true */
+		public function get kerning():Boolean { return mKerning; }
+		public function set kerning(value:Boolean):void
+		{
+			if (mKerning != value)
+			{
+				mKerning = value;
+				setTextFormatProperty("kerning",mKerning);
+			}
+		}
+		
+		protected var mLetterSpacing:Number = 0;
+		/** Indicates whether kerning is enabled. @default 0 */
+		public function get letterSpacing():Number { return mLetterSpacing; }
+		public function set letterSpacing(value:Number):void
+		{
+			if (mLetterSpacing != value)
+			{
+				mLetterSpacing = value;
+				setTextFormatProperty("letterSpacing",mLetterSpacing);
+			}
+		}
+		
+		protected var mLeading:Boolean = false;
+		/** The amount of vertical space (called 'leading') between lines. @default 0 */
+		public function get leading():Boolean { return mLeading; }
+		public function set leading(value:Boolean):void
+		{
+			if (mLeading != value)
+			{
+				mLeading = value;
+				setTextFormatProperty("leading", mLeading);
+			}
+		}
+		
+		private var _textFormatCacheProperties:Object;
+		private function setTextFormatProperty(name:String, value:*):void
+		{
+			if(defaultLabelProperties.textFormat)
+			{
+				defaultLabelProperties.textFormat[name] = value;
+			}else{
+				if(!_textFormatCacheProperties)
+				{
+					_textFormatCacheProperties={}
+				}
+				_textFormatCacheProperties[name] = value;
+			}
+			this.invalidate(INVALIDATION_FLAG_TEXT_EDITOR);
+		}
+		
 
 		/**
 		 * @private
@@ -2565,6 +2714,12 @@ package feathers.controls
 				var propertyValue:Object = properties[propertyName];
 				this.labelTextRenderer[propertyName] = propertyValue;
 			}
+		}
+		
+		public function refreshLaybeInitStyles():void
+		{
+			this.invalidate(INVALIDATION_FLAG_STYLES);
+			draw();
 		}
 		
 		/**

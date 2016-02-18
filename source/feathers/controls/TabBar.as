@@ -701,6 +701,18 @@ package feathers.controls
 			this._lastGap = value;
 			this.invalidate(INVALIDATION_FLAG_STYLES);
 		}
+		
+		private var _btnWidth:int = 50;
+		public function get btnWidth():int
+		{
+			return _btnWidth;
+		}
+		
+		public function set btnWidth(value:int):void
+		{
+			if(_btnWidth == value)return;
+			_btnWidth = value;
+		}
 
 		/**
 		 * Quickly sets all padding properties to the same value. The

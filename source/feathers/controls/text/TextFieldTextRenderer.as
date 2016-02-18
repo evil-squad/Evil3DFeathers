@@ -36,7 +36,6 @@ package feathers.controls.text
 	import starling.events.Event;
 	import starling.textures.ConcreteTexture;
 	import starling.textures.Texture;
-	import starling.utils.DynamicFont;
 	import starling.utils.getNextPowerOfTwo;
 
 	/**
@@ -1451,6 +1450,7 @@ package feathers.controls.text
 				this.textField.sharpness = this._sharpness;
 				this.textField.thickness = this._thickness;
 				this.textField.filters = this._nativeFilters;
+				this.textField.embedFonts = this._embedFonts;
 			}
 
 			if(dataInvalid || stylesInvalid || stateInvalid)
