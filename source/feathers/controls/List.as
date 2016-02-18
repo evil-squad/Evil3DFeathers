@@ -10,7 +10,7 @@ package feathers.controls
 	import flash.geom.Point;
 	import flash.ui.Keyboard;
 	
-	import feathers.controls.renderers.DefaultListItemRenderer;
+	import feathers.controls.renderers.BaseDefaultListItemRenderer;
 	import feathers.controls.supportClasses.ListDataViewPort;
 	import feathers.core.IFocusContainer;
 	import feathers.core.PropertyProxy;
@@ -891,7 +891,7 @@ package feathers.controls
 		/**
 		 * @private
 		 */
-		protected var _itemRendererType:Class = DefaultListItemRenderer;
+		protected var _itemRendererType:Class = BaseDefaultListItemRenderer;
 		
 		/**
 		 * The class used to instantiate item renderers. Must implement the

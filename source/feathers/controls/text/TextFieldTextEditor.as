@@ -426,6 +426,52 @@ package feathers.controls.text
 			this._previousTextFormat = null;
 			this.invalidate(INVALIDATION_FLAG_STYLES);
 		}
+		
+		/**
+		 * @private
+		 */
+		protected var _nativeFilters:Array;
+		
+		/**
+		 * Native filters to pass to the <code>flash.text.TextField</code>
+		 * before creating the texture snapshot.
+		 *
+		 * <p>In the following example, the native filters are changed:</p>
+		 *
+		 * <listing version="3.0">
+		 * renderer.nativeFilters = [ new GlowFilter() ];</listing>
+		 *
+		 * @default null
+		 *
+		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/display/DisplayObject.html#filters Full description of flash.display.DisplayObject.filters in Adobe's Flash Platform API Reference
+		 */
+		public function get nativeFilters():Array
+		{
+			return this._nativeFilters;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set nativeFilters(value:Array):void
+		{
+			if(this._nativeFilters == value)
+			{
+				return;
+			}
+			this._nativeFilters = value;
+			if(textField)this.textField.filters = value;
+			this.invalidate(INVALIDATION_FLAG_STYLES);
+		}
+		
+		private var _nativeFiltersId:String;
+		public function set nativeFiltersId(value:String):void
+		{
+			if(_nativeFiltersId == value)return;
+			_nativeFiltersId = value;
+			var fileterArr:Array = Fontter.filterObj[value];
+			nativeFilters = fileterArr;
+		}
 
 		/**
 		 * @private
@@ -1791,6 +1837,7 @@ package feathers.controls.text
 				this._previousTextFormat = this.currentTextFormat;
 			}
 			textField.defaultTextFormat = this.currentTextFormat;
+			if(_nativeFilters != null)textField.filters = _nativeFilters;
 			
 			if(this._isHTML)
 			{

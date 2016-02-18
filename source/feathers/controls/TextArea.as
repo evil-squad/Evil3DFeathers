@@ -9,6 +9,7 @@ package feathers.controls
 {
 	import flash.display.InteractiveObject;
 	import flash.geom.Point;
+	import flash.text.TextFormat;
 	import flash.ui.Mouse;
 	import flash.ui.MouseCursor;
 	
@@ -707,7 +708,7 @@ package feathers.controls
 				textEditorProperties.textFormat["leading"] = mLeading;
 			}
 		}
-
+		
 		/**
 		 * @private
 		 */
@@ -958,6 +959,10 @@ package feathers.controls
 			if(!this._textEditorProperties)
 			{
 				this._textEditorProperties = new PropertyProxy(childProperties_onChange);
+			}
+			if(!this._textEditorProperties.textFormat)
+			{
+				this._textEditorProperties.textFormat = new TextFormat(Fontter.DEFAULT_FONT_NAME, Fontter.DEFAULT_FONT_SIZE, Fontter.DEFAULT_FONT_COLOR);
 			}
 			return this._textEditorProperties;
 		}

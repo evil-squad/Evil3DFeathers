@@ -2078,7 +2078,7 @@ package feathers.core
 			}
 			this._styleNameList.addEventListener(Event.CHANGE, styleNameList_changeHandler);
 		}
-
+		
 		/**
 		 * Default event handler for <code>FeathersEventType.FOCUS_IN</code>
 		 * that may be overridden in subclasses to perform additional actions
