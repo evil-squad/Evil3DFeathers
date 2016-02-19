@@ -7,11 +7,14 @@ accordance with the terms of the accompanying license agreement.
 */
 package feathers.controls
 {
+	import flash.geom.Rectangle;
+	
 	import feathers.core.FeathersControl;
 	import feathers.skins.IStyleProvider;
 	import feathers.utils.math.clamp;
-
+	
 	import starling.display.DisplayObject;
+	import starling.display.Sprite;
 
 	/**
 	 * Displays the progress of a task over time. Non-interactive.
@@ -42,6 +45,17 @@ package feathers.controls
 		 * @see #direction
 		 */
 		public static const DIRECTION_VERTICAL:String = "vertical";
+		
+		
+		/**
+		 * 缩放,适用于缩放不会导致失真的九宫格或三宫格显示对象
+		 */		
+		public static const PROGRESS_MODE_SCALE:String = "scale";
+		
+		/**
+		 * MASK,适用于非九宫格或三宫格显示对象
+		 */		
+		public static const PROGRESS_MODE_MASK:String = "mask";
 
 		/**
 		 * The default <code>IStyleProvider</code> for all <code>ProgressBar</code>
@@ -104,6 +118,30 @@ package feathers.controls
 				return;
 			}
 			this._direction = value;
+			this.invalidate(INVALIDATION_FLAG_DATA);
+		}
+		
+		protected var _clipRect:Rectangle;
+		protected var _progressMode:String = PROGRESS_MODE_SCALE;
+		
+		[Inspectable(type="String",enumeration="scale,mask")]
+		/**
+		 * 进度条显示模式。请使用ProgressBar定义的常量。默认值：ProgressBar.PROGRESS_MODE_SCALE。
+		 */
+		public function get progressMode():String
+		{
+			return _progressMode;
+		}
+		
+		public function set progressMode(value:String):void
+		{
+			if(_progressMode==value)
+				return;
+			_progressMode = value;
+			if(value == PROGRESS_MODE_MASK && !_clipRect)
+			{
+				_clipRect = new Rectangle(0,0,0,0);
+			}
 			this.invalidate(INVALIDATION_FLAG_DATA);
 		}
 
@@ -187,7 +225,7 @@ package feathers.controls
 		/**
 		 * @private
 		 */
-		protected var _maximum:Number = 1;
+		protected var _maximum:Number = 100;
 
 		/**
 		 * The progress bar's value will not go higher than the maximum.
@@ -328,12 +366,12 @@ package feathers.controls
 		/**
 		 * @private
 		 */
-		protected var _originalFillWidth:Number = NaN;
+		protected var _originalFillWidth:Number = 0;
 
 		/**
 		 * @private
 		 */
-		protected var _originalFillHeight:Number = NaN;
+		protected var _originalFillHeight:Number = 0;
 
 		/**
 		 * @private
@@ -718,14 +756,14 @@ package feathers.controls
 			}
 			if(this.currentFill)
 			{
-				if(this._originalFillWidth !== this._originalFillWidth) //isNaN
+				/*if(this._originalFillWidth !== this._originalFillWidth) //isNaN
 				{
 					this._originalFillWidth = this.currentFill.width;
 				}
 				if(this._originalFillHeight !== this._originalFillHeight) //isNaN
 				{
 					this._originalFillHeight = this.currentFill.height;
-				}
+				}*/
 				this.currentFill.visible = true;
 			}
 		}
@@ -757,19 +795,45 @@ package feathers.controls
 					percentage = 1;
 				}
 			}
-			if(this._direction == DIRECTION_VERTICAL)
+			if(_progressMode == PROGRESS_MODE_SCALE || !(this.currentFill is Sprite))
 			{
-				this.currentFill.width = this.actualWidth - this._paddingLeft - this._paddingRight;
-				this.currentFill.height = Math.round(this._originalFillHeight + percentage * (this.actualHeight - this._paddingTop - this._paddingBottom - this._originalFillHeight));
-				this.currentFill.x = this._paddingLeft;
-				this.currentFill.y = this.actualHeight - this._paddingBottom - this.currentFill.height;
-			}
-			else //horizontal
-			{
-				this.currentFill.width = Math.round(this._originalFillWidth + percentage * (this.actualWidth - this._paddingLeft - this._paddingRight - this._originalFillWidth));
-				this.currentFill.height = this.actualHeight - this._paddingTop - this._paddingBottom;
-				this.currentFill.x = this._paddingLeft;
-				this.currentFill.y = this._paddingTop;
+				if(this._direction == DIRECTION_VERTICAL)
+				{
+					this.currentFill.width = this.actualWidth - this._paddingLeft - this._paddingRight;
+					this.currentFill.height = Math.round(this._originalFillHeight + percentage * (this.actualHeight - this._paddingTop - this._paddingBottom - this._originalFillHeight));
+					this.currentFill.x = this._paddingLeft;
+					this.currentFill.y = this.actualHeight - this._paddingBottom - this.currentFill.height;
+				}
+				else //horizontal
+				{
+					this.currentFill.width = Math.round(this._originalFillWidth + percentage * (this.actualWidth - this._paddingLeft - this._paddingRight - this._originalFillWidth));
+					this.currentFill.height = this.actualHeight - this._paddingTop - this._paddingBottom;
+					this.currentFill.x = this._paddingLeft;
+					this.currentFill.y = this._paddingTop;
+				}
+			}else{
+				if(this._direction == DIRECTION_VERTICAL)
+				{
+					this._clipRect.width = this.actualWidth - this._paddingLeft - this._paddingRight;
+					this._clipRect.height = Math.round(this._originalFillHeight + percentage * (this.actualHeight - this._paddingTop - this._paddingBottom - this._originalFillHeight));
+					this.currentFill.x = this._paddingLeft;
+					this.currentFill.y = this.actualHeight - this._paddingBottom - this.currentFill.height;
+					if(this.currentFill is Sprite)
+					{
+						Sprite(this.currentFill).clipRect = _clipRect; 
+					}
+				}
+				else //horizontal
+				{
+					this._clipRect.width = Math.round(this._originalFillWidth + percentage * (this.actualWidth - this._paddingLeft - this._paddingRight - this._originalFillWidth));
+					this._clipRect.height = this.actualHeight - this._paddingTop - this._paddingBottom;
+					this.currentFill.x = this._paddingLeft;
+					this.currentFill.y = this._paddingTop;
+					if(this.currentFill is Sprite)
+					{
+						Sprite(this.currentFill).clipRect = _clipRect; 
+					}
+				}
 			}
 		}
 	}

@@ -273,6 +273,7 @@ package feathers.controls.supportClasses
 				IVariableVirtualLayout(this._layout).resetVariableVirtualCache();
 			}
 			this._updateForDataReset = true;
+			_layoutIndexOffset = 0;
 			this.invalidate(INVALIDATION_FLAG_DATA);
 		}
 

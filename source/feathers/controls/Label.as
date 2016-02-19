@@ -140,8 +140,8 @@ public class Label extends DisplayObjectContainer
 		mColor = 0xFFFFFF;
 		mBorder = null;
 		mKerning = true;
-		mLetterSpacing = 2;
-		mLeading = 2;
+		mLetterSpacing = 0;
+		mLeading = 0;
 		mBold = false;
 		mAutoSize = TextFieldAutoSize.BOTH_DIRECTIONS;
 		mHitArea = new Rectangle(0, 0, 0, 0);

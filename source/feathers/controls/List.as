@@ -600,6 +600,7 @@ package feathers.controls
 			if(value >= 0)
 			{
 				this._selectedIndices.data = new <int>[value];
+				dispatchEventWith(Event.SELECT, false, selectedItem);
 			}
 			else
 			{
@@ -665,12 +666,17 @@ package feathers.controls
 		}
 		
 		/**
+		 * 当单击选中项时是否再次发送Select事件
+		 */
+		public var dispatchSelectAfterClickSelectedItem:Boolean=true;
+		
+		/**
 		 * 供外部自定义寄存的数据
 		 */
 		private var _customSelectedItemRender:DisplayObject;
 		public function set customSelectedItemRender(value:DisplayObject):void
 		{
-			if(_customSelectedItemRender == value)return;
+			if(_customSelectedItemRender == value && !dispatchSelectAfterClickSelectedItem)return;
 			_customSelectedItemRender = value;
 			dispatchEventWith(Event.SELECT, false, selectedItem);
 		}
