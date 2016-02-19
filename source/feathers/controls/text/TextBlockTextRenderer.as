@@ -888,11 +888,6 @@ package feathers.controls.text
 		}
 
 		/**
-		 * @private
-		 */
-		protected var _userData:*;
-
-		/**
 		 * Provides a way for the application to associate arbitrary data with
 		 * the text block.
 		 *
@@ -903,7 +898,7 @@ package feathers.controls.text
 		 *
 		 * @see http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/flash/text/engine/TextBlock.html#userData Full description of flash.text.engine.TextBlock.userData in Adobe's Flash Platform API Reference
 		 */
-		public function get userData():*
+		override public function get userData():*
 		{
 			return this._userData;
 		}
@@ -911,7 +906,7 @@ package feathers.controls.text
 		/**
 		 * @private
 		 */
-		public function set userData(value:*):void
+		override public function set userData(value:*):void
 		{
 			if(this._userData === value)
 			{

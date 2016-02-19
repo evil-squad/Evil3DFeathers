@@ -245,7 +245,6 @@ package feathers.core
 		 */		
 		public static var defautStyleClassParseFunction:Function = null;
 		
-		public var userData:*;
 		/**
 		 * Constructor.
 		 */
@@ -261,6 +260,12 @@ package feathers.core
 			this.addEventListener(Event.REMOVED_FROM_STAGE, feathersControl_removedFromStageHandler);
 			this.addEventListener(Event.FLATTEN, feathersControl_flattenHandler);
 		}
+		/**
+		 * @private
+		 */
+		protected var _userData:*;
+		public function get userData():*{return this._userData;}
+		public function set userData(value:*):void{this._userData = value;}
 
 		/**
 		 * @private
