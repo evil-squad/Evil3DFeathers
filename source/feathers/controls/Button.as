@@ -1193,6 +1193,21 @@ package feathers.controls
 			}
 		}
 		
+		private var mNativeFilters:Array;
+		/** The native Flash BitmapFilters to apply to this TextField.
+		 *
+		 *  <p>BEWARE: this property is ignored when using bitmap fonts!</p> */
+		public function get nativeFilters():Array { return mNativeFilters; }
+		public function set nativeFilters(value:Array) : void
+		{
+			if(mNativeFilters != value)
+			{
+				mNativeFilters = value;
+				defaultLabelProperties.mNativeFilters = value;
+				this.invalidate(INVALIDATION_FLAG_TEXT_EDITOR);
+			}
+		}
+		
 		private var _textFormatCacheProperties:Object;
 		private function setTextFormatProperty(name:String, value:*):void
 		{
