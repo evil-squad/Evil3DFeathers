@@ -944,7 +944,7 @@ package feathers.controls
 				}
 				_textFormatCacheProperties[name] = value;
 			}
-			this.invalidate(INVALIDATION_FLAG_TEXT_EDITOR);
+			this.invalidate(INVALIDATION_FLAG_STYLES);
 		}
 
 		/**
@@ -2405,7 +2405,6 @@ package feathers.controls
 			for(var propertyName:String in this._textEditorProperties)
 			{
 				var propertyValue:Object = this._textEditorProperties[propertyName];
-				this.textEditor[propertyName] = propertyValue;
 				if(propertyName == "textFormat" && _textFormatCacheProperties)
 				{
 					for (var prop:String in _textFormatCacheProperties)
@@ -2414,6 +2413,7 @@ package feathers.controls
 					}
 					_textFormatCacheProperties = null;
 				}
+				this.textEditor[propertyName] = propertyValue;
 			}
 		}
 

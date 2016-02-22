@@ -728,7 +728,7 @@ package feathers.controls
 		private var _textFormatCacheProperties:Object;
 		private function setTextFormatProperty(name:String, value:*):void
 		{
-			if(setTextFormatProperty)
+			if(setTextFormatProperty != null)
 			{
 				textEditorProperties.textFormat[name] = value;
 			}else{

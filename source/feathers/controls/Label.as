@@ -177,7 +177,7 @@ public class Label extends DisplayObjectContainer
 				vAlign = VAlign.BOTTOM;
 				break;
 		}
-		autoSize = TextFieldAutoSize.NONE;
+//		autoSize = TextFieldAutoSize.NONE;
 	}
 	
 	private var _textAlign:String = TextFormatAlign.LEFT;
@@ -208,7 +208,7 @@ public class Label extends DisplayObjectContainer
 				hAlign = HAlign.RIGHT;
 				break;
 		}
-		autoSize = TextFieldAutoSize.NONE;
+//		autoSize = TextFieldAutoSize.NONE;
 	}
 	
 	/**
@@ -418,12 +418,12 @@ public class Label extends DisplayObjectContainer
 		if (isHorizontalAutoSize)
 		{
 			width = maxWidth ? maxWidth : int.MAX_VALUE;
-			hAlign = HAlign.LEFT;
+			//hAlign = HAlign.LEFT;
 		}
 		if (isVerticalAutoSize)
 		{
 			height = maxHeight ? maxHeight : int.MAX_VALUE;
-			vAlign = VAlign.TOP;
+			//vAlign = VAlign.TOP;
 		}
 		
 		var textFormat:TextFormat = new TextFormat(mFontName,
@@ -460,10 +460,14 @@ public class Label extends DisplayObjectContainer
 		var textWidth:Number  = sNativeTextField.textWidth;
 		var textHeight:Number = sNativeTextField.textHeight;
 		
-		if (isHorizontalAutoSize)
+		if (isHorizontalAutoSize && !mHitArea.width)
 			sNativeTextField.width = width = Math.ceil(textWidth + 5);
-		if (isVerticalAutoSize)
+		if(mHitArea.width)
+			sNativeTextField.width = width = mHitArea.width;
+		if (isVerticalAutoSize && !mHitArea.height)
 			sNativeTextField.height = height = Math.ceil(textHeight + 4);
+		if(mHitArea.height)
+			sNativeTextField.height = height = mHitArea.height;
 		
 		// avoid invalid texture size
 		if (width  < 1) width  = 1.0;

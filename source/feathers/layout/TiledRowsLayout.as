@@ -678,7 +678,7 @@ package feathers.layout
 		/**
 		 * @private
 		 */
-		protected var _useSquareTiles:Boolean = true;
+		protected var _useSquareTiles:Boolean = false;
 
 		/**
 		 * Determines if the tiles must be square or if their width and height

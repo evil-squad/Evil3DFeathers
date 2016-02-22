@@ -1203,8 +1203,8 @@ package feathers.controls
 			if(mNativeFilters != value)
 			{
 				mNativeFilters = value;
-				defaultLabelProperties.mNativeFilters = value;
-				this.invalidate(INVALIDATION_FLAG_TEXT_EDITOR);
+				defaultLabelProperties.nativeFilters = value;
+				this.invalidate(INVALIDATION_FLAG_STYLES);
 			}
 		}
 		
@@ -1221,7 +1221,7 @@ package feathers.controls
 				}
 				_textFormatCacheProperties[name] = value;
 			}
-			this.invalidate(INVALIDATION_FLAG_TEXT_EDITOR);
+			this.invalidate(INVALIDATION_FLAG_STYLES);
 		}
 		
 
@@ -2728,6 +2728,14 @@ package feathers.controls
 			{
 				var propertyValue:Object = properties[propertyName];
 				this.labelTextRenderer[propertyName] = propertyValue;
+				if(propertyName == "textFormat" && _textFormatCacheProperties)
+				{
+					for (var prop:String in _textFormatCacheProperties)
+					{
+						propertyValue[prop] = _textFormatCacheProperties[prop];
+					}
+					_textFormatCacheProperties = null;
+				}
 			}
 		}
 		
